@@ -1,2 +1,2 @@
 # RLmusic
-Composing Music using Reinforcement Learning for Final Year Project
+Final Year Project: Composing music using Reinforcement Learning
