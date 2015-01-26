@@ -91,6 +91,9 @@ def get_corpus(corpus_dir):
             filenames.append(corpus_dir + f)
     return filenames
 
+def generate_features(states):
+    pass
+
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
     for filename in filenames:
