@@ -18,14 +18,13 @@ def parse(filename):
                                      note.Note])
     first_measure = song.parts[0][1]
     for i in range(len(elements)):
+        prev_elem = elements[i-1]
         elem = elements[i]
-
         try:
             next_elem = elements[i+1]
         except stream.StreamException:
+            # at the last iteration, look for next item in the original measure
             next_elem = elem.next()
-
-        prev_elem = elements[i-1]
 
         # Anacrusis
         if elem.measureNumber == 1 and first_measure.duration != \
@@ -52,7 +51,6 @@ def parse(filename):
             fig_chord = elem.figure
 
         elif elem.isNote:
-
             if prev_elem.isChord or elem.beat == 1.0:
                 fighead = elem.midi
                 fig_start_at_beat = elem.beat
@@ -63,15 +61,16 @@ def parse(filename):
             fig_notes.append(elem.quarterLength)
             fig_duration += elem.quarterLength
 
-            # Wrap up if we encounter Rest or Chord or new bar (beat == 1.0)
+            # Wrap up figure if we encounter Rest or Chord or new bar (beat ==
+            # 1.0)
             if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
                 figure = (tuple(fig_notes),
-                           fig_chord,
-                           fig_duration,
-                           fig_start_at_beat,
-                           fighead)
+                          fig_chord,
+                          fig_duration,
+                          fig_start_at_beat,
+                          fighead)
 
-                # If next_elem is the final barline
+                # If next_elem is the final barline, wrap up the figure
                 if hasattr(next_elem, 'style'):
                     figure = ('end',) + figure
                 states.append(figure)
