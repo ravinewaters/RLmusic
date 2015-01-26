@@ -1,6 +1,6 @@
 __author__ = 'redhat'
 
-from music21 import converter as c
+from music21 import converter, note, harmony, stream
 import os
 import pprint
 
@@ -12,105 +12,72 @@ def parse(filename):
     3. meeting the next chord, which implies new figure
     4. Pickup bar and the last figure are handled separately
     """
-
-    song = c.parse(filename)
-
     states = []
-    measures = song.parts[0].getElementsByClass("Measure")
-    number_of_measures = len(measures)
-    for measure in measures:
+    song = converter.parse(filename)
+    elements = song.flat.getElementsByClass([harmony.ChordSymbol, note.Rest,
+                                     note.Note])
+    first_measure = song.parts[0][1]
+    for i in range(len(elements)):
+        elem = elements[i]
+
+        try:
+            next_elem = elements[i+1]
+        except stream.StreamException:
+            next_elem = elem.next()
+
+        prev_elem = elements[i-1]
 
         # Anacrusis
-        if measure.number == 1 and measure.duration != measure.barDuration:
-            bar = measure.notesAndRests
+        if elem.measureNumber == 1 and first_measure.duration != \
+                first_measure.barDuration:
             pickups = []
+            fighead = None
 
-            first = True
-            for elem in bar:
-                if elem.isNote:
-                    if first:
-                        fighead = elem.midi
-                        first = False
-                    pickups.append(elem.midi)
-                    pickups.append(elem.quarterLength)
-                elif elem.isRest:
-                    pickups.append('rest')
-                    pickups.append(elem.quarterLength)
-            states.append(("pickup", tuple(pickups)))
-            continue
+            if elem.isNote:
+                if not fighead:
+                    fighead = elem.midi
 
-        for elem in measure.notesAndRests:
-
-            if elem.isChord:
-                # elem is a Chord
-                try:
-                    prev_fig_chord = chord
-                except NameError:
-                    pass
-
-                # get chord's name
-                chord = elem.figure
-                is_fighead = 1
-
-            elif elem.isNote:
-                # elem is a note
-                # when at new fighead or last note, i.e. the next object is
-                # the final barline
-
-                # NEED TO HANDLE TIE AS WELL
-                if is_fighead == 1 or elem.beat == 1.0:
-                    # many variables are undefined when iterating the first bar
-
-                    try:
-                        # if fig_start_at_beat undefined, define it for the new
-                        # figure
-                        prev_fig_start_at_beat = fig_start_at_beat
-                        prev_fig_duration = fig_duration
-                        prev_fig_notes = fig_notes
-                        prev_fighead = current_fighead
-
-                        states.append((tuple(prev_fig_notes),
-                                       prev_fig_chord,
-                                       prev_fig_duration,
-                                       prev_fig_start_at_beat,
-                                       prev_fighead))
-                    except NameError:
-                        pass
-
-                    current_fighead = elem.midi  # set new fighead
-                    fig_duration = 0
-                    fig_start_at_beat = elem.beat  # determine beat of the new
-                    # figure
-                    fig_notes = []  #set empty for the new figure
-                    is_fighead = 0  # next note may not be a fighead
-
-                #append notes to fig_notes
-                fig_notes.append(elem.midi)
-                fig_notes.append(elem.quarterLength)
-                fig_duration += elem.quarterLength
+                pickups.append(elem.midi)
+                pickups.append(elem.quarterLength)
 
             elif elem.isRest:
-                # elem is a rest
-                states.append(('rest', elem.quarterLength, elem.beat))
+                pickups.append('rest')
+                pickups.append(elem.quarterLength)
 
-            # terminal state, last figure
-            if measure.number == number_of_measures and not hasattr(elem.next(),
-                                                               'pitches'):
-                prev_fig_start_at_beat = fig_start_at_beat
-                prev_fig_duration = fig_duration
-                prev_fig_notes = fig_notes
-                prev_fighead = current_fighead
+            states.append(("pickup", tuple(pickups), fighead))
+            continue
 
-                states.append(("end",
-                               tuple(prev_fig_notes),
-                               chord,
-                               prev_fig_duration,
-                               prev_fig_start_at_beat,
-                               prev_fighead))
+        if elem.isChord:
+            # get chord's name
+            fig_chord = elem.figure
 
-    # for state in states:
-    #     print(state)
-    # print('fig_notes, chord, fig_duration, fig_start_at_beat, current_fighead')
+        elif elem.isNote:
+
+            if prev_elem.isChord or elem.beat == 1.0:
+                fighead = elem.midi
+                fig_start_at_beat = elem.beat
+                fig_notes = []
+                fig_duration = 0
+
+            fig_notes.append(elem.midi)
+            fig_notes.append(elem.quarterLength)
+            fig_duration += elem.quarterLength
+
+            if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
+                figure = (tuple(fig_notes),
+                           fig_chord,
+                           fig_duration,
+                           fig_start_at_beat,
+                           fighead)
+                if hasattr(next_elem, 'style'):
+                    figure = ('final',) + figure
+                states.append(figure)
+
+            # NEED TO HANDLE TIE AS WELL
+
+        elif elem.isRest:
+            # elem is a rest
+            states.append(('rest', elem.quarterLength, elem.beat))
 
     return states
 
