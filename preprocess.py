@@ -63,14 +63,17 @@ def parse(filename):
             fig_notes.append(elem.quarterLength)
             fig_duration += elem.quarterLength
 
+            # Wrap up if we encounter Rest or Chord or new bar (beat == 1.0)
             if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
                 figure = (tuple(fig_notes),
                            fig_chord,
                            fig_duration,
                            fig_start_at_beat,
                            fighead)
+
+                # If next_elem is the final barline
                 if hasattr(next_elem, 'style'):
-                    figure = ('final',) + figure
+                    figure = ('end',) + figure
                 states.append(figure)
 
             # NEED TO HANDLE TIE AS WELL
