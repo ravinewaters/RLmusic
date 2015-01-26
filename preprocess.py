@@ -58,7 +58,7 @@ def parse(filename):
                 # the final barline
 
                 # NEED TO HANDLE TIE AS WELL
-                if is_fighead == 1 and elem.beat == 1.0:
+                if is_fighead == 1 or elem.beat == 1.0:
                     # many variables are undefined when iterating the first bar
 
                     try:
