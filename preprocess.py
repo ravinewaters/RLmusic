@@ -133,7 +133,7 @@ def hash_elem_tuple(list_of_tuples):
         list_size.append(counter)
     return (list_to_int, list_to_elem, list_size)
 
-def to_int_states(list_of_list_of_tuples):
+def to_states_with_int_elem(list_of_lists_of_tuples):
     """
     returns states that are tuple of nonnegative integers, e.g.
     (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
@@ -141,14 +141,14 @@ def to_int_states(list_of_list_of_tuples):
 
     # flatten list of list of tuples to list of tuples
     flatten_states = [item for list_of_tuples in
-                      list_of_list_of_tuples for item in list_of_tuples]
+                      list_of_lists_of_tuples for item in list_of_tuples]
 
     global dict_states_to_int_states, dict_int_states_to_states, elem_set_sizes
     dict_states_to_int_states, dict_int_states_to_states, elem_set_sizes = \
         hash_elem_tuple(flatten_states)
 
     new_all_states = []
-    for states in list_of_list_of_tuples:
+    for states in list_of_lists_of_tuples:
         new_states = []
         for state in states:
             new_state = []
@@ -156,8 +156,34 @@ def to_int_states(list_of_list_of_tuples):
                 new_elem = dict_states_to_int_states[i][state[i]]
                 new_state.append(new_elem)
             new_states.append(tuple(new_state))
-        new_all_states.append(tuple(new_states))
+        new_all_states.append(new_states)
     return new_all_states
+
+def convert_states_with_int_elem_to_int(list_of_lists_of_tuples, elem_set_sizes):
+    elem_set_sizes = [1] + elem_set_sizes[:-1]
+    new_all_states = []
+    for list_of_tuples in list_of_lists_of_tuples:
+        all_states = []
+        for item in list_of_tuples:
+            result = 0
+            for i in range(len(item)):
+                result += item[i]*cum_multiply_elem(elem_set_sizes, i+1)
+            all_states.append(result)
+        new_all_states.append(all_states)
+    return new_all_states
+
+def cum_multiply_elem(list_of_int, pos):
+    """
+    Multiply all element of a list up to position pos
+    """
+    res = 1
+    for i in range(pos):
+        res *= list_of_int[i]
+    return res
+
+
+
+
 
 def generate_features(states):
     pass
@@ -169,6 +195,10 @@ if __name__ == "__main__":
         states = parse(filename)
         all_states.append(states)
     pprint.pprint(all_states)
-    new_all_states = to_int_states(all_states)
-    pprint.pprint(new_all_states)
+    states_with_int_elem = to_states_with_int_elem(all_states)
+    states_of_int = convert_states_with_int_elem_to_int(states_with_int_elem,
+                                                        elem_set_sizes)
+
+    pprint.pprint(states_of_int)
+    pprint.pprint(states_with_int_elem)
     pprint.pprint(dict_int_states_to_states)
