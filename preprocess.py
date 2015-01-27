@@ -75,8 +75,6 @@ def parse(filename):
                     figure = ('end',) + figure
                 states.append(figure)
 
-            # NEED TO HANDLE TIE AS WELL
-
         elif elem.isRest:
             # elem is a rest
             states.append(('rest', elem.quarterLength, elem.beat))
@@ -89,6 +87,73 @@ def get_corpus(corpus_dir):
         if '.xml' in f and os.path.isfile(corpus_dir + f):
             filenames.append(corpus_dir + f)
     return filenames
+
+def hash_elem_tuple(list_of_tuples):
+    """
+    Assume that we have a list of tuples.
+    An element in n-th coordinate of a tuple comes from a set.
+    The set contains all elements that are in n-th coordinate of all
+    tuples in the list.
+    Map all the elements from the set to a nonnegative integer and vice versa.
+    Returns 3 lists.
+    The first list contains dictionaries of k-th element to nonnegative integer
+    The second is the other way around.
+    the third contains size of each set
+    """
+    # initialize list of dictionaries
+    list_to_int = []
+    list_to_elem = []
+    list_size = []
+
+    # assume that all tuples have same length
+    for i in range(len(list_of_tuples[0])):
+        list_to_int.append({})  # key: elem, value: int
+        list_to_elem.append({})  # key: int, value: elem
+        counter = 0
+        for tuple in list_of_tuples:
+            # unpack elements in the tuple
+            # store it in dictionary if the key doesn't exist, pass otherwise
+            if tuple[i] not in list_to_int[i]:
+                list_to_int[i][tuple[i]] = counter
+                list_to_elem[i][counter] = tuple[i]
+                counter += 1
+        list_size.append(counter)
+    return (list_to_int, list_to_elem, list_size)
+
+
+
+
+
+
+def to_tuple_of_ints(states):
+    """
+    returns states that are tuple of nonnegative integers, e.g.
+    (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
+    """
+    fignotes_to_int = tuple_elem_to_int(states, 0)[0]
+    chord_to_int = tuple_elem_to_int(states, 1)[0]
+    duration_to_int = tuple_elem_to_int(states, 2)[0]
+    beat_to_int = tuple_elem_to_int(states, 3)[0]
+    fighead_to_int = tuple_elem_to_int(states, 4)[0]
+
+    new_states = []
+    for state in states:
+        fignotes, figchord, figduration, figbeat, fighead = state
+        new_states.append((
+            fignotes_to_int[fignotes],
+            chord_to_int[figchord],
+            duration_to_int[figduration],
+            beat_to_int[figbeat],
+            fighead_to_int[fighead],
+        )
+        )
+
+
+
+
+
+
+
 
 def generate_features(states):
     pass
