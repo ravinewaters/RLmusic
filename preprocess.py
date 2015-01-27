@@ -16,7 +16,37 @@ def parse(filename):
     song = converter.parse(filename)
     elements = song.flat.getElementsByClass([harmony.ChordSymbol, note.Rest,
                                      note.Note])
+
+    anacrusis = False
     first_measure = song.parts[0][1]
+
+    # check anacrusis here instead of inside loop
+    if first_measure.duration != first_measure.barDuration:
+        anacrusis = True
+
+        pickup = []
+        pickup_fighead = None
+
+
+        for elem in first_measure.notesAndRests:
+            if elem.isNote:
+                if not pickup_fighead:
+                    pickup_fighead = elem.midi
+                    pickup_beat = elem.beat
+                    pickup_duration = 0
+                pickup.append(elem.midi)
+
+            elif elem.isRest and pickup_fighead:
+                pickup.append('rest')
+
+            if pickup_fighead:
+                pickup.append(elem.quarterLength)
+                pickup_duration += elem.quarterLength
+
+        states.append((tuple(pickup), "pickup", pickup_duration,
+                       pickup_beat, pickup_fighead))
+
+
     for i in range(len(elements)):
         prev_elem = elements[i-1]
         elem = elements[i]
@@ -26,24 +56,8 @@ def parse(filename):
             # at the last iteration, look for next item in the original measure
             next_elem = elem.next()
 
-        # Anacrusis
-        if elem.measureNumber == 1 and first_measure.duration != \
-                first_measure.barDuration:
-            pickups = []
-            fighead = None
-
-            if elem.isNote:
-                if not fighead:
-                    fighead = elem.midi
-
-                pickups.append(elem.midi)
-                pickups.append(elem.quarterLength)
-
-            elif elem.isRest:
-                pickups.append('rest')
-                pickups.append(elem.quarterLength)
-
-            states.append(("pickup", tuple(pickups), fighead))
+        # Skip if anacrusis
+        if elem.measureNumber == 1 and anacrusis:
             continue
 
         if elem.isChord:
@@ -62,7 +76,7 @@ def parse(filename):
             fig_duration += elem.quarterLength
 
             # Wrap up figure if we encounter Rest or Chord or new bar (beat ==
-            # 1.0)
+            # 1.0) or Final Barline
             if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
                 figure = (tuple(fig_notes),
                           fig_chord,
@@ -70,14 +84,12 @@ def parse(filename):
                           fig_start_at_beat,
                           fighead)
 
-                # If next_elem is the final barline, wrap up the figure
-                if hasattr(next_elem, 'style'):
-                    figure = ('end',) + figure
                 states.append(figure)
 
         elif elem.isRest:
             # elem is a rest
-            states.append(('rest', elem.quarterLength, elem.beat))
+            states.append((('rest',), 'rest', elem.quarterLength, elem.beat,
+                           'rest'))
 
     return states
 
@@ -90,7 +102,7 @@ def get_corpus(corpus_dir):
 
 def hash_elem_tuple(list_of_tuples):
     """
-    Assume that we have a list of tuples.
+    Assume that we have a list of list of tuples.
     An element in n-th coordinate of a tuple comes from a set.
     The set contains all elements that are in n-th coordinate of all
     tuples in the list.
@@ -100,13 +112,15 @@ def hash_elem_tuple(list_of_tuples):
     The second is the other way around.
     the third contains size of each set
     """
+
     # initialize list of dictionaries
     list_to_int = []
     list_to_elem = []
     list_size = []
 
     # assume that all tuples have same length
-    for i in range(len(list_of_tuples[0])):
+    for i in range(len(list_of_tuples[0][0])):  # PROBLEM WRONG
+        # WHAT IS list_of_tuples?
         list_to_int.append({})  # key: elem, value: int
         list_to_elem.append({})  # key: int, value: elem
         counter = 0
@@ -120,21 +134,15 @@ def hash_elem_tuple(list_of_tuples):
         list_size.append(counter)
     return (list_to_int, list_to_elem, list_size)
 
-
-
-
-
-
-def to_tuple_of_ints(states):
+def to_tuple_of_ints(list_of_list_of_tuples):
     """
     returns states that are tuple of nonnegative integers, e.g.
     (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
     """
-    fignotes_to_int = tuple_elem_to_int(states, 0)[0]
-    chord_to_int = tuple_elem_to_int(states, 1)[0]
-    duration_to_int = tuple_elem_to_int(states, 2)[0]
-    beat_to_int = tuple_elem_to_int(states, 3)[0]
-    fighead_to_int = tuple_elem_to_int(states, 4)[0]
+
+    # flatten list of list of tuples to list of tuples
+    list_of_tuples = [item for list_of_tuples in
+                      list_of_list_of_tuples for item in list_of_tuples]
 
     new_states = []
     for state in states:
@@ -148,18 +156,15 @@ def to_tuple_of_ints(states):
         )
         )
 
-
-
-
-
-
-
-
 def generate_features(states):
     pass
 
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
+    full_states = []
     for filename in filenames:
         print('\n' + filename)
-        pprint.pprint(parse(filename))
+        states = parse(filename)
+        full_states.append(states)
+    pprint.pprint(full_states)
+    pprint.pprint(hash_elem_tuple(full_states))
