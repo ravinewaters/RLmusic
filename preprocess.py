@@ -119,8 +119,7 @@ def hash_elem_tuple(list_of_tuples):
     list_size = []
 
     # assume that all tuples have same length
-    for i in range(len(list_of_tuples[0][0])):  # PROBLEM WRONG
-        # WHAT IS list_of_tuples?
+    for i in range(len(list_of_tuples[0])):
         list_to_int.append({})  # key: elem, value: int
         list_to_elem.append({})  # key: int, value: elem
         counter = 0
@@ -134,37 +133,42 @@ def hash_elem_tuple(list_of_tuples):
         list_size.append(counter)
     return (list_to_int, list_to_elem, list_size)
 
-def to_tuple_of_ints(list_of_list_of_tuples):
+def to_int_states(list_of_list_of_tuples):
     """
     returns states that are tuple of nonnegative integers, e.g.
     (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
     """
 
     # flatten list of list of tuples to list of tuples
-    list_of_tuples = [item for list_of_tuples in
+    flatten_states = [item for list_of_tuples in
                       list_of_list_of_tuples for item in list_of_tuples]
 
-    new_states = []
-    for state in states:
-        fignotes, figchord, figduration, figbeat, fighead = state
-        new_states.append((
-            fignotes_to_int[fignotes],
-            chord_to_int[figchord],
-            duration_to_int[figduration],
-            beat_to_int[figbeat],
-            fighead_to_int[fighead],
-        )
-        )
+    global dict_states_to_int_states, dict_int_states_to_states, elem_set_sizes
+    dict_states_to_int_states, dict_int_states_to_states, elem_set_sizes = \
+        hash_elem_tuple(flatten_states)
+
+    new_all_states = []
+    for states in list_of_list_of_tuples:
+        new_states = []
+        for state in states:
+            new_state = []
+            for i in range(len(state)):
+                new_elem = dict_states_to_int_states[i][state[i]]
+                new_state.append(new_elem)
+            new_states.append(tuple(new_state))
+        new_all_states.append(tuple(new_states))
+    return new_all_states
 
 def generate_features(states):
     pass
 
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
-    full_states = []
+    all_states = []
     for filename in filenames:
-        print('\n' + filename)
         states = parse(filename)
-        full_states.append(states)
-    pprint.pprint(full_states)
-    pprint.pprint(hash_elem_tuple(full_states))
+        all_states.append(states)
+    pprint.pprint(all_states)
+    new_all_states = to_int_states(all_states)
+    pprint.pprint(new_all_states)
+    pprint.pprint(dict_int_states_to_states)
