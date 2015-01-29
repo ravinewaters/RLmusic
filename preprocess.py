@@ -200,7 +200,6 @@ def map_tuples_to_int(states):
     tuple_to_int_dict = {}
     int_to_tuples_dict = {}
     counter = 0
-    states = make_flat_list(states)
     for state in states:
         if state not in tuple_to_int_dict:
             tuple_to_int_dict[state] = counter
@@ -219,17 +218,35 @@ def map_item_inside_list_of_list(list_of_lists, item_mapper):
         mapped_list_of_list.append(mapped_item_list)
     return mapped_list_of_list
 
-def compute_trajectory(int_s, int_a, states_dict, actions_dict):
+def make_actions_set(actions_by_duration):
+    # actions_by_duration = {0.5: {action}}
+    pass
+
+def compute_trajectory(int_s_prime, states_dict, actions_dict):
     # states_dict: (states_to_int, int_to_states)
     # actions_dict: (actions_to_int, int_to_actions)
     # find a that makes s transition to s_prime
 
-    s = states_dict[1][int_s]
-    a = actions_dict[1][int_a]
-    s_prime = (a[0], a[1], sum(a[0][1::2]), s[2]+s[3], a[0][0])
-    return states_dict[0][s_prime]
+    s_prime = states_dict[1][int_s_prime]
+    a = (s_prime[0], s_prime[1])
+    return actions_dict[0][a]
 
+def get_trajectories(list_of_song_states, states_dict, actions_dict):
+    trajectories = []
+    for song_states in list_of_song_states:
+        trajectory = []
 
+        first = True
+        for int_s in song_states:
+            if first:
+                trajectory.append(int_s)
+                first = False
+                continue
+            int_a = compute_trajectory(int_s, states_dict, actions_dict)
+            trajectory.append(int_a)
+            trajectory.append(int_s)
+        trajectories.append(trajectory)
+    return trajectories
 
 def compute_next_state(int_s, int_a, states_dict, actions_dict):
     # states_dict: (states_to_int, int_to_states)
@@ -253,40 +270,56 @@ def generate_features(state, action):
 
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
-    list_of_states_per_song = []
+    list_of_song_states = []
     for filename in filenames:
         states = parse(filename)
-        list_of_states_per_song.append(states)
+        list_of_song_states.append(states)
 
     # TRAJECTORIES is list of trajectory
     # Trajectory is (s1, a1, s2, a2, s3, a3, ...)
 
 
 
-    actions_set = make_action_set(list_of_states_per_song)
-    start_states = get_start_states(list_of_states_per_song)
-    terminal_states = get_terminal_states(list_of_states_per_song)
-    state_int_dict, int_state_dict = map_tuples_to_int(list_of_states_per_song)
-    new_list_of_states_per_song = map_item_inside_list_of_list(list_of_states_per_song,
-                                                   state_int_dict)
-
+    actions_by_duration_set = make_action_set(list_of_song_states)
     print("\nACTIONS SET")
-    pprint(actions_set)
+    pprint(actions_by_duration_set)
 
+    start_states = get_start_states(list_of_song_states)
     print("\nSTART_STATES")
     pprint(start_states)
 
+    terminal_states = get_terminal_states(list_of_song_states)
     print("\nTERMINAL_STATES")
     pprint(terminal_states)
 
-    print("\nSTATE to INT DICT")
-    pprint(state_int_dict)
+    states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
+    print("\nSTATE DICT")
+    pprint(states_dict)
 
-    print("\nINT to STATE DICT")
-    pprint(int_state_dict)
+    actions_dict = map_tuples_to_int(actions_by_duration_set)
+    pprint("\nACTIONS_DICT")
+    pprint(actions_dict)
+
+    new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
+                                                   states_dict[0])
+    trajectories = get_trajectories(new_list_of_song_states, states_dict,
+                                    actions_dict)
+
+
+
+
+
+
+
+
+
 
     print("\nNEW LIST OF STATES PER SONG")
-    pprint(new_list_of_states_per_song)
+    pprint(new_list_of_song_states)
+
+    pprint("\nTRAJECTORIES")
+    pprint(trajectories)
+
 
     # states_with_int_elem = convert_elem_of_states_to_int(all_states)
     # states_of_int = convert_states_with_int_elem_to_int(states_with_int_elem,
