@@ -4,6 +4,8 @@ from music21 import converter, note, harmony, stream
 import os
 import pprint
 
+# Method name should start with a verb
+
 def parse(filename):
     """
     Idea:
@@ -100,9 +102,9 @@ def get_corpus(corpus_dir):
             filenames.append(corpus_dir + f)
     return filenames
 
-def hash_elem_tuple(list_of_tuples):
+def make_dict_of_elem(list_of_tuples):
     """
-    Assume that we have a list of list of tuples.
+    Assume that we have a list of tuples.
     An element in n-th coordinate of a tuple comes from a set.
     The set contains all elements that are in n-th coordinate of all
     tuples in the list.
@@ -133,7 +135,7 @@ def hash_elem_tuple(list_of_tuples):
         list_size.append(counter)
     return (list_to_int, list_to_elem, list_size)
 
-def to_states_with_int_elem(list_of_lists_of_tuples):
+def convert_elem_of_states_to_int(list_of_lists_of_tuples):
     """
     returns states that are tuple of nonnegative integers, e.g.
     (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
@@ -143,9 +145,9 @@ def to_states_with_int_elem(list_of_lists_of_tuples):
     flatten_states = [item for list_of_tuples in
                       list_of_lists_of_tuples for item in list_of_tuples]
 
-    global dict_states_to_int_states, dict_int_states_to_states, elem_set_sizes
-    dict_states_to_int_states, dict_int_states_to_states, elem_set_sizes = \
-        hash_elem_tuple(flatten_states)
+    global dict_elem_to_int, dict_int_to_elem, elem_set_sizes
+    dict_elem_to_int, dict_int_to_elem, elem_set_sizes = \
+        make_dict_of_elem(flatten_states)
 
     new_all_states = []
     for states in list_of_lists_of_tuples:
@@ -153,40 +155,55 @@ def to_states_with_int_elem(list_of_lists_of_tuples):
         for state in states:
             new_state = []
             for i in range(len(state)):
-                new_elem = dict_states_to_int_states[i][state[i]]
+                new_elem = dict_elem_to_int[i][state[i]]
                 new_state.append(new_elem)
             new_states.append(tuple(new_state))
         new_all_states.append(new_states)
     return new_all_states
 
 def convert_states_with_int_elem_to_int(list_of_lists_of_tuples, elem_set_sizes):
-    elem_set_sizes = [1] + elem_set_sizes[:-1]
-    new_all_states = []
-    for list_of_tuples in list_of_lists_of_tuples:
-        all_states = []
-        for item in list_of_tuples:
-            result = 0
-            for i in range(len(item)):
-                result += item[i]*cum_multiply_elem(elem_set_sizes, i+1)
-            all_states.append(result)
-        new_all_states.append(all_states)
-    return new_all_states
-
-def cum_multiply_elem(list_of_int, pos):
-    """
-    Multiply all element of a list up to position pos
-    """
-    res = 1
-    for i in range(pos):
-        res *= list_of_int[i]
-    return res
-
-
-
-
-
-def generate_features(states):
     pass
+
+
+def make_action_set(trajectories):
+    all_states = [state for trajectory in
+                      trajectories for state in trajectory]
+    action_set_by_duration = {}
+    for state in all_states:
+        if state[1] != 'pickup':
+            if state[2] in action_set_by_duration:
+                    action_set_by_duration[state[2]].append(state[:2])
+            else:
+                action_set_by_duration[state[2]] = []
+    for key in action_set_by_duration:
+        action_set_by_duration[key] = set(action_set_by_duration[key])
+    return action_set_by_duration
+
+def get_terminal_states(trajectories):
+    terminal_states = []
+    for trajectory in trajectories:
+        if trajectory[-1][1] != 'rest':
+            terminal_states.append(trajectory[-1])
+    return set(terminal_states)
+
+def get_start_states(trajectories):
+    start_states = []
+    for trajectory in trajectories:
+        if trajectory[0][1] != 'rest':
+            start_states.append(trajectory[0])
+    return set(start_states)
+
+
+def generate_features(state, action):
+    # need numpy array
+    pass
+
+def compute_next_state(int_s, int_a):
+    s = states_dict[int_s]
+    a = actions_dict[int_a]
+    s_prime = (a[0], a[1], sum(a[0][::2]), s[2]+s[3], a[0][0])
+    return s_prime
+
 
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
@@ -195,10 +212,12 @@ if __name__ == "__main__":
         states = parse(filename)
         all_states.append(states)
     pprint.pprint(all_states)
-    states_with_int_elem = to_states_with_int_elem(all_states)
-    states_of_int = convert_states_with_int_elem_to_int(states_with_int_elem,
-                                                        elem_set_sizes)
-
-    pprint.pprint(states_of_int)
-    pprint.pprint(states_with_int_elem)
-    pprint.pprint(dict_int_states_to_states)
+    pprint.pprint(make_action_set(all_states))
+    pprint.pprint(get_start_states(all_states))
+    # states_with_int_elem = convert_elem_of_states_to_int(all_states)
+    # states_of_int = convert_states_with_int_elem_to_int(states_with_int_elem,
+    #                                                     elem_set_sizes)
+    #
+    # pprint.pprint(states_of_int)
+    # pprint.pprint(states_with_int_elem)
+    # pprint.pprint(dict_int_states_to_states)
