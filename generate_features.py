@@ -12,14 +12,13 @@ def map_tup_to_bin_tup(tup, min_elem, max_elem):
     Big-Endian
     """
     coord_size = scipy.array(max_elem) - scipy.array(min_elem) + 1
-    bin_tup = [0] * sum(coord_size)
+    bin_tup = scipy.array[0] * sum(coord_size)
     coord_size = scipy.concatenate((scipy.array([0]), coord_size))
     pos = 0
     for i in range(len(tup)):
         pos = pos + coord_size[i]
         bin_tup[pos + tup[i] - min_elem[i]] = 1
     return bin_tup
-
 
 def compute_next_state(state, action):
     # states_dict: (states_to_int, int_to_states)
@@ -75,3 +74,6 @@ def is_to_rest(action):
     if action[1] == 'rest':
         return 1
     return 0
+
+def compute_features(state, action):
+    pass
