@@ -2,6 +2,7 @@ __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
 import os
+import pickle
 from pprint import pprint
 
 # Method name should start with a verb
@@ -48,7 +49,7 @@ def parse(filename):
         states.append((tuple(pickup), "pickup", pickup_duration,
                        pickup_beat, pickup_fighead))
 
-
+    last_item = False
     for i in range(len(elements)):
         prev_elem = elements[i-1]
         elem = elements[i]
@@ -57,6 +58,7 @@ def parse(filename):
         except stream.StreamException:
             # at the last iteration, look for next item in the original measure
             next_elem = elem.next()
+            last_item = True
 
         # Skip if anacrusis
         if elem.measureNumber == 1 and anacrusis:
@@ -88,7 +90,7 @@ def parse(filename):
 
                 states.append(figure)
 
-        elif elem.isRest:
+        elif elem.isRest and not last_item:
             # elem is a rest
             states.append((('rest', elem.quarterLength), 'rest', elem.quarterLength, elem.beat,
                            'rest'))
@@ -193,15 +195,13 @@ def make_action_by_duration_dict(list_of_song_states, actions_dict):
 def get_terminal_states(trajectories):
     terminal_states = []
     for trajectory in trajectories:
-        if trajectory[-1][1] != 'rest':
-            terminal_states.append(trajectory[-1])
+        terminal_states.append(trajectory[-1])
     return set(terminal_states)
 
 def get_start_states(trajectories):
     start_states = []
     for trajectory in trajectories:
-        if trajectory[0][1] != 'rest':
-            start_states.append(trajectory[0])
+        start_states.append(trajectory[0])
     return set(start_states)
 
 
@@ -273,9 +273,21 @@ def compute_next_state(int_s, int_a, states_dict, actions_dict):
     s_prime = (a[0], a[1], sum(a[0][1::2]), s[2]+s[3], a[0][0])
     return states_dict[0][s_prime]
 
-def generate_features(state, action):
-    # need numpy array
-    pass
+def make_dir_when_not_exist(dir):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+def save_obj(obj, name):
+    dir = 'obj/'
+    make_dir_when_not_exist(dir)
+    with open(dir + name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+def load_obj(name):
+    dir = 'obj/'
+    make_dir_when_not_exist(dir)
+    with open(dir + name + '.pkl', 'rb') as f:
+        return pickle.load(f)
 
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
@@ -287,42 +299,51 @@ if __name__ == "__main__":
     # TRAJECTORIES is list of trajectory
     # Trajectory is (s1, a1, s2, a2, s3, a3, ...)
 
+    # IMPORTANT data:
+    # states_dict, actions_dict and trajectories
+
 
     all_actions = make_list_of_all_action(list_of_song_states)
-    print("\n ALL ACTIONS")
-    pprint(all_actions)
+    # print("\n ALL ACTIONS")
+    # pprint(all_actions)
 
     actions_dict = map_tuples_to_int(all_actions)
     print("\n ACTIONS DICT")
     pprint(actions_dict)
+    save_obj(actions_dict, 'ACTIONS_DICT')
 
     actions_by_duration_dict = make_action_by_duration_dict(list_of_song_states,
                                                           actions_dict)
     print("\nACTIONS by DURATION DICT")
     pprint(actions_by_duration_dict)
-
-    start_states = get_start_states(list_of_song_states)
-    print("\nSTART_STATES")
-    pprint(start_states)
-
-    terminal_states = get_terminal_states(list_of_song_states)
-    print("\nTERMINAL_STATES")
-    pprint(terminal_states)
+    save_obj(actions_by_duration_dict, 'ACTIONS_BY_DURATION_DICT')
 
     states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
-    print("\nSTATE DICT")
+    print("\nSTATES DICT")
     pprint(states_dict)
+    save_obj(states_dict, 'STATES_DICT')
 
     new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
                                                    states_dict[0])
+
+    # print("\nNEW LIST OF STATES PER SONG")
+    # pprint(new_list_of_song_states)
+
     trajectories = get_trajectories(new_list_of_song_states, states_dict,
                                     actions_dict)
-
-    print("\nNEW LIST OF STATES PER SONG")
-    pprint(new_list_of_song_states)
-
     pprint("\nTRAJECTORIES")
     pprint(trajectories)
+    save_obj(trajectories, "TRAJECTORIES")
+
+    start_states = get_start_states(trajectories)
+    print("\nSTART_STATES")
+    pprint(start_states)
+    save_obj(start_states, "START STATES")
+
+    terminal_states = get_terminal_states(trajectories)
+    print("\nTERMINAL_STATES")
+    pprint(terminal_states)
+    save_obj(terminal_states, "TERMINAL STATES")
 
 
     # states_with_int_elem = convert_elem_of_states_to_int(all_states)
