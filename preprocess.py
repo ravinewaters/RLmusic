@@ -231,10 +231,10 @@ def map_item_inside_list_of_list(list_of_lists, item_mapper):
     return mapped_list_of_list
 
 
-def compute_trajectory(int_s_prime, states_dict, actions_dict):
+def compute_action(int_s_prime, states_dict, actions_dict):
     # states_dict: (states_to_int, int_to_states)
     # actions_dict: (actions_to_int, int_to_actions)
-    # find a that makes s transition to s_prime
+    # find a that makes fs transition to s_prime
 
     s_prime = states_dict[1][int_s_prime]
     a = (s_prime[0], s_prime[1])
@@ -251,7 +251,7 @@ def get_trajectories(list_of_song_states, states_dict, actions_dict):
                 trajectory.append(int_s)
                 first = False
                 continue
-            int_a = compute_trajectory(int_s, states_dict, actions_dict)
+            int_a = compute_action(int_s, states_dict, actions_dict)
             trajectory.append(int_a)
             trajectory.append(int_s)
         trajectories.append(trajectory)
@@ -317,15 +317,6 @@ if __name__ == "__main__":
                                                    states_dict[0])
     trajectories = get_trajectories(new_list_of_song_states, states_dict,
                                     actions_dict)
-
-
-
-
-
-
-
-
-
 
     print("\nNEW LIST OF STATES PER SONG")
     pprint(new_list_of_song_states)
