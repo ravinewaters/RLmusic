@@ -257,22 +257,6 @@ def get_trajectories(list_of_song_states, states_dict, actions_dict):
         trajectories.append(trajectory)
     return trajectories
 
-def compute_next_state(int_s, int_a, states_dict, actions_dict):
-    # states_dict: (states_to_int, int_to_states)
-    # actions_dict: (actions_to_int, int_to_actions)
-    # a = ((next_fig_seq_of_notes), next_chord_name)
-    # s = ((fig_seq_of_notes), chord_name, duration, beat, fighead_note)
-    # s_prime = ((next_fig_seq_of_notes),
-    # next_chord_name,
-    # duration = sum of duration of each note in next_fig_seq_of_notes,
-    # beat = duration of s + beat s in,
-    # fighead_note = the first note of next_fig_seq_of_notes)
-
-    s = states_dict[1][int_s]
-    a = actions_dict[1][int_a]
-    s_prime = (a[0], a[1], sum(a[0][1::2]), s[2]+s[3], a[0][0])
-    return states_dict[0][s_prime]
-
 def make_dir_when_not_exist(dir):
     if not os.path.exists(dir):
         os.makedirs(dir)
