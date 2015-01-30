@@ -3,21 +3,21 @@ __author__ = 'redhat'
 import scipy
 from constants import *
 
-def map_tup_to_bin_tup(tup, coord_size):
+def map_tup_to_bin_tup(tup, min_elem, max_elem):
     """
-    Assume that range of element in each coordinate is range(0, size)
-    len(tup) = len(coord_size)
+    Each coordinate range is specified in min_elem and max_elem
+    len(tup) = len(min_elem) = len(max_elem)
     convert (1,1,1) to (1, 0, 1, 0, 1, 0) given that the first coord has
     size 2, second size 2 and third size 3
     Big-Endian
     """
-
+    coord_size = scipy.array(max_elem) - scipy.array(min_elem) + 1
     bin_tup = [0] * sum(coord_size)
-    coord_size = (0,) + coord_size
+    coord_size = scipy.concatenate((scipy.array([0]), coord_size))
     pos = 0
     for i in range(len(tup)):
         pos = pos + coord_size[i]
-        bin_tup[pos + tup[i]] = 1
+        bin_tup[pos + tup[i] - min_elem[i]] = 1
     return bin_tup
 
 
