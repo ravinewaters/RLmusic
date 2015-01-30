@@ -292,19 +292,19 @@ if __name__ == "__main__":
     # pprint(all_actions)
 
     actions_dict = map_tuples_to_int(all_actions)
-    print("\n ACTIONS DICT")
-    pprint(actions_dict)
+    # print("\n ACTIONS DICT")
+    # pprint(actions_dict)
     save_obj(actions_dict, 'ACTIONS_DICT')
 
     actions_by_duration_dict = make_action_by_duration_dict(list_of_song_states,
                                                           actions_dict)
-    print("\nACTIONS by DURATION DICT")
-    pprint(actions_by_duration_dict)
+    # print("\nACTIONS by DURATION DICT")
+    # pprint(actions_by_duration_dict)
     save_obj(actions_by_duration_dict, 'ACTIONS_BY_DURATION_DICT')
 
     states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
-    print("\nSTATES DICT")
-    pprint(states_dict)
+    # print("\nSTATES DICT")
+    # pprint(states_dict)
     save_obj(states_dict, 'STATES_DICT')
 
     new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
@@ -315,19 +315,19 @@ if __name__ == "__main__":
 
     trajectories = get_trajectories(new_list_of_song_states, states_dict,
                                     actions_dict)
-    pprint("\nTRAJECTORIES")
-    pprint(trajectories)
+    # pprint("\nTRAJECTORIES")
+    # pprint(trajectories)
     save_obj(trajectories, "TRAJECTORIES")
 
     start_states = get_start_states(trajectories)
-    print("\nSTART_STATES")
-    pprint(start_states)
-    save_obj(start_states, "START STATES")
+    # print("\nSTART_STATES")
+    # pprint(start_states)
+    save_obj(start_states, "START_STATES")
 
     terminal_states = get_terminal_states(trajectories)
-    print("\nTERMINAL_STATES")
-    pprint(terminal_states)
-    save_obj(terminal_states, "TERMINAL STATES")
+    # print("\nTERMINAL_STATES")
+    # pprint(terminal_states)
+    save_obj(terminal_states, "TERM_STATES")
 
 
     # states_with_int_elem = convert_elem_of_states_to_int(all_states)
