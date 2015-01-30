@@ -90,7 +90,7 @@ def parse(filename):
 
         elif elem.isRest:
             # elem is a rest
-            states.append((('rest',), 'rest', elem.quarterLength, elem.beat,
+            states.append((('rest', elem.quarterLength), 'rest', elem.quarterLength, elem.beat,
                            'rest'))
 
     return states
@@ -165,15 +165,27 @@ def make_flat_list(list_of_lists):
     flat_list = [item for lists in list_of_lists for item in lists]
     return flat_list
 
-def make_action_set(trajectories):
-    all_states = make_flat_list(trajectories)
+def make_list_of_all_action(list_of_song_states):
+    flat_states = make_flat_list(list_of_song_states)
+    all_actions = []
+    for state in flat_states:
+        if state[1] != 'pickup':
+            all_actions.append(state[:2])
+    return all_actions
+
+def make_action_by_duration_dict(list_of_song_states, actions_dict):
+    # need to convert action to int first using map_tuples_to_int
+    # then separate each action according to its duration
+    flat_states = make_flat_list(list_of_song_states)
     action_set_by_duration = {}
-    for state in all_states:
+    for state in flat_states:
         if state[1] != 'pickup':
             if state[2] in action_set_by_duration:
-                    action_set_by_duration[state[2]].append(state[:2])
+                    action_set_by_duration[state[2]].append(
+                        actions_dict[0][state[:2]])
             else:
-                action_set_by_duration[state[2]] = []
+                action_set_by_duration[state[2]] = [
+                    actions_dict[0][state[:2]]]
     for key in action_set_by_duration:
         action_set_by_duration[key] = set(action_set_by_duration[key])
     return action_set_by_duration
@@ -193,14 +205,14 @@ def get_start_states(trajectories):
     return set(start_states)
 
 
-def map_tuples_to_int(states):
+def map_tuples_to_int(flat_states):
     """
     return a 2-tuple of dict of item to int and int to item
     """
     tuple_to_int_dict = {}
     int_to_tuples_dict = {}
     counter = 0
-    for state in states:
+    for state in flat_states:
         if state not in tuple_to_int_dict:
             tuple_to_int_dict[state] = counter
             int_to_tuples_dict[counter] = state
@@ -218,9 +230,6 @@ def map_item_inside_list_of_list(list_of_lists, item_mapper):
         mapped_list_of_list.append(mapped_item_list)
     return mapped_list_of_list
 
-def make_actions_set(actions_by_duration):
-    # actions_by_duration = {0.5: {action}}
-    pass
 
 def compute_trajectory(int_s_prime, states_dict, actions_dict):
     # states_dict: (states_to_int, int_to_states)
@@ -279,10 +288,18 @@ if __name__ == "__main__":
     # Trajectory is (s1, a1, s2, a2, s3, a3, ...)
 
 
+    all_actions = make_list_of_all_action(list_of_song_states)
+    print("\n ALL ACTIONS")
+    pprint(all_actions)
 
-    actions_by_duration_set = make_action_set(list_of_song_states)
-    print("\nACTIONS SET")
-    pprint(actions_by_duration_set)
+    actions_dict = map_tuples_to_int(all_actions)
+    print("\n ACTIONS DICT")
+    pprint(actions_dict)
+
+    actions_by_duration_dict = make_action_by_duration_dict(list_of_song_states,
+                                                          actions_dict)
+    print("\nACTIONS by DURATION DICT")
+    pprint(actions_by_duration_dict)
 
     start_states = get_start_states(list_of_song_states)
     print("\nSTART_STATES")
@@ -295,10 +312,6 @@ if __name__ == "__main__":
     states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
     print("\nSTATE DICT")
     pprint(states_dict)
-
-    actions_dict = map_tuples_to_int(actions_by_duration_set)
-    pprint("\nACTIONS_DICT")
-    pprint(actions_dict)
 
     new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
                                                    states_dict[0])
