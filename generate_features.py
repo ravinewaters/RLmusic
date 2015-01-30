@@ -10,6 +10,16 @@ def tuple_to_int(tup, elem_size):
     cum_prod = np.cumprod(sizes)
     return np.dot(array, cum_prod)
 
+def is_valid_action(state, action):
+    # valid action iff
+    # current_beat + duration + action duration <= 5.0
+    fig_duration = state[2]
+    fig_beat = state[3]
+    action_fig_duration = sum(action[0][1::2])
+    if fig_beat + fig_duration + action_fig_duration <= 5.0:
+        return True
+    return False
+
 def map_tup_to_bin_array(tup, min_elem, max_elem):
     """
     Each coordinate range is specified in min_elem and max_elem
