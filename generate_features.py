@@ -1,9 +1,16 @@
 __author__ = 'redhat'
 
-import scipy
+import scipy as sp
+import numpy as np
 from constants import *
 
-def map_tup_to_bin_tup(tup, min_elem, max_elem):
+def tuple_to_int(tup, elem_size):
+    array = np.array(tup)
+    sizes = np.array((1,) + elem_size[:-1])
+    cum_prod = np.cumprod(sizes)
+    return np.dot(array, cum_prod)
+
+def map_tup_to_bin_array(tup, min_elem, max_elem):
     """
     Each coordinate range is specified in min_elem and max_elem
     len(tup) = len(min_elem) = len(max_elem)
@@ -11,14 +18,14 @@ def map_tup_to_bin_tup(tup, min_elem, max_elem):
     size 2, second size 2 and third size 3
     Big-Endian
     """
-    coord_size = scipy.array(max_elem) - scipy.array(min_elem) + 1
-    bin_tup = scipy.array[0] * sum(coord_size)
-    coord_size = scipy.concatenate((scipy.array([0]), coord_size))
+    coord_size = sp.array(max_elem) - sp.array(min_elem) + 1
+    bin_array = sp.array([0] * sum(coord_size))
+    coord_size = sp.concatenate((sp.array([0]), coord_size))
     pos = 0
     for i in range(len(tup)):
         pos = pos + coord_size[i]
-        bin_tup[pos + tup[i] - min_elem[i]] = 1
-    return bin_tup
+        bin_array[pos + tup[i] - min_elem[i]] = 1
+    return bin_array
 
 def compute_next_state(state, action):
     # states_dict: (states_to_int, int_to_states)
@@ -36,6 +43,11 @@ def compute_next_state(state, action):
                state[2]+state[3],
                action[0][0])
     return s_prime
+
+def generate_features(trajectories, states_dict, actions_dict, start_states,
+                      term_states):
+    pass
+    # output: scipy.sparse 2-d array of binary features vector
 
 # These methods are assumed to have input the original state and action not
 # integers.
@@ -75,5 +87,13 @@ def is_to_rest(action):
         return 1
     return 0
 
-def compute_features(state, action):
-    pass
+def compute_features(states, actions):
+    tup = (
+        compute_root_movement(state, action),
+        compute_figure_head_movement(state, action),
+        get_fig_contour(state),
+        compute_next_fig_beat(state),
+        is_to_term_state(state),
+        is_to_rest(action),
+    )
+    return tup
