@@ -1,9 +1,7 @@
 __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
-import os
-import pickle
-from pprint import pprint
+from common_methods import *
 
 # Method name should start with a verb
 
@@ -163,9 +161,6 @@ def get_corpus(corpus_dir):
 #         new_all_states.append(new_states)
 #     return new_all_states
 
-def make_flat_list(list_of_lists):
-    flat_list = [item for lists in list_of_lists for item in lists]
-    return flat_list
 
 def make_list_of_all_action(list_of_song_states):
     flat_states = make_flat_list(list_of_song_states)
@@ -174,6 +169,7 @@ def make_list_of_all_action(list_of_song_states):
         if state[1] != 'pickup':
             all_actions.append(state[:2])
     return all_actions
+
 
 def make_action_by_duration_dict(list_of_song_states, actions_dict):
     # need to convert action to int first using map_tuples_to_int
@@ -192,11 +188,13 @@ def make_action_by_duration_dict(list_of_song_states, actions_dict):
         action_set_by_duration[key] = set(action_set_by_duration[key])
     return action_set_by_duration
 
+
 def get_terminal_states(trajectories):
     terminal_states = []
     for trajectory in trajectories:
         terminal_states.append(trajectory[-1])
     return set(terminal_states)
+
 
 def get_start_states(trajectories):
     start_states = []
@@ -219,6 +217,7 @@ def map_tuples_to_int(flat_states):
             counter += 1
     return tuple_to_int_dict, int_to_tuples_dict
 
+
 def map_item_inside_list_of_list(list_of_lists, item_mapper):
     # item_mapper is a dict
     mapped_list_of_list = []
@@ -240,6 +239,7 @@ def compute_action(int_s_prime, states_dict, actions_dict):
     a = (s_prime[0], s_prime[1])
     return actions_dict[0][a]
 
+
 def get_trajectories(list_of_song_states, states_dict, actions_dict):
     trajectories = []
     for song_states in list_of_song_states:
@@ -257,21 +257,7 @@ def get_trajectories(list_of_song_states, states_dict, actions_dict):
         trajectories.append(trajectory)
     return trajectories
 
-def make_dir_when_not_exist(dir):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
 
-def save_obj(obj, name):
-    dir = 'obj/'
-    make_dir_when_not_exist(dir)
-    with open(dir + name + '.pkl', 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
-def load_obj(name):
-    dir = 'obj/'
-    make_dir_when_not_exist(dir)
-    with open(dir + name + '.pkl', 'rb') as f:
-        return pickle.load(f)
 
 if __name__ == "__main__":
     filenames = get_corpus('corpus/')
