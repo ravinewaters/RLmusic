@@ -25,12 +25,12 @@ def is_valid_action(state, action):
 
 def map_tup_to_bin_array(tup, min_elem, max_elem):
     """
-    !!!!!!!!!!! Only need the position not the tuple !!!!!!!!!!!!
-    Each coordinate range is specified in min_elem and max_elem
-    len(tup) = len(min_elem) = len(max_elem)
-    convert (1,1,1) to (1, 0, 1, 0, 1, 0) given that the first coord has
-    size 2, second size 2 and third size 3
-    Big-Endian
+    Goal: turns a tuple into a binary array.
+    Input: a tuple of integers, the min (and max) value each coordinate
+    can have.
+    Output: array of indices that correspond to value 1 in binary tuple of
+    the original tuple. Also output the length of the binary tuple
+
     """
     coord_size = np.array(max_elem) - np.array(min_elem) + 1
     bin_array_length = sum(coord_size)
@@ -87,14 +87,14 @@ def get_features_range(states_dict, actions_dict, terminal_states):
 # integers.
 
 def parse_chord(chord):
-    pass
+    return chord[0]
 
 
 def compute_root_movement(state, action):
     # TROUBLE, how to parse chord?
-    current_chord = CHORD_ROOT_TO_INT[state[1][0]]
-    next_chord = CHORD_ROOT_TO_INT[action[1][0]]
-    return next_chord - current_chord
+    int_chord_root = CHORD_ROOT_TO_INT[parse_chord(state[1])]
+    int_next_chord_root = CHORD_ROOT_TO_INT[parse_chord(action[1])]
+    return int_next_chord_root - int_chord_root
 
 
 def compute_figure_head_movement(state, action):
@@ -151,7 +151,7 @@ def compute_features(state, action, term_states):
 
 ############
 
-def generate_features(states_dict, actions_dict, terminal_states):
+def generate_features_matrix(states_dict, actions_dict, terminal_states):
     state_action_sizes = (
         len(states_dict[0]), len(actions_dict[0]))  # (# states, # actions)
     min_feat, max_feat = get_features_range(states_dict, actions_dict,
@@ -190,10 +190,12 @@ def generate_features(states_dict, actions_dict, terminal_states):
 
     return sparse_feature_matrix.tocsr()
 
-
-if __name__ == "__main__":
+def generate_features():
     STATES_DICT = load_obj('STATES_DICT')
     ACTIONS_DICT = load_obj('ACTIONS_DICT')
     TERM_STATES = load_obj('TERM_STATES')
-    features_matrix = generate_features(STATES_DICT, ACTIONS_DICT, TERM_STATES)
+    features_matrix = generate_features_matrix(STATES_DICT, ACTIONS_DICT, TERM_STATES)
     io.savemat('obj/FEATURES_MATRIX.mat', {'features_matrix': features_matrix})
+
+if __name__ == "__main__":
+    generate_features()

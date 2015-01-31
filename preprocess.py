@@ -162,7 +162,7 @@ def get_corpus(corpus_dir):
 #     return new_all_states
 
 
-def make_list_of_all_action(list_of_song_states):
+def make_list_of_all_actions(list_of_song_states):
     flat_states = make_flat_list(list_of_song_states)
     all_actions = []
     for state in flat_states:
@@ -257,69 +257,38 @@ def get_trajectories(list_of_song_states, states_dict, actions_dict):
         trajectories.append(trajectory)
     return trajectories
 
-
-
-if __name__ == "__main__":
+def preprocess():
     filenames = get_corpus('corpus/')
     list_of_song_states = []
     for filename in filenames:
         states = parse(filename)
         list_of_song_states.append(states)
 
-    # TRAJECTORIES is list of trajectory
-    # Trajectory is (s1, a1, s2, a2, s3, a3, ...)
 
-    # IMPORTANT data:
-    # states_dict, actions_dict and trajectories
-
-
-    all_actions = make_list_of_all_action(list_of_song_states)
-    # print("\n ALL ACTIONS")
-    # pprint(all_actions)
+    all_actions = make_list_of_all_actions(list_of_song_states)
 
     actions_dict = map_tuples_to_int(all_actions)
-    # print("\n ACTIONS DICT")
-    # pprint(actions_dict)
     save_obj(actions_dict, 'ACTIONS_DICT')
 
     actions_by_duration_dict = make_action_by_duration_dict(list_of_song_states,
                                                           actions_dict)
-    # print("\nACTIONS by DURATION DICT")
-    # pprint(actions_by_duration_dict)
     save_obj(actions_by_duration_dict, 'ACTIONS_BY_DURATION_DICT')
 
     states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
-    # print("\nSTATES DICT")
-    # pprint(states_dict)
     save_obj(states_dict, 'STATES_DICT')
 
     new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
                                                    states_dict[0])
 
-    # print("\nNEW LIST OF STATES PER SONG")
-    # pprint(new_list_of_song_states)
-
     trajectories = get_trajectories(new_list_of_song_states, states_dict,
                                     actions_dict)
-    # pprint("\nTRAJECTORIES")
-    # pprint(trajectories)
     save_obj(trajectories, "TRAJECTORIES")
 
     start_states = get_start_states(trajectories)
-    # print("\nSTART_STATES")
-    # pprint(start_states)
     save_obj(start_states, "START_STATES")
 
     terminal_states = get_terminal_states(trajectories)
-    # print("\nTERMINAL_STATES")
-    # pprint(terminal_states)
     save_obj(terminal_states, "TERM_STATES")
 
-
-    # states_with_int_elem = convert_elem_of_states_to_int(all_states)
-    # states_of_int = convert_states_with_int_elem_to_int(states_with_int_elem,
-    #                                                     elem_set_sizes)
-    #
-    # pprint.pprint(states_of_int)
-    # pprint.pprint(states_with_int_elem)
-    # pprint.pprint(dict_int_states_to_states)
+if __name__ == "__main__":
+    preprocess()
