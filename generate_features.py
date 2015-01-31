@@ -5,8 +5,6 @@ import numpy as np
 from constants import *
 from common_methods import *
 
-
-
 def tuple_to_int(tup, elem_size):
     array = np.array(tup)
     sizes = np.array((1,) + elem_size[:-1])
