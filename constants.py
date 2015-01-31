@@ -8,3 +8,5 @@ CHORD_ROOT_TO_INT = {"C": 0,
                   "A": 5,
                   "B": 7}
 
+DIR = 'obj/'
+

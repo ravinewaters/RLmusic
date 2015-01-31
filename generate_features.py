@@ -195,7 +195,8 @@ def generate_features():
     ACTIONS_DICT = load_obj('ACTIONS_DICT')
     TERM_STATES = load_obj('TERM_STATES')
     features_matrix = generate_features_matrix(STATES_DICT, ACTIONS_DICT, TERM_STATES)
-    io.savemat('obj/FEATURES_MATRIX.mat', {'features_matrix': features_matrix})
+    io.savemat(DIR + 'FEATURES_MATRIX.mat',
+               {'features_matrix': features_matrix})
 
 if __name__ == "__main__":
     generate_features()
