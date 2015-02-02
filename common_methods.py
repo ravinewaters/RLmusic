@@ -2,6 +2,7 @@ __author__ = 'redhat'
 
 import pickle
 import os
+import numpy as np
 from constants import *
 
 def make_flat_list(list_of_lists):
@@ -21,3 +22,20 @@ def load_obj(name):
 def make_dir_when_not_exist(dir):
     if not os.path.exists(dir):
         os.makedirs(dir)
+
+def array_to_int(arr, elem_size):
+    arr = np.array(arr)
+    sizes = np.array((1,) + elem_size[:-1])
+    cum_prod = np.cumprod(sizes)
+    return np.dot(arr, cum_prod)
+
+def int_to_array(integer, elem_size):
+    sizes = np.array((1,) + elem_size[:-1])
+    cum_prod = np.cumprod(sizes)
+    index = -1
+    arr = [0]*len(elem_size)
+    for radix in reversed(cum_prod):
+        q, integer = divmod(integer, radix)
+        arr[index] = q
+        index -= 1
+    return arr

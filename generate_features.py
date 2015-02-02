@@ -5,12 +5,6 @@ import numpy as np
 from constants import *
 from common_methods import *
 
-def tuple_to_int(tup, elem_size):
-    array = np.array(tup)
-    sizes = np.array((1,) + elem_size[:-1])
-    cum_prod = np.cumprod(sizes)
-    return np.dot(array, cum_prod)
-
 
 def is_valid_action(state, action):
     # valid action iff
@@ -171,7 +165,7 @@ def generate_features_matrix(states_dict, actions_dict, terminal_states):
             int_a = actions_dict[0][action]
             features_vector = compute_features(state, action, terminal_states)
 
-            row = tuple_to_int((int_s, int_a), state_action_sizes)
+            row = array_to_int((int_s, int_a), state_action_sizes)
             if first:
                 # when first iteration, initialize sparse matrix after
                 # having computer number of columns of features vector
