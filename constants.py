@@ -28,3 +28,6 @@ CHORD_QUALITY = {'major': 0,
 
 DIR = 'obj/'
 
+DURATION_SIZE = 16
+BEAT_SIZE = 16
+

@@ -54,7 +54,11 @@ def get_features_range(states_dict, actions_dict, terminal_states):
 # integers.
 
 def parse_chord(chord):
-    return chord[0]
+    chord = chord[:2]
+    if chord[1] == '#' or chord[1] == 'b':
+        return chord[:2]
+    else:
+        return chord[0]
 
 
 def compute_root_movement(state, action):
@@ -79,9 +83,8 @@ def get_fig_contour(state):
         return 0
 
 
-def compute_next_fig_beat(state):
-    #  quantize beat into 0.5
-    return 2 * (state[2] + state[3])
+def compute_next_fig_beat(int_state):
+    return (int_state[2] + int_state[3])
 
 
 def is_to_term_state(state, action, TERM_STATES):
@@ -130,8 +133,8 @@ def map_state_action_pair(states_dict, actions_dict):
                 int_to_state_action_dict[integer] = (int_s, int_a)
     return state_action_to_int_dict, int_to_state_action_dict
 
-def generate_features_matrix(states_dict, actions_dict, terminal_states,
-                             state_action_dict):
+def generate_features_matrix(elem_sizes, fignotes_dict, chords_dict,
+                             terminal_states):
     state_action_sizes = (
         len(states_dict[0]), len(actions_dict[0]))  # (# states, # actions)
     min_feat, max_feat = get_features_range(states_dict, actions_dict,

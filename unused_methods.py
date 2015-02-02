@@ -59,3 +59,45 @@ __author__ = 'redhat'
 #             new_states.append(tuple(new_state))
 #         new_all_states.append(new_states)
 #     return new_all_states
+
+def make_action_by_duration_dict(list_of_song_states, actions_dict):
+    # need to convert action to int first using map_tuples_to_int
+    # then separate each action according to its duration
+    flat_states = make_flat_list(list_of_song_states)
+    action_set_by_duration = {}
+    for state in flat_states:
+        if state[1] != 'pickup':
+            if state[2] in action_set_by_duration:
+                    action_set_by_duration[state[2]].append(
+                        actions_dict[0][state[:2]])
+            else:
+                action_set_by_duration[state[2]] = [
+                    actions_dict[0][state[:2]]]
+    for key in action_set_by_duration:
+        action_set_by_duration[key] = set(action_set_by_duration[key])
+    return action_set_by_duration
+
+def map_tuples_to_int(flat_states):
+    """
+    return a 2-tuple of dict of item to int and int to item
+    """
+    tuple_to_int_dict = {}
+    int_to_tuples_dict = {}
+    counter = 0
+    for state in flat_states:
+        if state not in tuple_to_int_dict:
+            tuple_to_int_dict[state] = counter
+            int_to_tuples_dict[counter] = state
+            counter += 1
+    return tuple_to_int_dict, int_to_tuples_dict
+
+def map_item_inside_list_of_list(list_of_lists, item_mapper):
+    # item_mapper is a dict
+    mapped_list_of_list = []
+    for lists in list_of_lists:
+        mapped_item_list = []
+        for item in lists:
+            int_state = item_mapper[item]
+            mapped_item_list.append(int_state)
+        mapped_list_of_list.append(mapped_item_list)
+    return mapped_list_of_list
