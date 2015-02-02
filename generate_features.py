@@ -5,16 +5,7 @@ import numpy as np
 from constants import *
 from common_methods import *
 
-
-def is_valid_action(state, action):
-    # valid action iff
-    # current_beat + duration + action duration <= 5.0
-    fig_duration = state[2]
-    fig_beat = state[3]
-    action_fig_duration = sum(action[0][1::2])
-    if fig_beat + fig_duration + action_fig_duration <= 5.0:
-        return True
-    return False
+# need state_action_dict otherwise slow.
 
 
 def map_tup_to_bin_array(tup, min_elem, max_elem):
@@ -35,24 +26,6 @@ def map_tup_to_bin_array(tup, min_elem, max_elem):
         index = index + coord_size[i]
         pos.append(index + tup[i] - min_elem[i])
     return np.array(pos), bin_array_length
-
-
-def compute_next_state(state, action):
-    # states_dict: (states_to_int, int_to_states)
-    # actions_dict: (actions_to_int, int_to_actions)
-    # a = ((next_fig_seq_of_notes), next_chord_name)
-    # s = ((fig_seq_of_notes), chord_name, duration, beat, fighead_note)
-    # s_prime = ((next_fig_seq_of_notes),
-    # next_chord_name,
-    # duration = sum of duration of each note in next_fig_seq_of_notes,
-    # beat = duration of s + beat s in,
-    # fighead_note = the first note of next_fig_seq_of_notes)
-
-    s_prime = (action[0], action[1],
-               sum(action[0][1::2]),
-               state[2] + state[3],
-               action[0][0])
-    return s_prime
 
 
 def get_features_range(states_dict, actions_dict, terminal_states):
@@ -145,7 +118,20 @@ def compute_features(state, action, term_states):
 
 ############
 
-def generate_features_matrix(states_dict, actions_dict, terminal_states):
+def map_state_action_pair(states_dict, actions_dict):
+    state_action_to_int_dict = {}
+    int_to_state_action_dict = {}
+    state_action_sizes = (len(states_dict[0]), len(actions_dict[0]))
+    for int_s in states_dict[1]:
+        for int_a in actions_dict[1]:
+            if is_valid_action(states_dict[1][int_s], actions_dict[1][int_a]):
+                integer = array_to_int((int_s, int_a), state_action_sizes)
+                state_action_to_int_dict[int_s, int_a] = integer
+                int_to_state_action_dict[integer] = (int_s, int_a)
+    return state_action_to_int_dict, int_to_state_action_dict
+
+def generate_features_matrix(states_dict, actions_dict, terminal_states,
+                             state_action_dict):
     state_action_sizes = (
         len(states_dict[0]), len(actions_dict[0]))  # (# states, # actions)
     min_feat, max_feat = get_features_range(states_dict, actions_dict,
@@ -165,7 +151,8 @@ def generate_features_matrix(states_dict, actions_dict, terminal_states):
             int_a = actions_dict[0][action]
             features_vector = compute_features(state, action, terminal_states)
 
-            row = array_to_int((int_s, int_a), state_action_sizes)
+            # row = array_to_int((int_s, int_a), state_action_sizes)
+            row = state_action_dict[0][int_s, int_a]
             if first:
                 # when first iteration, initialize sparse matrix after
                 # having computer number of columns of features vector
@@ -174,7 +161,7 @@ def generate_features_matrix(states_dict, actions_dict, terminal_states):
                                                         max_feat)
                 sparse_feature_matrix = sparse.dok_matrix((num_of_rows,
                                                            num_of_cols),
-                                                          dtype = np.uint8)
+                                                          dtype=np.uint8)
                 first = False
             else:
                 col, _ = map_tup_to_bin_array(features_vector, min_feat,
@@ -184,13 +171,13 @@ def generate_features_matrix(states_dict, actions_dict, terminal_states):
 
     return sparse_feature_matrix.tocsr()
 
-def generate_features():
-    STATES_DICT = load_obj('STATES_DICT')
-    ACTIONS_DICT = load_obj('ACTIONS_DICT')
-    TERM_STATES = load_obj('TERM_STATES')
-    features_matrix = generate_features_matrix(STATES_DICT, ACTIONS_DICT, TERM_STATES)
+if __name__ == "__main__":
+    states_dict = load_obj('STATES_DICT')
+    actions_dict = load_obj('ACTIONS_DICT')
+    term_states = load_obj('TERM_STATES')
+    state_action_dict = map_state_action_pair(states_dict, actions_dict)
+    save_obj(state_action_dict, 'STATE_ACTION_DICT')
+    features_matrix = generate_features_matrix(states_dict, actions_dict,
+                                               term_states, state_action_dict)
     io.savemat(DIR + 'FEATURES_MATRIX.mat',
                {'features_matrix': features_matrix})
-
-if __name__ == "__main__":
-    generate_features()
