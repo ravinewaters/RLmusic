@@ -2,6 +2,7 @@ __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
 from common_methods import *
+from pprint import pprint
 
 # Method name should start with a verb
 
@@ -102,13 +103,57 @@ def get_corpus(corpus_dir):
             filenames.append(corpus_dir + f)
     return filenames
 
+def make_dict_of_elem(list_of_elem, filename):
+    # save to filename
+    # initialize list of dictionaries
+    output = []
 
-def make_list_of_all_actions(list_of_song_states):
-    flat_states = make_flat_list(list_of_song_states)
+    # assume that all tuples have same length
+    dict_elem_to_int = {}  # key: elem, value: int
+    dict_int_to_elem = {}  # key: int, value: elem
+    counter = 2
+    for elem in list_of_elem:
+        # store it in dictionary if the key doesn't exist, pass otherwise
+        if elem not in dict_elem_to_int:
+            dict_elem_to_int[elem] = counter
+            dict_int_to_elem[counter] = elem
+            counter += 1
+
+    output = [dict_elem_to_int, dict_int_to_elem, counter]
+    save_obj(output, filename)
+
+    return output
+
+def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict):
+    """
+    returns states that are tuple of nonnegative integers, e.g.
+    (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
+    """
+
+    new_all_states = []
+    for states in list_of_song_states:
+        new_states = []
+        for state in states:
+            new_state = [fignotes_dict[0][state[0]],
+                         chords_dict[0][state[1]],
+                         int(state[2] * 4),
+                         int(state[3] * 4),
+                         state[4]]
+            if state[4] == 'rest':
+                new_state[4] = 128
+            new_states.append(tuple(new_state))
+        new_all_states.append(new_states)
+    return new_all_states
+
+def get_all_actions(new_list_of_song_states, pickup_number):
+    flat_states = make_flat_list(new_list_of_song_states)
     all_actions = []
     for state in flat_states:
-        if state[1] != 'pickup':
-            all_actions.append(state[:2])
+        if state[4] == 128 or state[1] == pickup_number:
+            continue
+        else:
+            all_actions.append((state[0], state[1]))
+
     return all_actions
 
 
@@ -205,30 +250,55 @@ def preprocess():
         states = parse(filename)
         list_of_song_states.append(states)
 
-    all_actions = make_list_of_all_actions(list_of_song_states)
+    fignotes = []
+    chords = []
+    for states in list_of_song_states:
+        for state in states:
+            fignotes.append(state[0])
+            chords.append(state[1])
 
-    actions_dict = map_tuples_to_int(all_actions)
-    save_obj(actions_dict, 'ACTIONS_DICT')
+    fignotes_dict = make_dict_of_elem(fignotes, 'FIGNOTES_DICT')
+    chords_dict = make_dict_of_elem(chords, 'CHORDS_DICT')
 
-    actions_by_duration_dict = make_action_by_duration_dict(list_of_song_states,
-                                                          actions_dict)
-    save_obj(actions_by_duration_dict, 'ACTIONS_BY_DURATION_DICT')
+    new_list_of_song_states = convert_each_elem_to_int(list_of_song_states,
+                                                   fignotes_dict,
+                                                   chords_dict)
 
-    states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
-    save_obj(states_dict, 'STATES_DICT')
+    all_actions = get_all_actions(new_list_of_song_states,
+                                  chords_dict[0]['pickup'])
+    print('\nFIGNOTES_DICT')
+    pprint(fignotes_dict)
+    print('\nCHORDS_DICT')
+    pprint(chords_dict)
+    print('\nNEW_LIST_OF_SONG_STATES')
+    pprint(new_list_of_song_states)
+    print('\nALL_ACTIONS')
+    pprint(all_actions)
 
-    new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
-                                                   states_dict[0])
-
-    trajectories = get_trajectories(new_list_of_song_states, states_dict,
-                                    actions_dict)
-    save_obj(trajectories, "TRAJECTORIES")
-
-    start_states = get_start_states(trajectories)
-    save_obj(start_states, "START_STATES")
-
-    terminal_states = get_terminal_states(trajectories)
-    save_obj(terminal_states, "TERM_STATES")
+    # all_actions = make_list_of_all_actions(list_of_song_states)
+    #
+    # actions_dict = map_tuples_to_int(all_actions)
+    # save_obj(actions_dict, 'ACTIONS_DICT')
+    #
+    # actions_by_duration_dict = make_action_by_duration_dict(list_of_song_states,
+    #                                                       actions_dict)
+    # save_obj(actions_by_duration_dict, 'ACTIONS_BY_DURATION_DICT')
+    #
+    # states_dict = map_tuples_to_int(make_flat_list(list_of_song_states))
+    # save_obj(states_dict, 'STATES_DICT')
+    #
+    # new_list_of_song_states = map_item_inside_list_of_list(list_of_song_states,
+    #                                                states_dict[0])
+    #
+    # trajectories = get_trajectories(new_list_of_song_states, states_dict,
+    #                                 actions_dict)
+    # save_obj(trajectories, "TRAJECTORIES")
+    #
+    # start_states = get_start_states(trajectories)
+    # save_obj(start_states, "START_STATES")
+    #
+    # terminal_states = get_terminal_states(trajectories)
+    # save_obj(terminal_states, "TERM_STATES")
 
 if __name__ == "__main__":
     preprocess()
