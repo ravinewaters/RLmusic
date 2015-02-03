@@ -35,7 +35,7 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
     return policy_matrix_csr
 
 
-def computer_feature_expectation(policy_matrix, disc_rate, start_state,
+def compute_feature_expectation(policy_matrix, disc_rate, start_state,
                                  term_states, n_iter):
     # SLOW
     min_elem, max_elem = load_obj('ELEM_RANGE')
@@ -47,7 +47,7 @@ def computer_feature_expectation(policy_matrix, disc_rate, start_state,
     # what is s and a? tuple of integers
     mean = []
     for i in range(n_iter):
-        print('i=', i)
+        # print('i=', i)
         sum_of_feat_exp = 0
         state = start_state
         t = 0
@@ -72,7 +72,7 @@ def computer_feature_expectation(policy_matrix, disc_rate, start_state,
                                                              term_states)
             sum_of_feat_exp += feat_exp
             if np.all(feat_exp < 1e-7):
-                print(t)
+                # print(t)
                 break
             # print('feat_exp:', feat_exp)
             state = compute_next_state(state, action)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
                                                   state_elem_size)
     start_state = next(iter(start_states))
     # features_matrix = io.loadmat(DIR + 'FEATURES_MATRIX')['features_matrix']
-    avg_feat_exp = computer_feature_expectation(policy_matrix,
+    avg_feat_exp = compute_feature_expectation(policy_matrix,
                                                 0.99,
                                                 start_state,
                                                 term_states, 1,
