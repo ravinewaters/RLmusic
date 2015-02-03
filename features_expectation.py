@@ -35,9 +35,9 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
     return policy_matrix_csr
 
 
-def computer_feature_expectation(policy_matrix,
-                                 disc_rate, start_state,
+def computer_feature_expectation(policy_matrix, disc_rate, start_state,
                                  term_states, n_iter):
+    # SLOW
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
@@ -71,7 +71,7 @@ def computer_feature_expectation(policy_matrix,
                                                              chords_dict,
                                                              term_states)
             sum_of_feat_exp += feat_exp
-            if all(feat_exp < 1e-7):
+            if np.all(feat_exp < 1e-7):
                 print(t)
                 break
             # print('feat_exp:', feat_exp)
