@@ -46,8 +46,8 @@ def parse(filename):
                 pickup.append(elem.quarterLength)
                 pickup_duration += elem.quarterLength
 
-        states.append((tuple(pickup), '0', pickup_duration,
-                       pickup_beat, pickup_fighead))
+        states.append((tuple(pickup), '0', pickup_beat,
+                       pickup_duration, pickup_fighead))
 
     last_item = False
     for i in range(len(elements)):
@@ -84,16 +84,16 @@ def parse(filename):
             if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
                 figure = (tuple(fig_notes),
                           fig_chord,
-                          fig_duration,
                           fig_start_at_beat,
+                          fig_duration,
                           fighead)
 
                 states.append(figure)
 
         elif elem.isRest and not last_item:
             # elem is a rest
-            states.append((('rest', elem.quarterLength), 'rest', elem.quarterLength, elem.beat,
-                           -1))
+            states.append((('rest', elem.quarterLength), 'rest',
+                           elem.beat, elem.quarterLength, -1))
 
     return states
 
@@ -150,21 +150,11 @@ def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict):
         new_all_states.append(new_states)
     return new_all_states
 
-def get_all_actions(all_states):
-    all_actions = []
-    for state in all_states:
-        if state[1] == 1:
-            continue
-        else:
-            all_actions.append((state[0], state[1], state[2], state[4]))
-    all_actions = list(set(all_actions))
-    save_obj(all_actions, 'ALL_ACTIONS')
-    return all_actions
 
 def compute_action(s_prime):
     # find a that makes fs transition to s_prime
 
-    action = (s_prime[0], s_prime[1], s_prime[2], s_prime[4])
+    action = (s_prime[0], s_prime[1], s_prime[3], s_prime[4])
     return action
 
 
@@ -204,22 +194,36 @@ def generate_all_states(new_list_of_song_states):
     # combine all figures with all beat, but subjected to restriction
     flatten_states = make_flat_list(new_list_of_song_states)
     figure = []
-    beat = []
     for item in flatten_states:
-        figure.append(item[:3] + (item[4],))
-        beat.append(item[3])
+        figure.append(item[:2] + item[-2:],)
 
     figure = set(figure)
-    beat = set(beat)
+    beat = list(range(2, 20, 2))
 
-    all_states = []
+    all_states = {}
     for item in itertools.product(figure, beat):
-        if item[0][2] + item[1] <= 20:
-            all_states.append(item[0][:-1] + (item[1],) + (item[0][-1],))
+        duration = item[0][2]
+        beat = item[1]
+        if duration + beat <= 20:
+            key = item[0][:2] + (item[1],)
+            if key not in all_states:
+                value = (item[0][-2:])
+                all_states[key] = value
 
-    all_states = list(set(all_states))
     save_obj(all_states, 'ALL_STATES')
     return all_states
+
+def get_all_actions(all_states):
+    all_actions = {}
+    all_states = (k+v for k, v in all_states.items())
+    for state in all_states:
+        if state[1] == 1:
+            continue
+        else:
+            if state[:2] not in all_actions:
+                all_actions[state[:2]] = state[-2:]
+    save_obj(all_actions, 'ALL_ACTIONS')
+    return all_actions
 
 def save_elem_range(figheads):
     # save range of elemnents in the states
@@ -260,8 +264,7 @@ def preprocess():
     start_states = get_start_states(trajectories)
     terminal_states = get_terminal_states(trajectories)
 
-    state_elem_size = (fignotes_dict[-1], chords_dict[-1], 16, 16,
-                       len(figheads))
+    state_elem_size = (fignotes_dict[-1], chords_dict[-1], 16)
     save_obj(state_elem_size, 'STATE_ELEM_SIZE')  # save size of each element
 
     all_states = generate_all_states(new_list_of_song_states)

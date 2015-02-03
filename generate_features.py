@@ -43,7 +43,7 @@ def get_fig_contour(state, fignotes_dict):
 
 
 def compute_next_fig_beat(state):
-    return state[2] + state[3]
+    return state[3] + state[2]
 
 
 def is_to_term_state(state, action, term_states):
@@ -133,12 +133,12 @@ def compute_binary_features_expectation(state, action, min_elem, max_elem,
     # print(tup)
     coord_size = np.array(max_elem) - np.array(min_elem) + 1
     coord_size = np.concatenate((np.array([0]), coord_size))
-    pos = []
+    feat_exp = np.zeros(sum(coord_size))
     index = 0
     for i in range(len(tup)):
         index = index + coord_size[i]
-        pos.append(index + tup[i] - min_elem[i])
-    return np.array(pos)
+        feat_exp[index + tup[i] - min_elem[i]] = 1
+    return feat_exp
 
 
 if __name__ == "__main__":

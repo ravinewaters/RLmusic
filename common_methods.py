@@ -41,17 +41,20 @@ def int_to_array(integer, elem_size):
     return arr
 
 def compute_next_state(state, action):
+    beat = state[2] + state[3]
+    if beat == 20:
+        beat = 4
     s_prime = (action[0], action[1],
+               beat,
                action[2],
-               state[2] + state[3],
                action[3])
     return s_prime
 
 def is_valid_action(state, action):
     # valid action iff
     # current_beat + duration + action duration <= 20
-    fig_duration = state[2]
-    fig_beat = state[3]
+    fig_duration = state[3]
+    fig_beat = state[2]
     action_fig_duration = action[2]
     if fig_beat + fig_duration < 20:
         if action_fig_duration + fig_beat + fig_duration <= 20:
