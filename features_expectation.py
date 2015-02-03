@@ -5,6 +5,7 @@ import random
 from scipy import sparse, io
 from common_methods import *
 from pprint import pprint
+from generate_features import compute_binary_features_expectation
 
 
 def generate_random_policy_matrix(all_states, all_actions, state_elem_size):
@@ -30,29 +31,33 @@ def generate_random_policy_matrix(all_states, all_actions, state_elem_size):
     save_obj(policy_matrix_csr, 'POLICY_0')
     return policy_matrix_csr
 
-def computer_feature_expectation(features_matrix, policy_matrix,
+def computer_feature_expectation(policy_matrix,
                                  disc_rate, start_state,
-                                 terminal_states, n_iter,
-                                 states_dict,
-                                 actions_dict):
-    # what is s and a? int
+                                 term_states, n_iter, all_state):
+    min_elem, max_elem = load_obj('ELEM_RANGE')
+    fignotes_dict = load_obj('FIGNOTES_DICT')
+    # what is s and a? tuple of integers
     mean = 0
     n_action = policy_matrix.shape[1]
     for i in range(n_iter):
         cum_value = 0
         s = start_state
         t = 0
-        while s not in terminal_states:
+        while s not in term_states:
             row_prob = policy_matrix[s].toarray().ravel()
             a = np.random.choice(n_action,
                                  p=row_prob/sum(row_prob))
-            cum_value += disc_rate ** t * features_matrix[array_to_int((s, a),
-                                                                       policy_matrix.shape)]
-            s_prime = compute_next_state(states_dict[1][s], actions_dict[1][a])
-            print(s_prime)
-            s = states_dict[0][s_prime]
+            cum_value += disc_rate ** t * \
+                         compute_binary_features_expectation(s,
+                                                             a,
+                                                             min_elem,
+                                                             max_elem,
+                                                             fignotes_dict,
+                                                             chords_dict,
+                                                             term_states)
+            s = compute_next_state(s, a)
             t += 1
-        mean += + (cum_value - mean)/i
+        mean += (cum_value - mean)/i
 
     return mean
 

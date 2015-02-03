@@ -221,6 +221,13 @@ def generate_all_states(new_list_of_song_states):
     save_obj(all_states, 'ALL_STATES')
     return all_states
 
+def save_elem_range(figheads):
+    # save range of elemnents in the states
+    figheads.remove(-1)
+    figheads_range = max(figheads) - min(figheads)
+    min_elem = (-11, -figheads_range, 0, 0, 0, 0, 0, 0, 1)
+    max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 20)
+    save_obj([min_elem, max_elem], 'ELEM_RANGE')
 
 def preprocess():
     filenames = get_corpus('corpus/')
@@ -240,6 +247,8 @@ def preprocess():
 
     figheads = set(figheads)
     save_obj(figheads, 'FIGHEADS_ELEM')  # save set of figheads for later use
+
+    save_elem_range(figheads)
 
     fignotes_dict = make_dict_of_elem(fignotes, 'FIGNOTES_DICT')
     chords_dict = make_dict_of_elem(chords, 'CHORDS_DICT')

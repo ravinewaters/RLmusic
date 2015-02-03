@@ -147,11 +147,8 @@ if __name__ == "__main__":
     term_states = load_obj('TERM_STATES')
     all_actions = load_obj('ALL_ACTIONS')
     all_states = load_obj('ALL_STATES')
-    figheads = load_obj('FIGHEADS_ELEM')
-    figheads.remove(-1)
-    figheads_range = max(figheads) - min(figheads)
-    min_elem = (-11, -figheads_range, 0, 0, 0, 0, 0, 0, 1)
-    max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 20)
+    elem_range = load_obj('ELEM_RANGE')
+
 
     # feat_exp = []
     # for states in all_states:
