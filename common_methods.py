@@ -42,17 +42,17 @@ def int_to_array(integer, elem_size):
 
 def compute_next_state(state, action):
     s_prime = (action[0], action[1],
-               sum(action[0][1::2]),
+               action[2],
                state[2] + state[3],
-               action[0][0])
+               action[3])
     return s_prime
 
 def is_valid_action(state, action):
     # valid action iff
-    # current_beat + duration + action duration <= 5.0
+    # current_beat + duration + action duration <= 20
     fig_duration = state[2]
     fig_beat = state[3]
-    action_fig_duration = sum(action[0][1::2])
-    if fig_beat + fig_duration + action_fig_duration <= 5.0:
+    action_fig_duration = action[2]
+    if fig_beat + fig_duration + action_fig_duration <= 20:
         return True
     return False

@@ -45,7 +45,7 @@ def parse(filename):
                 pickup.append(elem.quarterLength)
                 pickup_duration += elem.quarterLength
 
-        states.append((tuple(pickup), "pickup", pickup_duration,
+        states.append((tuple(pickup), '0', pickup_duration,
                        pickup_beat, pickup_fighead))
 
     last_item = False
@@ -130,8 +130,7 @@ def make_dict_of_elem(list_of_elem, filename):
     return output
 
 
-def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict,
-                             figheads_dict):
+def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict):
     """
     returns states that are tuple of nonnegative integers, e.g.
     (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
@@ -145,26 +144,26 @@ def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict,
                          chords_dict[0][state[1]],
                          int(state[2] * 4),
                          int(state[3] * 4),
-                         figheads_dict[0][state[4]]]
+                         state[4]]
             new_states.append(tuple(new_state))
         new_all_states.append(new_states)
     return new_all_states
 
-def get_all_actions(new_list_of_song_states, pickup_number):
+def get_all_actions(new_list_of_song_states):
     flat_states = make_flat_list(new_list_of_song_states)
     all_actions = []
     for state in flat_states:
-        if state[1] == pickup_number:
+        if state[1] == 1:
             continue
         else:
-            all_actions.append((state[0], state[1]))
-
+            all_actions.append((state[0], state[1], state[2], state[4]))
+    save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 
 def compute_action(s_prime):
     # find a that makes fs transition to s_prime
 
-    action = (s_prime[0], s_prime[1])
+    action = (s_prime[0], s_prime[1], s_prime[2], s_prime[4])
     return action
 
 
@@ -216,18 +215,22 @@ def preprocess():
             chords.append(state[1])
             figheads.append(state[-1])
 
+    figheads = set(figheads)
+    save_obj(figheads, 'FIGHEADS_ELEM')  # save set of figheads for later use
+
     fignotes_dict = make_dict_of_elem(fignotes, 'FIGNOTES_DICT')
     chords_dict = make_dict_of_elem(chords, 'CHORDS_DICT')
-    figheads_dict = make_dict_of_elem(figheads, 'FIGHEADS_DICT')
 
     new_list_of_song_states = convert_each_elem_to_int(list_of_song_states,
-                                                   fignotes_dict,
-                                                   chords_dict,
-                                                   figheads_dict)
+                                                       fignotes_dict,
+                                                       chords_dict)
+    save_obj(new_list_of_song_states, 'ALL_STATES')
 
-    all_actions = get_all_actions(new_list_of_song_states,
-                                  chords_dict[0]['pickup'])
+    state_elem_size = [fignotes_dict[-1], chords_dict[-1], 16, 16,
+                       len(figheads)]
+    save_obj(state_elem_size, 'STATE_ELEM_SIZE')  # save size of each element
 
+    all_actions = get_all_actions(new_list_of_song_states)
     trajectories = get_trajectories(new_list_of_song_states)
     start_states = get_start_states(trajectories)
     terminal_states = get_terminal_states(trajectories)
@@ -236,12 +239,14 @@ def preprocess():
     pprint(fignotes_dict)
     print('\nCHORDS_DICT')
     pprint(chords_dict)
-    print('\nFIGHEADS_DICT')
-    pprint(figheads_dict)
+    # print('\nFIGHEADS_DICT')
+    # pprint(figheads_dict)
     print('\nNEW_LIST_OF_SONG_STATES')
     pprint(new_list_of_song_states)
     print('\nALL_ACTIONS')
     pprint(all_actions)
+    print('\nTRAJECTORIES')
+    pprint(trajectories)
     print('\nSTART_STATES')
     pprint(start_states)
     print('\nTERMINAL_STATES')

@@ -4,6 +4,7 @@ from scipy import sparse, io
 import numpy as np
 from constants import *
 from common_methods import *
+from pprint import pprint
 
 # need state_action_dict otherwise slow.
 
@@ -27,33 +28,9 @@ def map_tup_to_bin_array(tup, min_elem, max_elem):
         pos.append(index + tup[i] - min_elem[i])
     return np.array(pos), bin_array_length
 
-
-def get_features_range(states_dict, actions_dict, terminal_states):
-    for state in states_dict[0]:
-        if state in terminal_states:
-            continue
-        for action in actions_dict[0]:
-            if not is_valid_action(state, action):
-                continue
-
-            features_vector = compute_features(state, action, terminal_states)
-
-            try:
-                min_features_vector = np.minimum(min_features_vector,
-                                                 features_vector)
-                max_features_vector = np.maximum(max_features_vector,
-                                                 features_vector)
-            except NameError:
-                min_features_vector = features_vector
-                max_features_vector = features_vector
-
-    return min_features_vector, max_features_vector
-
-
-# These methods are assumed to have input the original state and action not
-# integers.
-
 def parse_chord(chord):
+    if len(chord) == 1:
+        return chord
     chord = chord[:2]
     if chord[1] == '#' or chord[1] == 'b':
         return chord[:2]
@@ -61,126 +38,152 @@ def parse_chord(chord):
         return chord[0]
 
 
-def compute_root_movement(state, action):
+def compute_root_movement(state, action, chords_dict):
     # TROUBLE, how to parse chord?
-    int_chord_root = CHORD_ROOT_TO_INT[parse_chord(state[1])]
-    int_next_chord_root = CHORD_ROOT_TO_INT[parse_chord(action[1])]
+    chord_root = chords_dict[1][state[1]]
+    next_chord_root = chords_dict[1][action[1]]
+    int_chord_root = CHORD_ROOT_TO_INT[parse_chord(chord_root)]
+    int_next_chord_root = CHORD_ROOT_TO_INT[parse_chord(next_chord_root)]
     return int_next_chord_root - int_chord_root
 
 
 def compute_figure_head_movement(state, action):
-    return action[0][0] - state[-1]
+    return action[-1] - state[-1]
 
 
-def get_fig_contour(state):
+def get_fig_contour(state, fignotes_dict):
     #  UP or DOWN or STAY
-    fig_contour = state[0][-2] - state[0][0]
+    # state is an integer tuple
+    fignotes = fignotes_dict[1][state[0]]
+    fig_contour = fignotes[0] - fignotes[-2]
     if fig_contour > 0:
-        return 1
+        return 2
     elif fig_contour < 0:
-        return -1
-    else:
         return 0
-
-
-def compute_next_fig_beat(int_state):
-    return (int_state[2] + int_state[3])
-
-
-def is_to_term_state(state, action, TERM_STATES):
-    if compute_next_state(state, action) in TERM_STATES:
+    else:
         return 1
-    return 0
 
 
-def is_from_pickup(state):
-    if state[1] == 'pickup':
+def compute_next_fig_beat(state):
+    return state[2] + state[3]
+
+
+def is_to_term_state(state, action, term_states):
+    if compute_next_state(state, action) in term_states:
         return 1
     return 0
 
 
 def is_to_rest(action):
-    if action[1] == 'rest':
+    if action[-1] == -1:
         return 1
     return 0
 
 
-def compute_features(state, action, term_states):
-    if state[1] == 'rest' or action[1] == 'rest':
-        tup = (0, 0, 0, 0, 0, 1)
+def compute_features(state, action, fignotes_dict, chords_dict,term_states):
+    # (root mvt,
+    # fighead mvt,
+    # fig contour,
+    # next_fig_contour,
+    # to_term_state,
+    # from_pickup,
+    # to_rest,
+    # from_rest,
+    # next_beat,
+    # )
+
+    # from rest and not to rest
+    if state[-1] == -1 and action[-1] != -1:
+        tup = (
+            0,
+            0,
+            0,
+            get_fig_contour(action, fignotes_dict),
+            is_to_term_state(state, action, term_states),
+            0,
+            0,
+            1,
+            compute_next_fig_beat(state),
+        )
+    # to rest
+    elif action[-1] == -1:
+        if state[-1] == -1:
+            tup = (
+                0, 0, 0, 0, 0, 0, 1, 1, compute_next_fig_beat(state),
+            )
+        else:
+            tup = (
+                0, 0, 0, 0, 0, 0, 1, 0, compute_next_fig_beat(state),
+            )
+    # pickup when chord == 1
+    elif state[1] == 1:
+        tup = (
+            0,
+            compute_figure_head_movement(state, action),
+            get_fig_contour(state, fignotes_dict),
+            get_fig_contour(action, fignotes_dict),
+            is_to_term_state(state, action, term_states),
+            1,
+            is_to_rest(action),
+            0,
+            compute_next_fig_beat(state),
+        )
     else:
         tup = (
-            compute_root_movement(state, action),
+            compute_root_movement(state, action, chords_dict),
             compute_figure_head_movement(state, action),
-            get_fig_contour(state),
-            compute_next_fig_beat(state),
+            get_fig_contour(state, fignotes_dict),
+            get_fig_contour(action, fignotes_dict),
             is_to_term_state(state, action, term_states),
+            0,
             is_to_rest(action),
+            0,
+            compute_next_fig_beat(state),
         )
     return np.array(tup)
 
 ############
 
-def map_state_action_pair(states_dict, actions_dict):
-    state_action_to_int_dict = {}
-    int_to_state_action_dict = {}
-    state_action_sizes = (len(states_dict[0]), len(actions_dict[0]))
-    for int_s in states_dict[1]:
-        for int_a in actions_dict[1]:
-            if is_valid_action(states_dict[1][int_s], actions_dict[1][int_a]):
-                integer = array_to_int((int_s, int_a), state_action_sizes)
-                state_action_to_int_dict[int_s, int_a] = integer
-                int_to_state_action_dict[integer] = (int_s, int_a)
-    return state_action_to_int_dict, int_to_state_action_dict
+def compute_binary_features_expectation(state, action, min_elem, max_elem,
+                                        fignotes_dict, chords_dict,
+                                        term_states):
+    # compute given state and action features expectation.
+    tup = compute_features(state, action, fignotes_dict,
+                           chords_dict, term_states)
+    print(tup)
+    coord_size = np.array(max_elem) - np.array(min_elem) + 1
+    coord_size = np.concatenate((np.array([0]), coord_size))
+    pos = []
+    index = 0
+    for i in range(len(tup)):
+        index = index + coord_size[i]
+        pos.append(index + tup[i] - min_elem[i])
+    return np.array(pos)
 
-def generate_features_matrix(elem_sizes, fignotes_dict, chords_dict,
-                             terminal_states):
-    state_action_sizes = (
-        len(states_dict[0]), len(actions_dict[0]))  # (# states, # actions)
-    min_feat, max_feat = get_features_range(states_dict, actions_dict,
-                                            terminal_states)
-    num_of_rows = state_action_sizes[0] * state_action_sizes[1]
-
-    # Use DOK sparse matrix
-
-    first = True
-    for state in states_dict[0]:
-        if state in terminal_states:
-            continue
-        for action in actions_dict[0]:
-            if not is_valid_action(state, action):
-                continue
-            int_s = states_dict[0][state]
-            int_a = actions_dict[0][action]
-            features_vector = compute_features(state, action, terminal_states)
-
-            # row = array_to_int((int_s, int_a), state_action_sizes)
-            row = state_action_dict[0][int_s, int_a]
-            if first:
-                # when first iteration, initialize sparse matrix after
-                # having computer number of columns of features vector
-                col, num_of_cols = map_tup_to_bin_array(features_vector,
-                                                        min_feat,
-                                                        max_feat)
-                sparse_feature_matrix = sparse.dok_matrix((num_of_rows,
-                                                           num_of_cols),
-                                                          dtype=np.uint8)
-                first = False
-            else:
-                col, _ = map_tup_to_bin_array(features_vector, min_feat,
-                                              max_feat)
-            for j in col:
-                sparse_feature_matrix[row, j] = 1
-
-    return sparse_feature_matrix.tocsr()
 
 if __name__ == "__main__":
-    states_dict = load_obj('STATES_DICT')
-    actions_dict = load_obj('ACTIONS_DICT')
+    fignotes_dict = load_obj('FIGNOTES_DICT')
+    chords_dict = load_obj('CHORDS_DICT')
     term_states = load_obj('TERM_STATES')
-    state_action_dict = map_state_action_pair(states_dict, actions_dict)
-    save_obj(state_action_dict, 'STATE_ACTION_DICT')
-    features_matrix = generate_features_matrix(states_dict, actions_dict,
-                                               term_states, state_action_dict)
-    io.savemat(DIR + 'FEATURES_MATRIX.mat',
-               {'features_matrix': features_matrix})
+    all_actions = load_obj('ALL_ACTIONS')
+    all_states = load_obj('ALL_STATES')
+    figheads = load_obj('FIGHEADS_ELEM')
+    figheads.remove(-1)
+    figheads_range = max(figheads) - min(figheads)
+    min_elem = (-11, -figheads_range, 0, 0, 0, 0, 0, 0, 1)
+    max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 20)
+
+    feat_exp = []
+    for states in all_states:
+        for state in states:
+            for action in all_actions:
+                if state in term_states:
+                    continue
+                if not is_valid_action(state, action):
+                    continue
+                res = compute_binary_features_expectation(state, action, min_elem,
+                                                          max_elem,
+                                                    fignotes_dict, chords_dict,
+                                                    term_states)
+                print(res)
+                feat_exp.append(res)

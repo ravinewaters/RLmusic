@@ -101,3 +101,79 @@ def map_item_inside_list_of_list(list_of_lists, item_mapper):
             mapped_item_list.append(int_state)
         mapped_list_of_list.append(mapped_item_list)
     return mapped_list_of_list
+
+def map_state_action_pair(states_dict, actions_dict):
+    state_action_to_int_dict = {}
+    int_to_state_action_dict = {}
+    state_action_sizes = (len(states_dict[0]), len(actions_dict[0]))
+    for int_s in states_dict[1]:
+        for int_a in actions_dict[1]:
+            if is_valid_action(states_dict[1][int_s], actions_dict[1][int_a]):
+                integer = array_to_int((int_s, int_a), state_action_sizes)
+                state_action_to_int_dict[int_s, int_a] = integer
+                int_to_state_action_dict[integer] = (int_s, int_a)
+    return state_action_to_int_dict, int_to_state_action_dict
+
+def get_features_range(all_states, all_actions, terminal_states):
+    for state in all_states:
+        if state in terminal_states:
+            continue
+        for action in all_actions:
+            if not is_valid_action(state, action):
+                continue
+
+            features_vector = compute_features(state, action, terminal_states)
+
+            try:
+                min_features_vector = np.minimum(min_features_vector,
+                                                 features_vector)
+                max_features_vector = np.maximum(max_features_vector,
+                                                 features_vector)
+            except NameError:
+                min_features_vector = features_vector
+                max_features_vector = features_vector
+
+    return min_features_vector, max_features_vector
+# These methods are assumed to have input the original state and action not
+# integers.
+
+def compute_features_matrix(elem_sizes, fignotes_dict, chords_dict,
+                             terminal_states):
+    state_action_sizes = (
+        len(states_dict[0]), len(actions_dict[0]))  # (# states, # actions)
+    min_feat, max_feat = get_features_range(states_dict, actions_dict,
+                                            terminal_states)
+    num_of_rows = state_action_sizes[0] * state_action_sizes[1]
+
+    # Use DOK sparse matrix
+
+    first = True
+    for state in states_dict[0]:
+        if state in terminal_states:
+            continue
+        for action in actions_dict[0]:
+            if not is_valid_action(state, action):
+                continue
+            int_s = states_dict[0][state]
+            int_a = actions_dict[0][action]
+            features_vector = compute_features(state, action, terminal_states)
+
+            # row = array_to_int((int_s, int_a), state_action_sizes)
+            row = state_action_dict[0][int_s, int_a]
+            if first:
+                # when first iteration, initialize sparse matrix after
+                # having computer number of columns of features vector
+                col, num_of_cols = map_tup_to_bin_array(features_vector,
+                                                        min_feat,
+                                                        max_feat)
+                sparse_feature_matrix = sparse.dok_matrix((num_of_rows,
+                                                           num_of_cols),
+                                                          dtype=np.uint8)
+                first = False
+            else:
+                col, _ = map_tup_to_bin_array(features_vector, min_feat,
+                                              max_feat)
+            for j in col:
+                sparse_feature_matrix[row, j] = 1
+
+    return sparse_feature_matrix.tocsr()
