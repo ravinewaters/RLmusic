@@ -55,9 +55,9 @@ def computer_feature_expectation(policy_matrix, disc_rate, start_state,
             # print('state:', state)
             reduced_state = state[:3]
             int_s = array_to_int(reduced_state[::-1], state_size[::-1])
-            row = policy_matrix.A[int_s, :]
-            indices, = np.where(row > 0)
-            prob = row[indices]/sum(row[indices])
+            indices = policy_matrix[int_s].indices
+            row = policy_matrix[int_s].data
+            prob = row/sum(row)
             a = np.random.choice(indices, p = prob)  # int
             key_a = tuple(int_to_array(a, action_size[::-1])[::-1])
             action = key_a + all_actions[key_a]
@@ -93,9 +93,9 @@ if __name__ == '__main__':
     start_state = next(iter(start_states))
     # features_matrix = io.loadmat(DIR + 'FEATURES_MATRIX')['features_matrix']
     avg_feat_exp = computer_feature_expectation(policy_matrix,
-                                                0.7,
+                                                0.99,
                                                 start_state,
-                                                term_states, 2,
+                                                term_states, 1,
                                                 )
 
     pprint(avg_feat_exp)
