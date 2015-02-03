@@ -1,28 +1,34 @@
 __author__ = 'redhat'
 
 import numpy as np
+import random
 from scipy import sparse, io
 from common_methods import *
 from pprint import pprint
 
-def generate_possible_action(state_action_dict):
-    possible_action = {}
-    for state_action in state_action_dict[0]:
-        if state_action[0] in possible_action:
-            possible_action[state_action[0]].append(state_action[1])
-        else:
-            possible_action[state_action[0]] = [state_action[1]]
-    return possible_action
 
-def generate_random_policy_matrix(possible_action_dict):
-    n_rows = len(states_dict[0])
-    n_cols = len(actions_dict[0])
+def generate_random_policy_matrix(all_states, all_actions, state_elem_size):
+    # generate matrix of 0-1 value with size:
+    # rows = # states
+    # cols = # actions
+    reduced_state_size = state_elem_size[:2] + (16,)
+    reduced_action_size = state_elem_size[:2]
+    n_rows = np.array(reduced_state_size).prod()
+    n_cols = np.array(reduced_action_size).prod()
     shape = (n_rows, n_cols)
-    policy_matrix = sparse.dok_matrix(shape)
-    for int_s in possible_action_dict:
-        int_a = np.random.choice(possible_action_dict[int_s])
+    policy_matrix = sparse.dok_matrix(shape, dtype=np.uint8)
+    for state in all_states:
+        action = random.choice(all_actions)
+        while not is_valid_action(state, action):
+            action = random.choice(all_actions)
+        reduced_state = state[:2] + (state[3],)
+        reduced_action = action[:2]
+        int_s = array_to_int(reduced_state[::-1], reduced_state_size[::-1])
+        int_a = array_to_int(reduced_action[::-1], reduced_action_size[::-1])
         policy_matrix[int_s, int_a] = 1
-    return policy_matrix.tocsr()
+    policy_matrix_csr = policy_matrix.tocsr()
+    save_obj(policy_matrix_csr, 'POLICY_0')
+    return policy_matrix_csr
 
 def computer_feature_expectation(features_matrix, policy_matrix,
                                  disc_rate, start_state,
@@ -51,22 +57,21 @@ def computer_feature_expectation(features_matrix, policy_matrix,
     return mean
 
 if __name__ == '__main__':
-    states_dict = load_obj('STATES_DICT')
-    actions_dict = load_obj('ACTIONS_DICT')
-    term_states = load_obj('TERM_STATES')
+    all_states = load_obj('ALL_STATES')
+    all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
-    state_action_dict = load_obj('STATE_ACTION_DICT')
-    possible_action_dict = generate_possible_action(state_action_dict)
-    save_obj(possible_action_dict, 'POSSIBLE_ACTION_DICT')
-    policy_matrix = generate_random_policy_matrix(possible_action_dict)
-
-    start_state = next(iter(start_states))
-    features_matrix = io.loadmat(DIR + 'FEATURES_MATRIX')['features_matrix']
-    avg_feat_exp = computer_feature_expectation(features_matrix,
-                                                policy_matrix,
-                                           .96,
-                                 start_state, term_states, 100,
-                                 states_dict, actions_dict)
-
+    term_states = load_obj('TERM_STATES')
+    state_elem_size = load_obj('STATE_ELEM_SIZE')
+    policy_matrix = generate_random_policy_matrix(all_states,
+                                                  all_actions,
+                                                  state_elem_size)
     pprint(policy_matrix)
-    pprint(avg_feat_exp)
+    # start_state = next(iter(start_states))
+    # features_matrix = io.loadmat(DIR + 'FEATURES_MATRIX')['features_matrix']
+    # avg_feat_exp = computer_feature_expectation(features_matrix,
+    #                                             policy_matrix,
+    #                                        .96,
+    #                              start_state, term_states, 100,
+    #                              states_dict, actions_dict)
+    #
+    # pprint(avg_feat_exp)

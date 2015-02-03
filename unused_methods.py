@@ -177,3 +177,33 @@ def compute_features_matrix(elem_sizes, fignotes_dict, chords_dict,
                 sparse_feature_matrix[row, j] = 1
 
     return sparse_feature_matrix.tocsr()
+
+
+
+def map_tup_to_bin_array(tup, min_elem, max_elem):
+    """
+    Goal: turns a tuple into a binary array.
+    Input: a tuple of integers, the min (and max) value each coordinate
+    can have.
+    Output: array of indices that correspond to value 1 in binary tuple of
+    the original tuple. Also output the length of the binary tuple
+
+    """
+    coord_size = np.array(max_elem) - np.array(min_elem) + 1
+    bin_array_length = sum(coord_size)
+    coord_size = np.concatenate((np.array([0]), coord_size))
+    pos = []
+    index = 0
+    for i in range(len(tup)):
+        index = index + coord_size[i]
+        pos.append(index + tup[i] - min_elem[i])
+    return np.array(pos), bin_array_length
+
+def generate_possible_action(state_action_dict):
+    possible_action = {}
+    for state_action in state_action_dict[0]:
+        if state_action[0] in possible_action:
+            possible_action[state_action[0]].append(state_action[1])
+        else:
+            possible_action[state_action[0]] = [state_action[1]]
+    return possible_action

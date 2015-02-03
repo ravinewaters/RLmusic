@@ -2,6 +2,7 @@ __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
 from common_methods import *
+import itertools
 from pprint import pprint
 
 # Method name should start with a verb
@@ -149,14 +150,14 @@ def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict):
         new_all_states.append(new_states)
     return new_all_states
 
-def get_all_actions(new_list_of_song_states):
-    flat_states = make_flat_list(new_list_of_song_states)
+def get_all_actions(all_states):
     all_actions = []
-    for state in flat_states:
+    for state in all_states:
         if state[1] == 1:
             continue
         else:
             all_actions.append((state[0], state[1], state[2], state[4]))
+    all_actions = list(set(all_actions))
     save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 
@@ -199,6 +200,28 @@ def get_start_states(trajectories):
     save_obj(start_states, 'START_STATES')
     return set(start_states)
 
+def generate_all_states(new_list_of_song_states):
+    # combine all figures with all beat, but subjected to restriction
+    flatten_states = make_flat_list(new_list_of_song_states)
+    figure = []
+    beat = []
+    for item in flatten_states:
+        figure.append(item[:3] + (item[4],))
+        beat.append(item[3])
+
+    figure = set(figure)
+    beat = set(beat)
+
+    all_states = []
+    for item in itertools.product(figure, beat):
+        if item[0][2] + item[1] <= 20:
+            all_states.append(item[0][:-1] + (item[1],) + (item[0][-1],))
+
+    all_states = list(set(all_states))
+    save_obj(all_states, 'ALL_STATES')
+    return all_states
+
+
 def preprocess():
     filenames = get_corpus('corpus/')
     list_of_song_states = []
@@ -224,16 +247,17 @@ def preprocess():
     new_list_of_song_states = convert_each_elem_to_int(list_of_song_states,
                                                        fignotes_dict,
                                                        chords_dict)
-    save_obj(new_list_of_song_states, 'ALL_STATES')
-
-    state_elem_size = [fignotes_dict[-1], chords_dict[-1], 16, 16,
-                       len(figheads)]
-    save_obj(state_elem_size, 'STATE_ELEM_SIZE')  # save size of each element
-
-    all_actions = get_all_actions(new_list_of_song_states)
     trajectories = get_trajectories(new_list_of_song_states)
     start_states = get_start_states(trajectories)
     terminal_states = get_terminal_states(trajectories)
+
+    state_elem_size = (fignotes_dict[-1], chords_dict[-1], 16, 16,
+                       len(figheads))
+    save_obj(state_elem_size, 'STATE_ELEM_SIZE')  # save size of each element
+
+    all_states = generate_all_states(new_list_of_song_states)
+    all_actions = get_all_actions(all_states)
+
 
     print('\nFIGNOTES_DICT')
     pprint(fignotes_dict)
@@ -241,8 +265,10 @@ def preprocess():
     pprint(chords_dict)
     # print('\nFIGHEADS_DICT')
     # pprint(figheads_dict)
-    print('\nNEW_LIST_OF_SONG_STATES')
-    pprint(new_list_of_song_states)
+    # print('\nNEW_LIST_OF_SONG_STATES')
+    # pprint(new_list_of_song_states)
+    print('\nALL_STATES')
+    pprint(all_states)
     print('\nALL_ACTIONS')
     pprint(all_actions)
     print('\nTRAJECTORIES')

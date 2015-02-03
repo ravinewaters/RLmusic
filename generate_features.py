@@ -1,32 +1,10 @@
 __author__ = 'redhat'
 
-from scipy import sparse, io
 import numpy as np
 from constants import *
 from common_methods import *
-from pprint import pprint
+# from pprint import pprint
 
-# need state_action_dict otherwise slow.
-
-
-def map_tup_to_bin_array(tup, min_elem, max_elem):
-    """
-    Goal: turns a tuple into a binary array.
-    Input: a tuple of integers, the min (and max) value each coordinate
-    can have.
-    Output: array of indices that correspond to value 1 in binary tuple of
-    the original tuple. Also output the length of the binary tuple
-
-    """
-    coord_size = np.array(max_elem) - np.array(min_elem) + 1
-    bin_array_length = sum(coord_size)
-    coord_size = np.concatenate((np.array([0]), coord_size))
-    pos = []
-    index = 0
-    for i in range(len(tup)):
-        index = index + coord_size[i]
-        pos.append(index + tup[i] - min_elem[i])
-    return np.array(pos), bin_array_length
 
 def parse_chord(chord):
     if len(chord) == 1:
@@ -107,10 +85,12 @@ def compute_features(state, action, fignotes_dict, chords_dict,term_states):
         )
     # to rest
     elif action[-1] == -1:
+        # from rest
         if state[-1] == -1:
             tup = (
                 0, 0, 0, 0, 0, 0, 1, 1, compute_next_fig_beat(state),
             )
+        # not from rest
         else:
             tup = (
                 0, 0, 0, 0, 0, 0, 1, 0, compute_next_fig_beat(state),
@@ -150,7 +130,7 @@ def compute_binary_features_expectation(state, action, min_elem, max_elem,
     # compute given state and action features expectation.
     tup = compute_features(state, action, fignotes_dict,
                            chords_dict, term_states)
-    print(tup)
+    # print(tup)
     coord_size = np.array(max_elem) - np.array(min_elem) + 1
     coord_size = np.concatenate((np.array([0]), coord_size))
     pos = []
@@ -173,17 +153,17 @@ if __name__ == "__main__":
     min_elem = (-11, -figheads_range, 0, 0, 0, 0, 0, 0, 1)
     max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 20)
 
-    feat_exp = []
-    for states in all_states:
-        for state in states:
-            for action in all_actions:
-                if state in term_states:
-                    continue
-                if not is_valid_action(state, action):
-                    continue
-                res = compute_binary_features_expectation(state, action, min_elem,
-                                                          max_elem,
-                                                    fignotes_dict, chords_dict,
-                                                    term_states)
-                print(res)
-                feat_exp.append(res)
+    # feat_exp = []
+    # for states in all_states:
+    #     for state in states:
+    #         for action in all_actions:
+    #             if state in term_states:
+    #                 continue
+    #             if not is_valid_action(state, action):
+    #                 continue
+    #             res = compute_binary_features_expectation(state, action, min_elem,
+    #                                                       max_elem,
+    #                                                 fignotes_dict, chords_dict,
+    #                                                 term_states)
+    #             print(res)
+    #             feat_exp.append(res)

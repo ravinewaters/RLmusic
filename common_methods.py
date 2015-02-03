@@ -6,7 +6,7 @@ import numpy as np
 from constants import *
 
 def make_flat_list(list_of_lists):
-    flat_list = [item for lists in list_of_lists for item in lists]
+    flat_list = (item for lists in list_of_lists for item in lists)
     return flat_list
 
 def save_obj(obj, name):
@@ -53,6 +53,8 @@ def is_valid_action(state, action):
     fig_duration = state[2]
     fig_beat = state[3]
     action_fig_duration = action[2]
-    if fig_beat + fig_duration + action_fig_duration <= 20:
-        return True
-    return False
+    if fig_beat + fig_duration < 20:
+        if action_fig_duration + fig_beat + fig_duration <= 20:
+            return True
+        return False # if > 20, false
+    return True
