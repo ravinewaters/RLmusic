@@ -140,7 +140,7 @@ def compute_binary_features_expectation(state, action, min_elem, max_elem,
     for i in range(len(tup)):
         index = index + coord_size[i]
         col.append(index + tup[i] - min_elem[i])
-    data = [1]* len(col)
+    data = [1] * len(col)
     row = [0] * len(col)
     mtx = sparse.csr_matrix((data, (row, col)), (1, sum(coord_size)))
     return mtx

@@ -31,7 +31,7 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
         int_a = array_to_int(reduced_action[::-1], action_size[::-1])
         policy_matrix[int_s, int_a] = 1
     policy_matrix_csr = policy_matrix.tocsr()
-    save_obj(policy_matrix_csr, 'POLICY_0')
+    io.savemat(DIR + 'POLICY_MATRIX.mat', {'policy_0': policy_matrix_csr})
     return policy_matrix_csr
 
 
