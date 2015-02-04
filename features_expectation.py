@@ -4,7 +4,6 @@ import numpy as np
 import random
 from scipy import sparse, io
 from common_methods import *
-from pprint import pprint
 from generate_features import compute_binary_features_expectation
 
 
@@ -12,6 +11,7 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
     # generate matrix of 0-1 value with size:
     # rows = # states
     # cols = # actions
+    # Should add stochastic policy to the matrix.
     all_actions = [k+v for k, v in all_actions.items()]
     action_size = state_size[:2]
 
@@ -36,8 +36,16 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
 
 
 def compute_feature_expectation(policy_matrix, disc_rate, start_state,
-                                 term_states, n_iter):
-    # SLOW
+                                term_states, n_iter):
+    # Basically what the function does is walk through the states and
+    # actions. The actions are gotten by choosing randomly according to the
+    # policy matrix. We start from a given start_state and stop when
+    # reaching a terminal state or the features expectation is very small
+    # because of the discount factor.
+    # We generate n_iter trajectories and find the average of the sum of
+    # discounted feature expectation. If we have a deterministic policy we
+    # can just set the n_iter to be 1.
+
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
@@ -45,7 +53,7 @@ def compute_feature_expectation(policy_matrix, disc_rate, start_state,
     all_actions = load_obj('ALL_ACTIONS')
     action_size = state_size[:2]
     # what is s and a? tuple of integers
-    mean = []
+    mean_feat_exp = 0
     for i in range(n_iter):
         # print('i=', i)
         sum_of_feat_exp = 0
@@ -71,15 +79,16 @@ def compute_feature_expectation(policy_matrix, disc_rate, start_state,
                                                              chords_dict,
                                                              term_states)
             sum_of_feat_exp += feat_exp
-            if np.all(feat_exp < 1e-7):
-                # print(t)
+            if feat_exp.sum() <= 1e-5:
+                print('break:', t)
                 break
             # print('feat_exp:', feat_exp)
             state = compute_next_state(state, action)
             t += 1
-        mean.append(sum_of_feat_exp)
-    # print('mean:', mean)
-    return np.mean(mean, axis=0)
+        # print(t)
+        mean_feat_exp += sum_of_feat_exp
+    # print('mean:', mean_feat_exp)
+    return mean_feat_exp.A/n_iter
 
 if __name__ == '__main__':
     all_states = load_obj('ALL_STATES')
@@ -91,11 +100,10 @@ if __name__ == '__main__':
                                                   all_actions,
                                                   state_elem_size)
     start_state = next(iter(start_states))
-    # features_matrix = io.loadmat(DIR + 'FEATURES_MATRIX')['features_matrix']
     avg_feat_exp = compute_feature_expectation(policy_matrix,
-                                                0.99,
-                                                start_state,
-                                                term_states, 1,
-                                                )
+                                               0.99,
+                                               start_state,
+                                               term_states,
+                                               1,)
 
-    pprint(avg_feat_exp)
+    print(avg_feat_exp)

@@ -14,6 +14,9 @@ def parse(filename):
     2. Continue acquiring all notes that falls into the same figure, until
     3. meeting the next chord, which implies new figure
     4. Pickup bar and the last figure are handled separately
+
+    notes:
+    1. In 4/4 beat occurs every quarter.
     """
     states = []
     song = converter.parse(filename)
