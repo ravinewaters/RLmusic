@@ -35,7 +35,7 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
     return policy_matrix_csr
 
 
-def compute_feature_expectation(policy_matrix, disc_rate, start_state,
+def compute_policy_features_expectation(policy_matrix, disc_rate, start_state,
                                 term_states, n_iter):
     # Basically what the function does is walk through the states and
     # actions. The actions are gotten by choosing randomly according to the
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                                                   all_actions,
                                                   state_elem_size)
     start_state = next(iter(start_states))
-    avg_feat_exp = compute_feature_expectation(policy_matrix,
+    avg_feat_exp = compute_policy_features_expectation(policy_matrix,
                                                0.99,
                                                start_state,
                                                term_states,
