@@ -94,8 +94,8 @@ def choose_action_from_state(policy_matrix, all_actions,
     indices = policy_matrix[int_s].indices
     row = policy_matrix[int_s].data
     prob = row/sum(row)
-    a = np.random.choice(indices, p=prob)  # int
-    key_a = tuple(int_to_array(a, action_size[::-1])[::-1])
+    int_a = np.random.choice(indices, p=prob)  # int
+    key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
     action = key_a + all_actions[key_a]
     return action
 
