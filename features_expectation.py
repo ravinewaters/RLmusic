@@ -35,8 +35,8 @@ def generate_random_policy_matrix(all_states, all_actions, state_size):
     return policy_matrix_csr
 
 
-def compute_policy_features_expectation(policy_matrix, disc_rate, start_state,
-                                term_states, n_iter):
+def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
+                                        n_iter):
     # Basically what the function does is walk through the states and
     # actions. The actions are gotten by choosing randomly according to the
     # policy matrix. We start from a given start_state and stop when
@@ -49,8 +49,10 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_state,
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
+    term_states = load_obj('TERM_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
     all_actions = load_obj('ALL_ACTIONS')
+    start_state = random.choice(list(start_states))
     action_size = state_size[:2]
     # what is s and a? tuple of integers
     mean_feat_exp = 0
@@ -60,27 +62,21 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_state,
         state = start_state
         t = 0
         while state not in term_states:
-            # print('state:', state)
-            reduced_state = state[:3]
-            int_s = array_to_int(reduced_state[::-1], state_size[::-1])
-            indices = policy_matrix[int_s].indices
-            row = policy_matrix[int_s].data
-            prob = row/sum(row)
-            a = np.random.choice(indices, p = prob)  # int
-            key_a = tuple(int_to_array(a, action_size[::-1])[::-1])
-            action = key_a + all_actions[key_a]
-            # print('action', action)
-            feat_exp = disc_rate ** t * \
-                         compute_binary_features_expectation(state,
-                                                             action,
-                                                             min_elem,
-                                                             max_elem,
-                                                             fignotes_dict,
-                                                             chords_dict,
-                                                             term_states)
+            print('state:', state)
+            action = choose_action_from_state(policy_matrix, all_actions, state,
+                                           state_size, action_size)
+            print('action', action)
+            feat_exp = disc_rate ** t * compute_binary_features_expectation(
+                state,
+                action,
+                min_elem,
+                max_elem,
+                fignotes_dict,
+                chords_dict,
+                term_states)
             sum_of_feat_exp += feat_exp
             if feat_exp.sum() <= 1e-5:
-                print('break:', t)
+                # print('break:', t)
                 break
             # print('feat_exp:', feat_exp)
             state = compute_next_state(state, action)
@@ -88,22 +84,32 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_state,
         # print(t)
         mean_feat_exp += sum_of_feat_exp
     # print('mean:', mean_feat_exp)
-    return mean_feat_exp.A/n_iter
+    return mean_feat_exp/n_iter
+
+def choose_action_from_state(policy_matrix, all_actions,
+                          state, state_size, action_size):
+    # doesn't check whether state is a terminal state
+    reduced_state = state[:3]
+    int_s = array_to_int(reduced_state[::-1], state_size[::-1])
+    indices = policy_matrix[int_s].indices
+    row = policy_matrix[int_s].data
+    prob = row/sum(row)
+    a = np.random.choice(indices, p=prob)  # int
+    key_a = tuple(int_to_array(a, action_size[::-1])[::-1])
+    action = key_a + all_actions[key_a]
+    return action
 
 if __name__ == '__main__':
     all_states = load_obj('ALL_STATES')
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
-    term_states = load_obj('TERM_STATES')
     state_elem_size = load_obj('STATE_ELEM_SIZE')
     policy_matrix = generate_random_policy_matrix(all_states,
                                                   all_actions,
                                                   state_elem_size)
-    start_state = next(iter(start_states))
     avg_feat_exp = compute_policy_features_expectation(policy_matrix,
                                                0.99,
-                                               start_state,
-                                               term_states,
+                                               start_states,
                                                1,)
 
     print(avg_feat_exp)
