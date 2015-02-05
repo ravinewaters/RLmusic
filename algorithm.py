@@ -7,6 +7,8 @@ from math import sqrt
 from scipy import sparse
 import numpy as np
 from datetime import datetime
+from itertools import product
+from random import shuffle
 
 def compute_policies(disc_rate, eps):
     all_states = load_obj('ALL_STATES')
@@ -74,14 +76,19 @@ def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
     n_cols = np.array(action_size).prod()
     shape = (n_rows, n_cols)
     policy_matrix = sparse.dok_matrix(shape)
-    Q2 = sparse.dok_matrix(shape)
-
+    q_matrix = sparse.dok_matrix(shape)
     delta = 0
+
+    while_counter = 0
     while delta < eps*(1-disc_rate)/disc_rate:
-        Q1 = Q2.copy()
         delta = 0
-        for state in all_states:
-            for action in all_actions:
+        print('\n')
+        print('while_counter:', while_counter)
+        for action in all_actions:
+            for state in all_states:
+                if not is_valid_action(state, action):
+                    continue
+                print('\n')
                 reduced_state = state[:3]
                 reduced_action = action[:2]
                 int_s = array_to_int(reduced_state[::-1],
@@ -91,7 +98,7 @@ def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
                                      action_size[::-1])
                 print('int_a:', int_a)
                 if state in term_states:
-                    Q2[int_s, 1] = max_reward
+                    q_matrix[int_s, 1] = max_reward
                     print('max_reward:', max_reward)
                 else:
                     feat_exp = compute_binary_features_expectation(state,
@@ -102,23 +109,25 @@ def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
                                                                    chords_dict,
                                                                    term_states)
 
-                    row = Q1[int_s].tocsr()
+                    row = q_matrix[int_s].tocsr()
                     if row.size:
                         max_q_value = max(row.data)
                     else:
                         max_q_value = 0
-                    Q2[int_s, int_a] = w.dot(feat_exp.T)[0, 0] + \
-                                       disc_rate * max_q_value
-                    print('Q2[int_s, int_a]:', Q2[int_s, int_a])
-                    diff = Q2[int_s, int_a] - Q1[int_s, int_a]
+                    new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * \
+                                                                 max_q_value
+                    print('new_q_value', new_q_value)
+                    diff = abs(new_q_value - q_matrix[int_s, int_a])
                     print('diff:', diff)
-                    if abs(diff) > delta:
+                    q_matrix[int_s, int_a] = new_q_value
+
+                    if diff > delta:
                         delta = diff
                         print('delta:', delta)
-
-    Q2 = Q2.tocsc()
-    for int_s in np.unique(Q2.indices):
-        row = Q2[int_s]
+        while_counter += 1
+    q_matrix = q_matrix.tocsc()
+    for int_s in np.unique(q_matrix.indices):
+        row = q_matrix[int_s]
         max_index = row.indices[row.data.argmax()] if row.nnz else 0
         policy_matrix[int_s, max_index] = 1
 
