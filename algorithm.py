@@ -22,7 +22,8 @@ def compute_policies(disc_rate, eps):
     mu = []
     policies = []
     counter = 1
-    while True:
+    # while True:
+    for i in range(2):
         if counter == 1:
             mu_value = compute_policy_features_expectation(policy_matrix_0,
                                                                disc_rate,
@@ -31,7 +32,7 @@ def compute_policies(disc_rate, eps):
             mu.append(mu_value)
             mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
         else:  # counter >= 2
-            mu_bar += compute_projection(mu_bar, mu, mu_expert)
+            mu_bar += compute_projection(mu_bar, mu[counter-1], mu_expert)
 
         w = mu_expert - mu_bar
         t = sqrt((w.data**2).sum())
@@ -79,7 +80,6 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
     n_rows = np.array(state_size).prod()
     n_cols = np.array(action_size).prod()
     shape = (n_rows, n_cols)
-
     try:
         # load saved state
         temp = io.loadmat(DIR + 'temp')
@@ -97,7 +97,8 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
     delta = threshold
     print('threshold:', threshold)
     while_counter = 0
-    while delta >= threshold:
+    # while delta >= threshold:
+    for i in range(1):
         delta = threshold
         print('while_counter:', while_counter)
         for start_state in start_states:
@@ -149,11 +150,11 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
         # save state
         io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'errors': errors})
         while_counter += 1
-    q_matrix = q_matrix.tocsc()
 
+    q_matrix = q_matrix.tocoo()
     policy_matrix = sparse.dok_matrix(shape)
-    for int_s in np.unique(q_matrix.indices):
-        row = q_matrix[int_s]
+    for int_s in np.unique(q_matrix.row):
+        row = q_matrix.getrow(int_s)
         max_index = row.indices[row.data.argmax()] if row.nnz else 0
         print('(int_s, max_index) = ({}, {})'.format(int_s, max_index))
         policy_matrix[int_s, max_index] = 1
