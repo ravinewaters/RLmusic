@@ -8,7 +8,7 @@ from scipy import sparse
 import numpy as np
 from datetime import datetime
 from itertools import product
-from random import shuffle
+from random import shuffle, choice
 
 def compute_policies(disc_rate, eps):
     all_states = load_obj('ALL_STATES')
@@ -39,12 +39,12 @@ def compute_policies(disc_rate, eps):
             break
         w /= t  # normalize w
         print('w:', w)
-        policy_matrix = q_value_iteration_algorithm(w, 0.99, 1e-2, 1000)
-        policies.append(policy_matrix)
+        policy_matrix = q_value_iteration_algorithm(w, disc_rate, 1e-2, 1000)
         mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
                                                                start_states,
                                                                1,)
+        policies.append(policy_matrix)
         print('mu_value:', mu_value)
         mu.append(mu_value)
         counter += 1
@@ -61,77 +61,100 @@ def compute_projection(mu_bar, mu, mu_expert):
 
 
 def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
-    all_states = load_obj('ALL_STATES')
+    # all_states = load_obj('ALL_STATES')
     all_actions = load_obj('ALL_ACTIONS')
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
     term_states = load_obj('TERM_STATES')
+    start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
 
     all_actions = [k+v for k, v in all_actions.items()]
-    all_states = [k+v for k, v in all_states.items()]
+    # all_states = [k+v for k, v in all_states.items()]
     action_size = state_size[:2]
     n_rows = np.array(state_size).prod()
     n_cols = np.array(action_size).prod()
     shape = (n_rows, n_cols)
-    policy_matrix = sparse.dok_matrix(shape)
+
     q_matrix = sparse.dok_matrix(shape)
-    delta = 0
+    visit = sparse.dok_matrix(shape, dtype=np.uint32)
+    start_states = list(start_states)
+    shuffle(start_states)
+
+    threshold = eps*(1-disc_rate)/disc_rate
+    delta = threshold + 0.1
+    print('threshold:', threshold)
 
     while_counter = 0
-    while delta < eps*(1-disc_rate)/disc_rate:
-        delta = 0
-        print('\n')
+    while delta > threshold:
+        delta = threshold + 0.1
         print('while_counter:', while_counter)
-        for action in all_actions:
-            for state in all_states:
-                if not is_valid_action(state, action):
-                    continue
+        for start_state in start_states:
+            trajectory = generate_random_trajectory(start_state,
+                                                    term_states,
+                                                    all_actions)
+            for i in range(0, len(trajectory), 2):
                 print('\n')
+                state = trajectory[i]
                 reduced_state = state[:3]
-                reduced_action = action[:2]
                 int_s = array_to_int(reduced_state[::-1],
                                      state_size[::-1])
-                print('int_s:', int_s)
-                int_a = array_to_int(reduced_action[::-1],
-                                     action_size[::-1])
-                print('int_a:', int_a)
-                if state in term_states:
+                try:
+                    action = trajectory[i+1]
+                except IndexError:
+                    # terminal state
                     q_matrix[int_s, 1] = max_reward
                     print('max_reward:', max_reward)
+                    break
+                reduced_action = action[:2]
+                int_a = array_to_int(reduced_action[::-1],
+                                     action_size[::-1])
+
+                visit[int_s, int_a] += 1
+
+
+
+                print('Visited ({}, {}): {} times'.format(int_s, int_a,
+                                                          visit[int_s, int_a]))
+
+                feat_exp = compute_binary_features_expectation(state,
+                                                               action,
+                                                               min_elem,
+                                                               max_elem,
+                                                               fignotes_dict,
+                                                               chords_dict,
+                                                               term_states)
+
+                row = q_matrix[int_s].tocsr()
+                print('row.size:', row.size)
+                if row.size != 0:
+                    max_q_value = max(row.data)
+                    print('max_q_value:', max_q_value)
                 else:
-                    feat_exp = compute_binary_features_expectation(state,
-                                                                   action,
-                                                                   min_elem,
-                                                                   max_elem,
-                                                                   fignotes_dict,
-                                                                   chords_dict,
-                                                                   term_states)
+                    max_q_value = 0
+                new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * \
+                                                             max_q_value
+                print('new_q_value', new_q_value)
+                diff = abs(new_q_value - q_matrix[int_s, int_a])
+                print('diff:', diff)
+                q_matrix[int_s, int_a] = new_q_value
 
-                    row = q_matrix[int_s].tocsr()
-                    if row.size:
-                        max_q_value = max(row.data)
-                    else:
-                        max_q_value = 0
-                    new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * \
-                                                                 max_q_value
-                    print('new_q_value', new_q_value)
-                    diff = abs(new_q_value - q_matrix[int_s, int_a])
-                    print('diff:', diff)
-                    q_matrix[int_s, int_a] = new_q_value
-
-                    if diff > delta:
-                        delta = diff
-                        print('delta:', delta)
+                if diff > delta:
+                    delta = diff
+                    print('delta:', delta)
         while_counter += 1
     q_matrix = q_matrix.tocsc()
+
+    policy_matrix = sparse.dok_matrix(shape)
     for int_s in np.unique(q_matrix.indices):
         row = q_matrix[int_s]
         max_index = row.indices[row.data.argmax()] if row.nnz else 0
+        print('state:', int_s)
+        print('action:', max_index)
         policy_matrix[int_s, max_index] = 1
 
-    return policy_matrix
+    return policy_matrix.tocsr()
 
 
 def compute_expert_features_expectation(disc_rate):
@@ -161,10 +184,27 @@ def compute_expert_features_expectation(disc_rate):
     expert_feat_exp /= len(trajectories)
     return expert_feat_exp
 
+def generate_random_trajectory(state, term_states,
+                               all_actions, policy_matrix=None):
+    trajectory = []
+    while state not in term_states:
+        trajectory.append(state)
+        while True:
+            action = choice(all_actions)
+            if is_valid_action(state, action):
+                break
+        trajectory.append(action)
+        state = compute_next_state(state, action)
+    trajectory.append(state)  # append terminal state
+    return trajectory
+
+def choose_policy(policies, mu):
+    pass
+
 if __name__ == '__main__':
     # print(compute_expert_features_expectation(0.99))
     print(datetime.now())
 
-    compute_policies(0.99, 1e-3)
+    compute_policies(0.7, 1e-1)
 
     print(datetime.now())

@@ -103,7 +103,7 @@ if __name__ == '__main__':
     all_states = load_obj('ALL_STATES')
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
-    state_elem_size = load_obj('STATE_ELEM_SIZE')
+
     policy_matrix = generate_random_policy_matrix(all_states,
                                                   all_actions,
                                                   state_elem_size)
