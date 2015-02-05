@@ -16,17 +16,17 @@ def compute_policies(disc_rate, eps):
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
-    policy_matrix_0 = generate_random_policy_matrix(all_states,
+    policy_matrix = generate_random_policy_matrix(all_states,
                                                   all_actions,
                                                   state_size)
+    policies = [policy_matrix]
     mu_expert = compute_expert_features_expectation(disc_rate)
     mu = []
-    policies = []
     counter = 1
-    # while True:
-    for i in range(2):
+    while True:
+    # for i in range(2):
         if counter == 1:
-            mu_value = compute_policy_features_expectation(policy_matrix_0,
+            mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
                                                                start_states,
                                                                1,)
@@ -50,7 +50,7 @@ def compute_policies(disc_rate, eps):
                                                                start_states,
                                                                1)
         policies.append(policy_matrix)
-        print('mu_value:', mu_value)
+        # print('mu_value:', mu_value)
         mu.append(mu_value)
         counter += 1
         print('counter:', counter)
@@ -96,12 +96,12 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
 
     threshold = 2*eps*(1-disc_rate)/disc_rate
     delta = threshold
-    print('threshold:', threshold)
-    while_counter = 0
-    # while delta >= threshold:
-    for i in range(1):
+    # print('threshold:', threshold)
+    iteration = 0
+    while delta >= threshold:
+    # for i in range(1):
         delta = threshold
-        print('while_counter:', while_counter)
+        print('iteration:', iteration)
         for start_state in start_states:
             trajectory = generate_trajectory_based_on_number_of_visits(start_state,
                                                     term_states,
@@ -116,11 +116,11 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
                 except IndexError:
                     # terminal state
                     q_matrix[int_s, 1] = max_reward
-                    print('terminal state:', int_s)
-                    print('max_reward:', max_reward)
+                    # print('terminal state:', int_s)
+                    # print('max_reward:', max_reward)
                     break
-                print('\nerrors({}, {}): {}'.format(int_s, int_a,
-                                                    errors[int_s, int_a]))
+                # print('\nerrors({}, {}): {}'.format(int_s, int_a,
+                #                                     errors[int_s, int_a]))
                 feat_exp = compute_binary_features_expectation(state,
                                                                action,
                                                                min_elem,
@@ -130,18 +130,18 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
                                                                term_states)
 
                 row = q_matrix[int_s].tocsr()
-                print('row.size:', row.size)
+                # print('row.size:', row.size)
                 if row.size != 0:
                     max_q_value = max(row.data)
                     # print('max_q_value:', max_q_value)
                 else:
                     max_q_value = 0
                 new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * max_q_value
-                print('old q_value:', q_matrix[int_s, int_a])
-                print('new q_value:', new_q_value)
+                # print('old q_value:', q_matrix[int_s, int_a])
+                # print('new q_value:', new_q_value)
                 diff = abs(new_q_value - q_matrix[int_s, int_a])
                 errors[int_s, int_a] = diff
-                print('diff:', diff)
+                # print('diff:', diff)
                 q_matrix[int_s, int_a] = new_q_value
 
                 if diff > delta:
@@ -150,14 +150,14 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
 
         # save state
         io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'errors': errors})
-        while_counter += 1
+        iteration += 1
 
     q_matrix = q_matrix.tocoo()
     policy_matrix = sparse.dok_matrix(shape)
     for int_s in np.unique(q_matrix.row):
         row = q_matrix.getrow(int_s)
         max_index = row.indices[row.data.argmax()] if row.nnz else 0
-        print('(int_s, max_index) = ({}, {})'.format(int_s, max_index))
+        # print('(int_s, max_index) = ({}, {})'.format(int_s, max_index))
         policy_matrix[int_s, max_index] = 1
 
     return policy_matrix.tocsr()

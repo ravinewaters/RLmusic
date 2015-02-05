@@ -62,11 +62,11 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
         state = start_state
         t = 0
         while state not in term_states:
-            print('state:', state)
+            # print('state:', state)
 
             action = choose_action_from_state(policy_matrix, all_actions,
                                               state, state_size, action_size)
-            print('action', action)
+            # print('action', action)
             feat_exp = disc_rate ** t * compute_binary_features_expectation(
                 state,
                 action,
@@ -97,7 +97,7 @@ def choose_action_from_state(policy_matrix, all_actions,
     prob = row/sum(row)
     int_a = np.random.choice(indices, p=prob)  # int
     key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
-    print(key_a)
+    # print(key_a)
     action = key_a + all_actions[key_a]
     return action
 
