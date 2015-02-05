@@ -5,10 +5,11 @@ from generate_features import compute_binary_features_expectation
 from features_expectation import compute_policy_features_expectation, generate_random_policy_matrix
 from math import sqrt
 from scipy import sparse, io
-import numpy as np
 from datetime import datetime
 from itertools import product
 from random import shuffle, choice, uniform
+from pprint import pprint
+import numpy as np
 
 def compute_policies(disc_rate, eps):
     all_states = load_obj('ALL_STATES')
@@ -59,8 +60,8 @@ def compute_policies(disc_rate, eps):
 def compute_projection(mu_bar, mu, mu_expert):
     mu_mu_bar_distance = mu - mu_bar
     mu_bar_mu_expert_distance = mu_expert - mu_bar
-    numerator = np.dot(mu_mu_bar_distance, mu_bar_mu_expert_distance)
-    denominator = np.dot(mu_mu_bar_distance, mu_mu_bar_distance)
+    numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)[0, 0]
+    denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)[0, 0]
     return numerator/denominator * mu_mu_bar_distance
 
 
@@ -262,6 +263,8 @@ if __name__ == '__main__':
     # print(compute_expert_features_expectation(0.99))
     print(datetime.now())
 
-    compute_policies(0.7, 1e-1)
+    policies, mu = compute_policies(0.7, 1e-1)
+    pprint(policies)
+    pprint(mu)
 
     print(datetime.now())
