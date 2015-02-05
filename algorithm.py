@@ -4,10 +4,9 @@ from common_methods import *
 from generate_features import compute_binary_features_expectation
 from features_expectation import compute_policy_features_expectation, generate_random_policy_matrix
 from math import sqrt
-from scipy import sparse
+from scipy import sparse, io
 import numpy as np
 from datetime import datetime
-from itertools import product
 from random import shuffle, choice
 
 def compute_policies(disc_rate, eps):
@@ -39,7 +38,7 @@ def compute_policies(disc_rate, eps):
             break
         w /= t  # normalize w
         print('w:', w)
-        policy_matrix = q_value_iteration_algorithm(w, disc_rate, 1e-2, 1000)
+        policy_matrix = compute_optimal_policy(w, disc_rate, 1e-2, 1000)
         mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
                                                                start_states,
@@ -60,7 +59,7 @@ def compute_projection(mu_bar, mu, mu_expert):
     return numerator/denominator * mu_mu_bar_distance
 
 
-def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
+def compute_optimal_policy(w, disc_rate, eps, max_reward):
     # all_states = load_obj('ALL_STATES')
     all_actions = load_obj('ALL_ACTIONS')
     min_elem, max_elem = load_obj('ELEM_RANGE')
@@ -77,18 +76,25 @@ def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
     n_cols = np.array(action_size).prod()
     shape = (n_rows, n_cols)
 
-    q_matrix = sparse.dok_matrix(shape)
-    visit = sparse.dok_matrix(shape, dtype=np.uint32)
+    try:
+        # load saved state
+        temp = io.loadmat(DIR + 'temp')
+        q_matrix = temp['q_matrix']
+        visit = temp['visit']
+    except Exception as e:
+        print(e)
+        q_matrix = sparse.dok_matrix(shape)
+        visit = sparse.dok_matrix(shape, dtype=np.uint32)
+
     start_states = list(start_states)
     shuffle(start_states)
 
     threshold = eps*(1-disc_rate)/disc_rate
-    delta = threshold + 0.1
+    delta = threshold
     print('threshold:', threshold)
-
     while_counter = 0
-    while delta > threshold:
-        delta = threshold + 0.1
+    while delta >= threshold:
+        delta = threshold
         print('while_counter:', while_counter)
         for start_state in start_states:
             trajectory = generate_random_trajectory(start_state,
@@ -143,6 +149,9 @@ def q_value_iteration_algorithm(w, disc_rate, eps, max_reward):
                 if diff > delta:
                     delta = diff
                     print('delta:', delta)
+
+        # save state
+        io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'visit': visit})
         while_counter += 1
     q_matrix = q_matrix.tocsc()
 
