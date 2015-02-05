@@ -135,7 +135,8 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
                 else:
                     max_q_value = 0
                 new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * max_q_value
-                # print('new_q_value', new_q_value)
+                print('old q_value:', q_matrix[int_s, int_a])
+                print('new q_value:', new_q_value)
                 diff = abs(new_q_value - q_matrix[int_s, int_a])
                 errors[int_s, int_a] = diff
                 print('diff:', diff)
@@ -219,11 +220,10 @@ def generate_trajectory_based_on_number_of_visits(state, term_states,
                                                      action_size)
             # 90% of the time based on number of visits
             else:
-                row = np.around(row_csr.data * 10, decimals=2)
-                print(row)
                 indices = row_csr.indices
-                prob = row/sum(row)
-                int_a = np.random.choice(indices, p=prob)
+                row = row_csr.data * 10
+                probs = row/sum(row)
+                int_a = random_pick(indices, probs)
                 key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
                 action = key_a + all_actions[key_a]
         else:
@@ -236,6 +236,13 @@ def generate_trajectory_based_on_number_of_visits(state, term_states,
                          state_size[::-1])
     trajectory.append((int_s, state))  # append terminal state
     return trajectory
+
+
+def random_pick(choices, probs):
+    cutoffs = np.cumsum(probs)
+    idx = cutoffs.searchsorted(np.random.uniform(0, cutoffs[-1]))
+    return choices[idx]
+
 
 def choose_random_action(all_actions, state, action_size):
     while True:
