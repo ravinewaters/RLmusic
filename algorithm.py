@@ -38,7 +38,7 @@ def compute_policies(disc_rate, eps):
         if t <= eps:
             break
         w /= t  # normalize w
-        print('w:', w)
+        # print('w:', w)
         policy_matrix = compute_optimal_policy(w, disc_rate,
                                                1e-1, 1000,
                                                all_actions)
@@ -84,16 +84,16 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
         # load saved state
         temp = io.loadmat(DIR + 'temp')
         q_matrix = temp['q_matrix'].todok()
-        visit = temp['visit'].todok()
+        errors = temp['errors'].todok()
     except Exception as e:
-        print(e)
+        # print(e)
         q_matrix = sparse.dok_matrix(shape)
-        visit = sparse.dok_matrix(shape, dtype=np.uint32)
+        errors = sparse.dok_matrix(shape, dtype=np.float64)
 
     start_states = list(start_states)
     shuffle(start_states)
 
-    threshold = eps*(1-disc_rate)/disc_rate
+    threshold = 2*eps*(1-disc_rate)/disc_rate
     delta = threshold
     print('threshold:', threshold)
     while_counter = 0
@@ -104,24 +104,21 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
             trajectory = generate_trajectory_based_on_number_of_visits(start_state,
                                                     term_states,
                                                     all_actions,
-                                                    visit,
+                                                    errors,
                                                     state_size,
                                                     action_size, .3)
             for i in range(0, len(trajectory), 2):
-                print('\n')
                 int_s, state = trajectory[i]
                 try:
                     int_a, action = trajectory[i+1]
                 except IndexError:
                     # terminal state
                     q_matrix[int_s, 1] = max_reward
+                    print('terminal state:', int_s)
                     print('max_reward:', max_reward)
                     break
-
-                visit[int_s, int_a] += 1
-                print('Visited ({}, {}): {} times'.format(int_s, int_a,
-                                                          visit[int_s, int_a]))
-
+                print('\nerrors({}, {}): {}'.format(int_s, int_a,
+                                                    errors[int_s, int_a]))
                 feat_exp = compute_binary_features_expectation(state,
                                                                action,
                                                                min_elem,
@@ -134,12 +131,13 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
                 print('row.size:', row.size)
                 if row.size != 0:
                     max_q_value = max(row.data)
-                    print('max_q_value:', max_q_value)
+                    # print('max_q_value:', max_q_value)
                 else:
                     max_q_value = 0
                 new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * max_q_value
-                print('new_q_value', new_q_value)
+                # print('new_q_value', new_q_value)
                 diff = abs(new_q_value - q_matrix[int_s, int_a])
+                errors[int_s, int_a] = diff
                 print('diff:', diff)
                 q_matrix[int_s, int_a] = new_q_value
 
@@ -148,7 +146,7 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
                     print('delta:', delta)
 
         # save state
-        io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'visit': visit})
+        io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'errors': errors})
         while_counter += 1
     q_matrix = q_matrix.tocsc()
 
@@ -201,7 +199,7 @@ def compute_expert_features_expectation(disc_rate):
     return expert_feat_exp
 
 def generate_trajectory_based_on_number_of_visits(state, term_states,
-                               all_actions, number_of_visits, state_size,
+                               all_actions, errors, state_size,
                                action_size, gamma):
     # original state
     # all_actions dict
@@ -212,7 +210,7 @@ def generate_trajectory_based_on_number_of_visits(state, term_states,
                                      state_size[::-1])
         trajectory.append((int_s, state))
 
-        row_csr = number_of_visits[int_s].tocsr()
+        row_csr = errors[int_s].tocsr()
 
         # 10% of the time choose random action
         if row_csr.size:
@@ -221,7 +219,8 @@ def generate_trajectory_based_on_number_of_visits(state, term_states,
                                                      action_size)
             # 90% of the time based on number of visits
             else:
-                row = 1/row_csr.data
+                row = np.around(row_csr.data * 10, decimals=2)
+                print(row)
                 indices = row_csr.indices
                 prob = row/sum(row)
                 int_a = np.random.choice(indices, p=prob)
