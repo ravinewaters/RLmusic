@@ -7,31 +7,24 @@ from common_methods import *
 from generate_features import compute_binary_features_expectation
 
 
-def generate_random_policy_matrix(all_states, all_actions, state_size):
+def generate_random_policy_matrix(q_states, state_size):
     # generate matrix of 0-1 value with size:
     # rows = # states
     # cols = # actions
     # Should add stochastic policy to the matrix.
-    all_actions = [k+v for k, v in all_actions.items()]
-    action_size = state_size[:2]
 
     n_rows = np.array(state_size).prod()
-    n_cols = np.array(action_size).prod()
+    n_cols = np.array(state_size[:2]).prod()
     shape = (n_rows, n_cols)
-
     policy_matrix = sparse.dok_matrix(shape, dtype=np.uint8)
-    for first_three, last_two in all_states.items():
-        # print('state:', first_three+last_two)
-        action = random.choice(all_actions)
-        while not is_valid_action(first_three + last_two, action):
-            action = random.choice(all_actions)
-        reduced_action = action[:2]
-        # print('action:', action)
-        int_s = array_to_int(first_three[::-1], state_size[::-1])
-        int_a = array_to_int(reduced_action[::-1], action_size[::-1])
+
+    for state in q_states:
+        int_a, action = choose_random_action(q_states, state, state_size[:2])
+        int_s = array_to_int(state[:3][::-1], state_size[::-1])
         policy_matrix[int_s, int_a] = 1
+
     policy_matrix_csr = policy_matrix.tocsr()
-    io.savemat(DIR + 'POLICY_MATRIX.mat', {'policy_0': policy_matrix_csr})
+    # io.savemat(DIR + 'POLICY_MATRIX.mat', {'policy_0': policy_matrix_csr})
     return policy_matrix_csr
 
 

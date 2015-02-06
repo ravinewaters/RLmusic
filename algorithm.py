@@ -6,18 +6,27 @@ from features_expectation import compute_policy_features_expectation, generate_r
 from math import sqrt
 from scipy import sparse, io
 from datetime import datetime
-from itertools import product
+# from itertools import product
 from random import shuffle, choice, uniform
 from pprint import pprint
 import numpy as np
 
 def compute_policies(disc_rate, eps):
-    all_states = load_obj('ALL_STATES')
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
-    policy_matrix = generate_random_policy_matrix(all_states,
-                                                  all_actions,
+
+    try:
+        q_states = load_obj('Q_STATES')
+        print('Loaded Q_STATES')
+    except IOError:
+        all_states = load_obj('ALL_STATES')
+        list_of_all_states = [k+v for k, v in all_states.items()]
+        list_of_all_actions = [k+v for k, v in all_actions.items()]
+        q_states = generate_all_possible_q_states(list_of_all_states,
+                                                  list_of_all_actions)
+
+    policy_matrix = generate_random_policy_matrix(q_states,
                                                   state_size)
     policies = [policy_matrix]
     mu_expert = compute_expert_features_expectation(disc_rate)
@@ -43,17 +52,19 @@ def compute_policies(disc_rate, eps):
         # print('w:', w)
         policy_matrix = compute_optimal_policy(w, disc_rate,
                                                1e-1, 1000,
-                                               all_actions)
-        io.savemat(DIR + 'POLICY_MATRIX', {'policy_matrix': policy_matrix})
+                                               all_actions,
+                                               q_states)
+        policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
                                                                start_states,
-                                                               1)
-        policies.append(policy_matrix)
+                                                               )
         # print('mu_value:', mu_value)
         mu.append(mu_value)
         counter += 1
         print('counter:', counter)
+        # save policies, mu_expert, mu, mu_bar counter
+
     return policies, mu
 
 
@@ -65,8 +76,8 @@ def compute_projection(mu_bar, mu, mu_expert):
     return numerator/denominator * mu_mu_bar_distance
 
 
-def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
-    # all_states = load_obj('ALL_STATES')
+def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
+                           q_states):
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
@@ -75,14 +86,12 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
     state_size = load_obj('STATE_ELEM_SIZE')
     action_size = state_size[:2]
 
-    # all_states = [k+v for k, v in all_states.items()]
-    # q_states = generate_all_possible_q_states(all_states, all_actions)
-
     n_rows = np.array(state_size).prod()
     n_cols = np.array(action_size).prod()
     shape = (n_rows, n_cols)
     try:
         # load saved state
+        print('Loading saved state.')
         temp = io.loadmat(DIR + 'temp')
         q_matrix = temp['q_matrix'].todok()
         errors = temp['errors'].todok()
@@ -102,13 +111,15 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
     # for i in range(1):
         delta = threshold
         print('iteration:', iteration)
+        print('delta:', delta)
         for start_state in start_states:
-            trajectory = generate_trajectory_based_on_number_of_visits(start_state,
+            trajectory = generate_trajectory_based_on_errors(start_state,
                                                     term_states,
                                                     all_actions,
+                                                    q_states,
                                                     errors,
                                                     state_size,
-                                                    action_size, .3)
+                                                    action_size, .05)
             for i in range(0, len(trajectory), 2):
                 int_s, state = trajectory[i]
                 try:
@@ -163,17 +174,6 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions):
     return policy_matrix.tocsr()
 
 
-def generate_all_possible_q_states(all_states, all_actions):
-    # assume complete states and actions, not reduced ones.
-    q_states = []
-    for q_state in product(all_states, all_actions):
-        state = q_state[0]
-        action = q_state[1]
-        if is_valid_action(state, action):
-            q_states.append(q_state)
-    return q_states
-
-
 def compute_expert_features_expectation(disc_rate):
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
@@ -201,26 +201,25 @@ def compute_expert_features_expectation(disc_rate):
     expert_feat_exp /= len(trajectories)
     return expert_feat_exp
 
-def generate_trajectory_based_on_number_of_visits(state, term_states,
-                               all_actions, errors, state_size,
+def generate_trajectory_based_on_errors(state, term_states,
+                               all_actions, q_states, errors, state_size,
                                action_size, gamma):
     # original state
     # all_actions dict
     trajectory = []
     while state not in term_states:
-        reduced_state = state[:3]
-        int_s = array_to_int(reduced_state[::-1],
-                                     state_size[::-1])
+        int_s = array_to_int(state[:3][::-1], state_size[::-1])
         trajectory.append((int_s, state))
 
         row_csr = errors[int_s].tocsr()
-
-        # 10% of the time choose random action
-        if row_csr.size:
+        if row_csr.size:  # if the row has nonzero entries.
+            
+            # with prob. gamma, choose random action
             if uniform(0, 1) < gamma:
-                int_a, action = choose_random_action(all_actions, state,
+                int_a, action = choose_random_action(q_states, state,
                                                      action_size)
-            # 90% of the time based on number of visits
+            # with prob. 1-gamma, based on errors. Smaller error,
+            # lesser chance to be chosen.
             else:
                 indices = row_csr.indices
                 row = row_csr.data * 10
@@ -229,13 +228,12 @@ def generate_trajectory_based_on_number_of_visits(state, term_states,
                 key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
                 action = key_a + all_actions[key_a]
         else:
-            int_a, action = choose_random_action(all_actions, state,
+            int_a, action = choose_random_action(q_states, state,
                                                  action_size)
         trajectory.append((int_a, action))
         state = compute_next_state(state, action)
-    reduced_state = state[:3]
-    int_s = array_to_int(reduced_state[::-1],
-                         state_size[::-1])
+
+    int_s = array_to_int(state[:3][::-1], state_size[::-1])
     trajectory.append((int_s, state))  # append terminal state
     return trajectory
 
@@ -246,15 +244,23 @@ def random_pick(choices, probs):
     return choices[idx]
 
 
-def choose_random_action(all_actions, state, action_size):
-    while True:
-        reduced_action = choice(list(all_actions))
-        action = reduced_action + all_actions[reduced_action]
-        if is_valid_action(state, action):
-            break
-    int_a = array_to_int(reduced_action[::-1],
-                         action_size[::-1])
-    return int_a, action
+def generate_all_possible_q_states(all_states, all_actions):
+    # assume complete states and actions, not reduced ones.
+    q_states = {}
+    for state in all_states:
+        for action in all_actions:
+            if is_valid_action(state, action):
+                if state in q_states:
+                    q_states[state].append(action)
+                else:
+                    q_states[state] = [action]
+    for state in q_states:
+        q_states[state] = tuple(q_states[state])
+    save_obj(q_states, 'Q_STATES')
+    return q_states
+
+
+
 
 def choose_policy(policies, mu):
     pass
