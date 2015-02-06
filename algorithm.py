@@ -12,13 +12,22 @@ from pprint import pprint
 import numpy as np
 
 def compute_policies(disc_rate, eps):
+    value_iteration_n_iter = 70
+    value_iteration_error_threshold = 1e-1
+    max_reward = 1000
+    print('\ndisc_rate', disc_rate)
+    print('eps:', eps)
+    print('number of iteration of value iteration algorithm:',
+          value_iteration_n_iter)
+    print('value_iteration_error_threshold:', value_iteration_error_threshold)
+    print('terminal states reward:', max_reward)
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
 
     try:
         q_states = load_obj('Q_STATES')
-        print('Loaded Q_STATES')
+        # print('Loaded Q_STATES')
     except FileNotFoundError:
         all_states = load_obj('ALL_STATES')
         list_of_all_states = [k+v for k, v in all_states.items()]
@@ -27,7 +36,7 @@ def compute_policies(disc_rate, eps):
                                                   list_of_all_actions)
 
     try:
-        print('LOAD SAVED STATE.')
+        # print('LOAD SAVED STATE.')
         temp = io.loadmat(DIR + 'TEMP')
         policies = temp['policies'].tolist()[0]
         mu_expert = temp['mu_expert']
@@ -43,7 +52,7 @@ def compute_policies(disc_rate, eps):
         counter = 1
     while True:
     # for i in range(2):
-        print('\n\ncounter:', counter)
+        print('\ncounter:', counter)
         if counter == 1:
             mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
@@ -57,15 +66,15 @@ def compute_policies(disc_rate, eps):
         w = mu_expert - mu_bar
         t = sqrt((w.data**2).sum())
         print('t:', t)
-        print('eps:', eps)
         if t <= eps:
             break
         w /= t
 
         policy_matrix = compute_optimal_policy(w, disc_rate,
-                                               1e-1, 1000,
+                                               value_iteration_error_threshold,
+                                               max_reward,
                                                all_actions,
-                                               q_states)
+                                               q_states, value_iteration_n_iter)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(policy_matrix,
                                                        disc_rate,
@@ -93,7 +102,7 @@ def compute_projection(mu_bar, mu, mu_expert):
 
 
 def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
-                           q_states):
+                           q_states, value_iteration_n_iter):
     term_states = load_obj('TERM_STATES')
     start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
@@ -121,17 +130,17 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
     # print('threshold:', threshold)
     iteration = 1
     # while delta >= threshold:
-    number_of_states = 0
-    number_of_states_greater_than_delta = 0
-    for i in range(50):
+    # number_of_states = 0
+    # number_of_states_greater_than_delta = 0
+    for i in range(value_iteration_n_iter):
         delta = threshold
         # print('delta:', delta)
-        print('\niteration:', iteration)
-        print('number of states went through:', number_of_states)
-        print('number of states greater than delta:',
-              number_of_states_greater_than_delta)
-        number_of_states = 0
-        number_of_states_greater_than_delta = 0
+        # print('\niteration:', iteration)
+        # print('number of states went through:', number_of_states)
+        # print('number of states greater than delta:',
+        #       number_of_states_greater_than_delta)
+        # number_of_states = 0
+        # number_of_states_greater_than_delta = 0
         for start_state in start_states:
             trajectory = generate_trajectory_based_on_errors(start_state,
                                                     term_states,
@@ -141,7 +150,7 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                                                     state_size,
                                                     action_size, .75)
             for j in range(0, len(trajectory), 2):
-                number_of_states += 1
+                # number_of_states += 1
                 int_s, state = trajectory[j]
                 try:
                     int_a, action = trajectory[j+1]
@@ -174,11 +183,9 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
 
                 if diff > delta:
                     delta = diff
-                    number_of_states_greater_than_delta += 1
+                    # number_of_states_greater_than_delta += 1
                     # print('delta:', delta)
 
-        # save state
-        # io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'errors': errors})
         iteration += 1
 
     n_rows = np.array(state_size).prod()
@@ -271,10 +278,11 @@ def choose_policy(policies, mu):
 
 if __name__ == '__main__':
     # print(compute_expert_features_expectation(0.99))
+    print('\n')
     print(datetime.now())
 
     policies, mu = compute_policies(0.7, 0.7)
     pprint(policies)
     pprint(mu)
-
+    print('\n')
     print(datetime.now())
