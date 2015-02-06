@@ -207,3 +207,4 @@ def generate_possible_action(state_action_dict):
         else:
             possible_action[state_action[0]] = [state_action[1]]
     return possible_action
+
