@@ -12,7 +12,7 @@ from pprint import pprint
 import numpy as np
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 70
+    value_iteration_n_iter = 100
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
     print('\ndisc_rate', disc_rate)
@@ -90,6 +90,9 @@ def compute_policies(disc_rate, eps):
                             'counter': counter})
         # save policies, mu_expert, mu, mu_bar counter
 
+    # delete TEMP.mat
+    if os.path.exists(DIR + 'TEMP.mat'):
+        os.remove(DIR + 'TEMP.mat')
     return policies, mu
 
 
