@@ -4,7 +4,7 @@ import numpy as np
 import random
 from scipy import sparse, io
 from common_methods import *
-from generate_features import compute_binary_features_expectation
+from generate_features import generate_binary_features_expectation_table
 
 
 def generate_random_policy_matrix(q_states, state_size):
@@ -12,7 +12,6 @@ def generate_random_policy_matrix(q_states, state_size):
     # rows = # states
     # cols = # actions
     # Should add stochastic policy to the matrix.
-
 
     rows = []
     cols = []
@@ -33,7 +32,7 @@ def generate_random_policy_matrix(q_states, state_size):
 
 
 def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
-                                        n_iter):
+                                        n_iter=1):
     # Basically what the function does is walk through the states and
     # actions. The actions are gotten by choosing randomly according to the
     # policy matrix. We start from a given start_state and stop when
@@ -43,20 +42,21 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
     # discounted feature expectation. If we have a deterministic policy we
     # can just set the n_iter to be 1.
 
-    min_elem, max_elem = load_obj('ELEM_RANGE')
-    fignotes_dict = load_obj('FIGNOTES_DICT')
-    chords_dict = load_obj('CHORDS_DICT')
+    try:
+        features_expectation_dict = load_obj('FEATURES_EXPECTATION_DICT')
+    except FileNotFoundError:
+        features_expectation_dict = generate_binary_features_expectation_table()
+
     term_states = load_obj('TERM_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
     all_actions = load_obj('ALL_ACTIONS')
-    start_state = random.choice(list(start_states))
+    state = random.choice(list(start_states))
     action_size = state_size[:2]
     # what is s and a? tuple of integers
     mean_feat_exp = 0
     for i in range(n_iter):
         # print('i=', i)
         sum_of_feat_exp = 0
-        state = start_state
         t = 0
         while state not in term_states:
             # print('state:', state)
@@ -64,14 +64,8 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
             action = choose_action_from_state(policy_matrix, all_actions,
                                               state, state_size, action_size)
             # print('action', action)
-            feat_exp = disc_rate ** t * compute_binary_features_expectation(
-                state,
-                action,
-                min_elem,
-                max_elem,
-                fignotes_dict,
-                chords_dict,
-                term_states)
+            feat_exp = disc_rate ** t * \
+                       np.array(features_expectation_dict[(state, action)])
             sum_of_feat_exp += feat_exp
             if feat_exp.sum() <= 1e-5:
                 # print('break:', t)

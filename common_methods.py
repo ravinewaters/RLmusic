@@ -76,3 +76,30 @@ def choose_random_action(q_states, state, action_size):
     action = random.choice(q_states[state])
     int_a = array_to_int(action[:2][::-1], action_size[::-1])
     return int_a, action
+
+
+def generate_all_possible_q_states(all_states, all_actions):
+    # assume complete states and actions, not reduced ones.
+    q_states = {}
+    for state in all_states:
+        for action in all_actions:
+            if is_valid_action(state, action):
+                if state in q_states:
+                    q_states[state].append(action)
+                else:
+                    q_states[state] = [action]
+    for state in q_states:
+        q_states[state] = tuple(q_states[state])
+    save_obj(q_states, 'Q_STATES')
+    return q_states
+
+
+def weighted_choice(choices):
+   total = sum(w for c, w in choices)
+   r = random() * total
+   upto = 0
+   for c, w in choices:
+      if upto + w >= r:
+         return c
+      upto += w
+   assert False, "Shouldn't get here"

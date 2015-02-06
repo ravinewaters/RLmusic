@@ -4,6 +4,7 @@ import numpy as np
 from constants import *
 from scipy import sparse
 from common_methods import *
+from itertools import product
 # from pprint import pprint
 
 
@@ -140,11 +141,45 @@ def compute_binary_features_expectation(state, action, min_elem, max_elem,
     for i in range(len(tup)):
         index = index + coord_size[i]
         col.append(index + tup[i] - min_elem[i])
-    data = [1] * len(col)
-    row = [0] * len(col)
-    mtx = sparse.csr_matrix((data, (row, col)), (1, sum(coord_size)))
+    mtx = [0]*sum(coord_size)
+    for pos in col:
+        mtx[pos] = 1
+    # data = [1] * len(col)
+    # row = [0] * len(col)
+    # mtx = sparse.csr_matrix((data, (row, col)), (1, sum(coord_size)))
     return mtx
 
+
+def generate_binary_features_expectation_table():
+    min_elem, max_elem = load_obj('ELEM_RANGE')
+    fignotes_dict = load_obj('FIGNOTES_DICT')
+    chords_dict = load_obj('CHORDS_DICT')
+    term_states = load_obj('TERM_STATES')
+    all_actions = load_obj('ALL_ACTIONS')
+
+    try:
+        q_states = load_obj('Q_STATES')
+        print('Loaded Q_STATES')
+    except FileNotFoundError:
+        all_states = load_obj('ALL_STATES')
+        list_of_all_states = [k+v for k, v in all_states.items()]
+        list_of_all_actions = [k+v for k, v in all_actions.items()]
+        q_states = generate_all_possible_q_states(list_of_all_states,
+                                                  list_of_all_actions)
+
+    features_expectation_dict = dict()
+    for state in q_states:
+        print('state:', state)
+        for action in q_states[state]:
+            print('action:', action)
+            feat_exp = compute_binary_features_expectation(state, action,
+                                                min_elem, max_elem,
+                                                fignotes_dict, chords_dict,
+                                                term_states)
+            features_expectation_dict[(state, action)] = feat_exp
+
+    save_obj(features_expectation_dict, 'FEATURES_EXPECTATION_DICT')
+    return features_expectation_dict
 
 if __name__ == "__main__":
     fignotes_dict = load_obj('FIGNOTES_DICT')

@@ -1,7 +1,7 @@
 __author__ = 'redhat'
 
 from common_methods import *
-from generate_features import compute_binary_features_expectation
+from generate_features import generate_binary_features_expectation_table
 from features_expectation import compute_policy_features_expectation, generate_random_policy_matrix
 from math import sqrt
 from scipy import sparse, io
@@ -34,7 +34,7 @@ def compute_policies(disc_rate, eps):
     mu = []
     counter = 1
     # while True:
-    for i in range(1):
+    for i in range(2):
         print('counter:', counter)
         if counter == 1:
             mu_value = compute_policy_features_expectation(policy_matrix,
@@ -50,7 +50,7 @@ def compute_policies(disc_rate, eps):
         t = sqrt((w.data**2).sum())
         if t <= eps:
             break
-        w /= t  # normalize w
+        w /= t
         # print('w:', w)
         policy_matrix = compute_optimal_policy(w, disc_rate,
                                                1e-1, 1000,
@@ -80,13 +80,15 @@ def compute_projection(mu_bar, mu, mu_expert):
 def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                            q_states):
     print('q_matrix is a dictionary')
-    min_elem, max_elem = load_obj('ELEM_RANGE')
-    fignotes_dict = load_obj('FIGNOTES_DICT')
-    chords_dict = load_obj('CHORDS_DICT')
     term_states = load_obj('TERM_STATES')
     start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
     action_size = state_size[:2]
+
+    try:
+        features_expectation_dict = load_obj('FEATURES_EXPECTATION_DICT')
+    except FileNotFoundError:
+        features_expectation_dict = generate_binary_features_expectation_table()
 
     # try:
     #     # load saved state
@@ -130,13 +132,7 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                     break
                 # print('\nerrors({}, {}): {}'.format(int_s, int_a,
                 #                                     errors[int_s, int_a]))
-                feat_exp = compute_binary_features_expectation(state,
-                                                               action,
-                                                               min_elem,
-                                                               max_elem,
-                                                               fignotes_dict,
-                                                               chords_dict,
-                                                               term_states)
+                feat_exp = np.array(features_expectation_dict[(state, action)])
 
                 # print('row.size:', row.size)
                 if int_s in q_matrix:
@@ -183,10 +179,11 @@ def dict_argmax(dict):
 
 
 def compute_expert_features_expectation(disc_rate):
-    min_elem, max_elem = load_obj('ELEM_RANGE')
-    fignotes_dict = load_obj('FIGNOTES_DICT')
-    chords_dict = load_obj('CHORDS_DICT')
-    term_states = load_obj('TERM_STATES')
+    try:
+        features_expectation_dict = load_obj('FEATURES_EXPECTATION_DICT')
+    except FileNotFoundError:
+        features_expectation_dict = generate_binary_features_expectation_table()
+
     trajectories = load_obj('TRAJECTORIES')
     expert_feat_exp = 0
     for trajectory in trajectories:
@@ -196,14 +193,10 @@ def compute_expert_features_expectation(disc_rate):
         for i in range(0, len(trajectory)-2, 2):
             state = trajectory[i]
             action = trajectory[i+1]
-            feat_exp += disc_rate ** t * compute_binary_features_expectation(
-                state,
-                action,
-                min_elem,
-                max_elem,
-                fignotes_dict,
-                chords_dict,
-                term_states)
+            print(state)
+            print(action)
+            feat_exp += disc_rate ** t * \
+                        np.array(features_expectation_dict[(state, action)])
             t += 1
         expert_feat_exp += feat_exp
     expert_feat_exp /= len(trajectories)
@@ -243,31 +236,7 @@ def generate_trajectory_based_on_errors(state, term_states,
     return trajectory
 
 
-def weighted_choice(choices):
-   total = sum(w for c, w in choices)
-   r = random() * total
-   upto = 0
-   for c, w in choices:
-      if upto + w >= r:
-         return c
-      upto += w
-   assert False, "Shouldn't get here"
 
-
-def generate_all_possible_q_states(all_states, all_actions):
-    # assume complete states and actions, not reduced ones.
-    q_states = {}
-    for state in all_states:
-        for action in all_actions:
-            if is_valid_action(state, action):
-                if state in q_states:
-                    q_states[state].append(action)
-                else:
-                    q_states[state] = [action]
-    for state in q_states:
-        q_states[state] = tuple(q_states[state])
-    save_obj(q_states, 'Q_STATES')
-    return q_states
 
 
 
