@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # print(compute_expert_features_expectation(0.99))
     print(datetime.now())
 
-    policies, mu = compute_policies(0.7, 1e-1)
+    policies, mu = compute_policies(0.7, 0.7)
     pprint(policies)
     pprint(mu)
 
