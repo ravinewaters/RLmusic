@@ -13,19 +13,23 @@ def generate_random_policy_matrix(q_states, state_size):
     # cols = # actions
     # Should add stochastic policy to the matrix.
 
+
+    rows = []
+    cols = []
+    for state in q_states:
+        int_a, _ = choose_random_action(q_states, state, state_size[:2])
+        int_s = array_to_int(state[:3][::-1], state_size[::-1])
+        rows.append(int_s)
+        cols.append(int_a)
+    data = [1]*len(cols)
+
     n_rows = np.array(state_size).prod()
     n_cols = np.array(state_size[:2]).prod()
     shape = (n_rows, n_cols)
-    policy_matrix = sparse.dok_matrix(shape, dtype=np.uint8)
+    policy_matrix = sparse.coo_matrix((data, (rows, cols)), shape=shape,
+                                      dtype=np.uint8)
 
-    for state in q_states:
-        int_a, action = choose_random_action(q_states, state, state_size[:2])
-        int_s = array_to_int(state[:3][::-1], state_size[::-1])
-        policy_matrix[int_s, int_a] = 1
-
-    policy_matrix_csr = policy_matrix.tocsr()
-    # io.savemat(DIR + 'POLICY_MATRIX.mat', {'policy_0': policy_matrix_csr})
-    return policy_matrix_csr
+    return policy_matrix.tocsr()
 
 
 def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,

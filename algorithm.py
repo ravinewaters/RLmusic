@@ -7,7 +7,8 @@ from math import sqrt
 from scipy import sparse, io
 from datetime import datetime
 # from itertools import product
-from random import shuffle, choice, uniform
+from random import random
+from bisect import bisect
 from pprint import pprint
 import numpy as np
 
@@ -19,7 +20,7 @@ def compute_policies(disc_rate, eps):
     try:
         q_states = load_obj('Q_STATES')
         print('Loaded Q_STATES')
-    except IOError:
+    except FileNotFoundError:
         all_states = load_obj('ALL_STATES')
         list_of_all_states = [k+v for k, v in all_states.items()]
         list_of_all_actions = [k+v for k, v in all_actions.items()]
@@ -32,8 +33,9 @@ def compute_policies(disc_rate, eps):
     mu_expert = compute_expert_features_expectation(disc_rate)
     mu = []
     counter = 1
-    while True:
-    # for i in range(2):
+    # while True:
+    for i in range(1):
+        print('counter:', counter)
         if counter == 1:
             mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
@@ -56,13 +58,12 @@ def compute_policies(disc_rate, eps):
                                                q_states)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(policy_matrix,
-                                                               disc_rate,
-                                                               start_states,
-                                                               )
+                                                       disc_rate,
+                                                       start_states,
+                                                       1)
         # print('mu_value:', mu_value)
         mu.append(mu_value)
         counter += 1
-        print('counter:', counter)
         # save policies, mu_expert, mu, mu_bar counter
 
     return policies, mu
@@ -78,6 +79,7 @@ def compute_projection(mu_bar, mu, mu_expert):
 
 def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                            q_states):
+    print('q_matrix is a dictionary')
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
@@ -86,29 +88,25 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
     state_size = load_obj('STATE_ELEM_SIZE')
     action_size = state_size[:2]
 
-    n_rows = np.array(state_size).prod()
-    n_cols = np.array(action_size).prod()
-    shape = (n_rows, n_cols)
-    try:
-        # load saved state
-        print('Loading saved state.')
-        temp = io.loadmat(DIR + 'temp')
-        q_matrix = temp['q_matrix'].todok()
-        errors = temp['errors'].todok()
-    except Exception as e:
+    # try:
+    #     # load saved state
+    #     print('Loading saved state.')
+    #     temp = io.loadmat(DIR + 'temp')
+    #     q_matrix = temp['q_matrix'].todok()
+    #     errors = temp['errors'].todok()
+    # except Exception as e:
         # print(e)
-        q_matrix = sparse.dok_matrix(shape)
-        errors = sparse.dok_matrix(shape, dtype=np.float64)
+    q_matrix = dict()
+    errors = dict()
 
     start_states = list(start_states)
-    shuffle(start_states)
 
     threshold = 2*eps*(1-disc_rate)/disc_rate
     delta = threshold
     # print('threshold:', threshold)
-    iteration = 0
-    while delta >= threshold:
-    # for i in range(1):
+    iteration = 1
+    # while delta >= threshold:
+    for i in range(1):
         delta = threshold
         print('iteration:', iteration)
         print('delta:', delta)
@@ -126,7 +124,7 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                     int_a, action = trajectory[i+1]
                 except IndexError:
                     # terminal state
-                    q_matrix[int_s, 1] = max_reward
+                    q_matrix[int_s] = {1: max_reward}
                     # print('terminal state:', int_s)
                     # print('max_reward:', max_reward)
                     break
@@ -140,38 +138,48 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                                                                chords_dict,
                                                                term_states)
 
-                row = q_matrix[int_s].tocsr()
                 # print('row.size:', row.size)
-                if row.size != 0:
-                    max_q_value = max(row.data)
-                    # print('max_q_value:', max_q_value)
+                if int_s in q_matrix:
+                    max_q_value = max(q_matrix[int_s].values())
+                    new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * max_q_value
+                    if int_a not in q_matrix[int_s]:
+                        diff = abs(new_q_value)
+                    else:
+                        diff = abs(new_q_value - q_matrix[int_s][int_a])
+                    q_matrix[int_s][int_a] = new_q_value
+                    errors[int_s][int_a] = diff
                 else:
-                    max_q_value = 0
-                new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * max_q_value
-                # print('old q_value:', q_matrix[int_s, int_a])
-                # print('new q_value:', new_q_value)
-                diff = abs(new_q_value - q_matrix[int_s, int_a])
-                errors[int_s, int_a] = diff
-                # print('diff:', diff)
-                q_matrix[int_s, int_a] = new_q_value
+                    new_q_value = w.dot(feat_exp.T)[0, 0]
+                    diff = abs(new_q_value)
+                    q_matrix[int_s] = {int_a: new_q_value}
+                    errors[int_s] = {int_a: diff}
 
                 if diff > delta:
                     delta = diff
                     print('delta:', delta)
 
         # save state
-        io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'errors': errors})
+        # io.savemat(DIR + 'temp', {'q_matrix': q_matrix, 'errors': errors})
         iteration += 1
 
-    q_matrix = q_matrix.tocoo()
-    policy_matrix = sparse.dok_matrix(shape)
-    for int_s in np.unique(q_matrix.row):
-        row = q_matrix.getrow(int_s)
-        max_index = row.indices[row.data.argmax()] if row.nnz else 0
-        # print('(int_s, max_index) = ({}, {})'.format(int_s, max_index))
-        policy_matrix[int_s, max_index] = 1
+    n_rows = np.array(state_size).prod()
+    n_cols = np.array(action_size).prod()
+    shape = (n_rows, n_cols)
 
+    rows = []
+    cols = []
+    for int_s in q_matrix:
+        rows.append(int_s)
+        max_index = dict_argmax(q_matrix[int_s])
+        cols.append(max_index)
+    data = [1] * len(rows)
+    policy_matrix = sparse.coo_matrix((data, (rows, cols)), shape=shape,
+                                      dtype=np.uint8)
     return policy_matrix.tocsr()
+
+
+def dict_argmax(dict):
+    return max(dict.items(), key=lambda x: x[1])[0]
 
 
 def compute_expert_features_expectation(disc_rate):
@@ -211,20 +219,17 @@ def generate_trajectory_based_on_errors(state, term_states,
         int_s = array_to_int(state[:3][::-1], state_size[::-1])
         trajectory.append((int_s, state))
 
-        row_csr = errors[int_s].tocsr()
-        if row_csr.size:  # if the row has nonzero entries.
-            
+        if int_s in errors:  # if the row has nonzero entries.
+            row = errors[int_s]
             # with prob. gamma, choose random action
-            if uniform(0, 1) < gamma:
+            if random() < gamma:
                 int_a, action = choose_random_action(q_states, state,
                                                      action_size)
             # with prob. 1-gamma, based on errors. Smaller error,
             # lesser chance to be chosen.
             else:
-                indices = row_csr.indices
-                row = row_csr.data * 10
-                probs = row/sum(row)
-                int_a = random_pick(indices, probs)
+                # simulate probability
+                int_a = weighted_choice(row.items())
                 key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
                 action = key_a + all_actions[key_a]
         else:
@@ -238,10 +243,15 @@ def generate_trajectory_based_on_errors(state, term_states,
     return trajectory
 
 
-def random_pick(choices, probs):
-    cutoffs = np.cumsum(probs)
-    idx = cutoffs.searchsorted(np.random.uniform(0, cutoffs[-1]))
-    return choices[idx]
+def weighted_choice(choices):
+   total = sum(w for c, w in choices)
+   r = random() * total
+   upto = 0
+   for c, w in choices:
+      if upto + w >= r:
+         return c
+      upto += w
+   assert False, "Shouldn't get here"
 
 
 def generate_all_possible_q_states(all_states, all_actions):
