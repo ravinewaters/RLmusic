@@ -72,7 +72,7 @@ def parse(filename):
             fig_chord = elem.figure
 
         elif elem.isNote:
-            if prev_elem.isChord or elem.beat == 1.0:
+            if prev_elem.isChord or prev_elem.isRest or elem.beat == 1.0:
                 fighead = elem.midi
                 fig_start_at_beat = elem.beat
                 fig_notes = []
@@ -90,7 +90,6 @@ def parse(filename):
                           fig_start_at_beat,
                           fig_duration,
                           fighead)
-
                 states.append(figure)
 
         elif elem.isRest and not last_item:
@@ -207,7 +206,7 @@ def generate_all_states(new_list_of_song_states):
     for item in itertools.product(figure, beat):
         duration = item[0][2]
         beat = item[1]
-        if duration + beat <= 20:
+        if beat + duration <= 20:
             key = item[0][:2] + (item[1],)
             if key not in all_states:
                 value = (item[0][-2:])
