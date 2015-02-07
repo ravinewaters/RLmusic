@@ -8,7 +8,7 @@ from scipy import sparse, io
 from datetime import datetime
 from random import random
 from pprint import pprint
-from cvxopt import matrix, spmatrix, spdiag
+from cvxopt import matrix, spmatrix, spdiag, solvers
 import numpy as np
 
 def compute_policies(disc_rate, eps):
@@ -278,17 +278,21 @@ def generate_trajectory_based_on_errors(state, term_states,
 
 def choose_policy(policies, mu):
     n = len(mu)
+    B = sparse.vstack(mu)
     A_data = [1]*(n+1)
     A_rows = [0] + [1]*n
     A_cols = range(n+1)
     A = spmatrix(A_data, A_rows, A_cols)
-    b = matrix([1, 1])
-    G = spdiag([-1]*n)
-    h = matrix([0]*(n))
-    q = matrix([0]*(n+1))
-    P = B.T * B
+    b = matrix([1.0, 1.0])
+    G = spmatrix([-1]*n, range(0, n), range(1, n+1), (n, n+1))
+    h = matrix([0.0]*(n))
+    q = matrix([0.0]*(n+1))
+    P = (B.T * B).tocoo()
+    P = 2 * spmatrix(P.data, P.row, P.col)
+    lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])
+    return weighted_choice(zip(policies, lambdas))
 
-    pass
+
 
 if __name__ == '__main__':
     # print(compute_expert_features_expectation(0.99))
@@ -302,3 +306,4 @@ if __name__ == '__main__':
         pprint(policies)
         print('\n')
         print(datetime.now())
+        choose_policy(policies, mu)
