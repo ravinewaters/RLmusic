@@ -1,7 +1,7 @@
 __author__ = 'redhat'
-import numpy as np
+
 from common_methods import *
-from features_expectation import choose_action_from_state
+from features_expectation import choose_action_from_policy_matrix
 import music21
 
 
@@ -28,24 +28,19 @@ def get_original_state(states, fignotes_dict, chords_dict):
     return new_states
 
 
-def generate_sequence_of_states(state, term_states,
-                               all_actions, policies, lambdas):
+def generate_sequence_of_states(state, term_states, all_actions,
+                                policy_matrix):
     state_size = load_obj('STATE_ELEM_SIZE')
     action_size = state_size[:2]
-    policy_matrix = mix_policy(policies, lambdas)
     states = []
     while state not in term_states:
         states.append(state)
-        action = choose_action_from_state(policy_matrix, all_actions, state,
-                                          state_size, action_size)
+        action = choose_action_from_policy_matrix(policy_matrix,
+                                                  all_actions,
+                                                  state,
+                                                  state_size,
+                                                  action_size)
         state = compute_next_state(state, action)
     states.append(state)  # append terminal state
     save_obj(states, 'GENERATED_SEQUENCE_OF_STATES')
     return states
-
-def mix_policy(policies, lambdas):
-    # input: list of policies and its weight
-    # idea: randomly select policy according to its weights (lambdas)
-    # output: a policy matrix
-    index = np.random.choice(len(policies), p=lambdas)
-    return policies[index]

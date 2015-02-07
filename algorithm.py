@@ -12,7 +12,7 @@ import numpy as np
 
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 3
+    value_iteration_n_iter = 30
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
     print('\ndisc_rate', disc_rate)
@@ -292,7 +292,7 @@ def choose_policy(policies, mu):
     q = matrix([0.0]*(n+1))
     P = (B * B.T).tocoo()
     P = 2 * spmatrix(P.data, P.row, P.col)
-    lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])
+    lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
     print('\n', 'lambdas')
     [print(item) for item in lambdas]
     save_obj(lambdas, 'LAMBDAS')
@@ -300,7 +300,7 @@ def choose_policy(policies, mu):
 
 
 def mix_policies(policies, lambdas):
-    opt_pol_index = weighted_choice(zip(range(len(policies)), lambdas[1:]))
+    opt_pol_index = weighted_choice(zip(range(len(policies)), lambdas))
     save_obj(opt_pol_index, 'OPTIMAL POLICY INDEX')
     return policies[opt_pol_index]
 
@@ -310,11 +310,12 @@ if __name__ == '__main__':
     print(datetime.now())
 
     try:
-        policies, mu = compute_policies(0.7, 2)
+        policies, mu = compute_policies(0.7, 0.7)
         print('\n', 'policies_nnz')
         [print(policy.getnnz()) for policy in policies]
-        print('\n', datetime.now())
         policy = choose_policy(policies, mu)
+        print('\n', datetime.now())
+
     except KeyboardInterrupt:
         # if os.path.exists(DIR + 'TEMP.mat'):
         #     os.remove(DIR + 'TEMP.mat')

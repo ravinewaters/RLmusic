@@ -57,7 +57,7 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
         while state not in term_states:
             # print('state:', state)
 
-            action = choose_action_from_state(policy_matrix, all_actions,
+            action = choose_action_from_policy_matrix(policy_matrix, all_actions,
                                               state, state_size, action_size)
             # print('action', action)
             feat_exp = compute_binary_features_expectation(state, action,
@@ -76,7 +76,7 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
     # print('mean:', mean_feat_exp)
     return mean_feat_exp/n_iter
 
-def choose_action_from_state(policy_matrix, all_actions,
+def choose_action_from_policy_matrix(policy_matrix, all_actions,
                           state, state_size, action_size):
     # doesn't check whether state is a terminal state
     reduced_state = state[:3]
