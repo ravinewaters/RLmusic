@@ -12,7 +12,7 @@ from pprint import pprint
 import numpy as np
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 100
+    value_iteration_n_iter = 30
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
     print('\ndisc_rate', disc_rate)
@@ -50,9 +50,9 @@ def compute_policies(disc_rate, eps):
         mu_expert = compute_expert_features_expectation(disc_rate)
         mu = []
         counter = 1
+    print('\ncounter, t')
     while True:
     # for i in range(2):
-        print('\ncounter:', counter)
         if counter == 1:
             mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
@@ -65,7 +65,7 @@ def compute_policies(disc_rate, eps):
 
         w = mu_expert - mu_bar
         t = sqrt((w.data**2).sum())
-        print('t:', t)
+        print('{}, {}'.format(counter, t))
         if t <= eps:
             break
         w /= t
@@ -281,11 +281,13 @@ def choose_policy(policies, mu):
 
 if __name__ == '__main__':
     # print(compute_expert_features_expectation(0.99))
-    print('\n')
-    print(datetime.now())
+    for i in range(3):
+        print('\n')
+        print(datetime.now())
 
-    policies, mu = compute_policies(0.7, 0.7)
-    pprint(policies)
-    pprint(mu)
-    print('\n')
-    print(datetime.now())
+        policies, mu = compute_policies(0.7, 0.05)
+
+        print('\n')
+        pprint(policies)
+        print('\n')
+        print(datetime.now())
