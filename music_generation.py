@@ -69,7 +69,6 @@ def translate_states_to_song(original_states, title='', composer=''):
     stream.makeMeasures(inPlace=True)
     part.append(stream)
     score.append(part)
-    # save score to musicxml
     return score
 
 
