@@ -6,9 +6,9 @@ from features_expectation import compute_policy_features_expectation, generate_r
 from math import sqrt
 from scipy import sparse, io
 from datetime import datetime
-# from itertools import product
 from random import random
 from pprint import pprint
+from cvxopt import matrix, spmatrix, spdiag
 import numpy as np
 
 def compute_policies(disc_rate, eps):
@@ -277,6 +277,17 @@ def generate_trajectory_based_on_errors(state, term_states,
 
 
 def choose_policy(policies, mu):
+    n = len(mu)
+    A_data = [1]*(n+1)
+    A_rows = [0] + [1]*n
+    A_cols = range(n+1)
+    A = spmatrix(A_data, A_rows, A_cols)
+    b = matrix([1, 1])
+    G = spdiag([-1]*n)
+    h = matrix([0]*(n))
+    q = matrix([0]*(n+1))
+    P = B.T * B
+
     pass
 
 if __name__ == '__main__':
