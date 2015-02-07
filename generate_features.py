@@ -45,7 +45,7 @@ def get_fig_contour(state, fignotes_dict):
 
 
 def compute_next_fig_beat(state):
-    return state[3] + state[2]
+    return (state[3] + state[2])/2
 
 
 def is_to_term_state(state, action, term_states):
@@ -181,25 +181,4 @@ def generate_binary_features_expectation_table():
     return features_expectation_dict
 
 if __name__ == "__main__":
-    fignotes_dict = load_obj('FIGNOTES_DICT')
-    chords_dict = load_obj('CHORDS_DICT')
-    term_states = load_obj('TERM_STATES')
-    all_actions = load_obj('ALL_ACTIONS')
-    all_states = load_obj('ALL_STATES')
-    elem_range = load_obj('ELEM_RANGE')
-
-
-    # feat_exp = []
-    # for states in all_states:
-    #     for state in states:
-    #         for action in all_actions:
-    #             if state in term_states:
-    #                 continue
-    #             if not is_valid_action(state, action):
-    #                 continue
-    #             res = compute_binary_features_expectation(state, action, min_elem,
-    #                                                       max_elem,
-    #                                                 fignotes_dict, chords_dict,
-    #                                                 term_states)
-    #             print(res)
-    #             feat_exp.append(res)
+    pass

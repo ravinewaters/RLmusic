@@ -232,7 +232,7 @@ def save_elem_range(figheads):
     figheads.remove(-1)
     figheads_range = max(figheads) - min(figheads)
     min_elem = (-11, -figheads_range, 0, 0, 0, 0, 0, 0, 1)
-    max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 20)
+    max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 10)
     save_obj([min_elem, max_elem], 'ELEM_RANGE')
 
 def preprocess():
@@ -266,27 +266,24 @@ def preprocess():
     start_states = get_start_states(trajectories)
     terminal_states = get_terminal_states(trajectories)
 
-    state_elem_size = (fignotes_dict[-1], chords_dict[-1], 16)
-    save_obj(state_elem_size, 'STATE_ELEM_SIZE')  # save size of each element
-
     all_states = generate_all_states(new_list_of_song_states)
     all_actions = get_all_actions(all_states)
 
 
-    print('\nFIGNOTES_DICT')
-    pprint(fignotes_dict)
-    print('\nCHORDS_DICT')
-    pprint(chords_dict)
-    print('\nALL_STATES')
-    pprint(all_states)
-    print('\nALL_ACTIONS')
-    pprint(all_actions)
-    print('\nTRAJECTORIES')
-    pprint(trajectories)
-    print('\nSTART_STATES')
-    pprint(start_states)
-    print('\nTERMINAL_STATES')
-    pprint(terminal_states)
+    # print('\nFIGNOTES_DICT')
+    # pprint(fignotes_dict)
+    # print('\nCHORDS_DICT')
+    # pprint(chords_dict)
+    # print('\nALL_STATES')
+    # pprint(all_states)
+    # print('\nALL_ACTIONS')
+    # pprint(all_actions)
+    # print('\nTRAJECTORIES')
+    # pprint(trajectories)
+    # print('\nSTART_STATES')
+    # pprint(start_states)
+    # print('\nTERMINAL_STATES')
+    # pprint(terminal_states)
 
 if __name__ == "__main__":
     preprocess()

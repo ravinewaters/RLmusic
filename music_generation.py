@@ -73,8 +73,6 @@ def translate_states_to_song(original_states, title='', composer=''):
     return score
 
 
-
-
 if __name__ == '__main__':
     policies = load_obj('POLICIES')
     start_states = load_obj('START_STATES')
