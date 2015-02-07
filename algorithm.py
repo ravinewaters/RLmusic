@@ -6,6 +6,7 @@ from features_expectation import compute_policy_features_expectation, generate_r
 from math import sqrt
 from scipy import sparse, io
 from datetime import datetime
+from time import time
 from random import random
 from cvxopt import matrix, spmatrix, solvers
 
@@ -15,7 +16,7 @@ def compute_policies(disc_rate, eps):
     value_iteration_n_iter = 10
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
-    p_random_action = .75
+    p_random_action = .5
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
     print('number of iteration of value iteration algorithm:',
@@ -112,8 +113,8 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, q_states,
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
 
-    q_matrix = dict()
-    errors = dict()
+    q_matrix = {}
+    errors = {}
 
     start_states = list(start_states)
 
@@ -246,22 +247,32 @@ def choose_policy(policies, mu):
 
 def mix_policies(policies, lambdas):
     opt_pol_index = weighted_choice(zip(range(len(policies)), lambdas))
-    save_obj(opt_pol_index, 'OPTIMAL POLICY INDEX')
+    save_obj(opt_pol_index, 'OPTIMAL_POLICY_INDEX')
     return policies[opt_pol_index]
 
 
 if __name__ == '__main__':
-    print('\n')
-    print(datetime.now())
+    average_time = []
+    for i in range(1):
+        print('\n')
+        print(datetime.now())
 
-    try:
-        policies, mu = compute_policies(0.7, 0.7)
-        print('\n', 'policies_nnz')
-        [print(len(policy)) for policy in policies]
-        policy = choose_policy(policies, mu)
-        print('\n', datetime.now())
+        try:
+            start_time = time()
+            policies, mu = compute_policies(0.7, 0.7)
+            end_time = time()
+            duration = end_time - start_time
+            print(duration)
+            average_time.append(duration)
 
-    except KeyboardInterrupt:
-        # if os.path.exists(DIR + 'TEMP.mat'):
-        #     os.remove(DIR + 'TEMP.mat')
-        print('\n', datetime.now())
+            print('\n', 'policies_nnz')
+            [print(len(policy)) for policy in policies]
+
+            policy = choose_policy(policies, mu)
+
+        except KeyboardInterrupt:
+            # if os.path.exists(DIR + 'TEMP.mat'):
+            #     os.remove(DIR + 'TEMP.mat')
+            print('\n', datetime.now())
+
+    print('\n', sum(average_time)*1.0/len(average_time))
