@@ -71,7 +71,7 @@ def is_valid_action(state, action):
         return False # if > 20, false
     elif fig_beat + fig_duration == 20:
         return True
-    return False
+    assert False, "Shouldn't get here"
 
 
 def choose_random_action(q_states, state, action_size):
@@ -97,11 +97,12 @@ def generate_all_possible_q_states(all_states, all_actions):
 
 
 def weighted_choice(choices):
-   total = sum(w for c, w in choices)
-   r = random() * total
-   upto = 0
-   for c, w in choices:
+    choices = tuple(choices)
+    total = sum(w for c, w in choices)
+    r = random() * total
+    upto = 0
+    for c, w in choices:
       if upto + w >= r:
          return c
       upto += w
-   assert False, "Shouldn't get here"
+    assert False, "Shouldn't get here"

@@ -12,7 +12,7 @@ from cvxopt import matrix, spmatrix, spdiag, solvers
 import numpy as np
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 30
+    value_iteration_n_iter = 3
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
     print('\ndisc_rate', disc_rate)
@@ -50,6 +50,8 @@ def compute_policies(disc_rate, eps):
         mu_expert = compute_expert_features_expectation(disc_rate)
         mu = []
         counter = 1
+
+
     print('\ncounter, t')
     while True:
     # for i in range(2):
@@ -89,6 +91,11 @@ def compute_policies(disc_rate, eps):
                             'mu_bar': mu_bar,
                             'counter': counter})
         # save policies, mu_expert, mu, mu_bar counter
+    mu = [mu_expert] + mu
+
+    # save policies and mu
+    save_obj(policies, 'POLICIES')
+    save_obj(mu, 'MU')
 
     # delete TEMP.mat
     if os.path.exists(DIR + 'TEMP.mat'):
@@ -271,13 +278,8 @@ def generate_trajectory_based_on_errors(state, term_states,
     return trajectory
 
 
-
-
-
-
-
 def choose_policy(policies, mu):
-    n = len(mu)
+    n = len(mu) - 1
     B = sparse.vstack(mu)
     A_data = [1]*(n+1)
     A_rows = [0] + [1]*n
@@ -285,25 +287,34 @@ def choose_policy(policies, mu):
     A = spmatrix(A_data, A_rows, A_cols)
     b = matrix([1.0, 1.0])
     G = spmatrix([-1]*n, range(0, n), range(1, n+1), (n, n+1))
-    h = matrix([0.0]*(n))
+    h = matrix([0.0]*n)
     q = matrix([0.0]*(n+1))
-    P = (B.T * B).tocoo()
+    P = (B * B.T).tocoo()
     P = 2 * spmatrix(P.data, P.row, P.col)
     lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])
-    return weighted_choice(zip(policies, lambdas))
+    save_obj(lambdas, 'LAMBDAS')
+    return mix_policies(policies, lambdas)
 
+
+def mix_policies(policies, lambdas):
+    opt_pol_index = weighted_choice(zip(range(len(policies)), lambdas[1:]))
+    save_obj(opt_pol_index, 'OPTIMAL POLICY INDEX')
+    return policies[opt_pol_index]
 
 
 if __name__ == '__main__':
-    # print(compute_expert_features_expectation(0.99))
-    for i in range(3):
-        print('\n')
-        print(datetime.now())
+    print('\n')
+    print(datetime.now())
 
-        policies, mu = compute_policies(0.7, 0.05)
-
+    try:
+        policies, mu = compute_policies(0.7, 2)
         print('\n')
         pprint(policies)
         print('\n')
         print(datetime.now())
-        choose_policy(policies, mu)
+        policy = choose_policy(policies, mu)
+    except KeyboardInterrupt:
+        # if os.path.exists(DIR + 'TEMP.mat'):
+        #     os.remove(DIR + 'TEMP.mat')
+        print('\n')
+        print(datetime.now())
