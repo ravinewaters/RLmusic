@@ -15,10 +15,12 @@ def compute_policies(disc_rate, eps):
     value_iteration_n_iter = 30
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
+    p_random_action = .05
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
     print('number of iteration of value iteration algorithm:',
           value_iteration_n_iter)
+    print('Probability of random action:', p_random_action)
     print('value_iteration_error_threshold:', value_iteration_error_threshold)
     print('terminal states reward:', max_reward)
     all_actions = load_obj('ALL_ACTIONS')
@@ -76,7 +78,9 @@ def compute_policies(disc_rate, eps):
                                                value_iteration_error_threshold,
                                                max_reward,
                                                all_actions,
-                                               q_states, value_iteration_n_iter)
+                                               q_states,
+                                               value_iteration_n_iter,
+                                               p_random_action)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(policy_matrix,
                                                        disc_rate,
@@ -112,7 +116,7 @@ def compute_projection(mu_bar, mu, mu_expert):
 
 
 def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
-                           q_states, value_iteration_n_iter):
+                           q_states, value_iteration_n_iter, p_random_action):
     term_states = load_obj('TERM_STATES')
     start_states = load_obj('START_STATES')
     state_size = load_obj('STATE_ELEM_SIZE')
@@ -158,7 +162,7 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                                                     q_states,
                                                     errors,
                                                     state_size,
-                                                    action_size, .05)
+                                                    action_size, p_random_action)
             for j in range(0, len(trajectory), 2):
                 # number_of_states += 1
                 int_s, state = trajectory[j]
