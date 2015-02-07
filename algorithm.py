@@ -281,7 +281,6 @@ def generate_trajectory_based_on_errors(state, term_states,
 def choose_policy(policies, mu):
     solvers.options['show_progress'] = False
     n = len(mu) - 1
-    B = sparse.vstack(mu)
     A_data = [1]*(n+1)
     A_rows = [0] + [1]*n
     A_cols = range(n+1)
@@ -290,8 +289,9 @@ def choose_policy(policies, mu):
     G = spmatrix([-1]*n, range(0, n), range(1, n+1), (n, n+1))
     h = matrix([0.0]*n)
     q = matrix([0.0]*(n+1))
+    B = sparse.vstack(mu)
     P = (B * B.T).tocoo()
-    P = 2 * spmatrix(P.data, P.row, P.col)
+    P = spmatrix(P.data, P.row, P.col)
     lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
     print('\n', 'lambdas')
     [print(item) for item in lambdas]

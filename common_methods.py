@@ -97,7 +97,7 @@ def generate_all_possible_q_states(all_states, all_actions):
 
 
 def weighted_choice(choices):
-    choices = tuple(choices)
+    choices = list(choices)
     total = sum(w for c, w in choices)
     r = random() * total
     upto = 0
