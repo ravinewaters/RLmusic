@@ -9,6 +9,7 @@ def generate_random_policy_matrix(q_states, state_size):
     # generate matrix of 0-1 value with size:
     # rows = # states
     # cols = # actions
+    # Use dictionary not matrix.
     # Should add stochastic policy to the matrix.
 
     rows = []

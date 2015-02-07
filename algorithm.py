@@ -10,12 +10,13 @@ from random import random
 from cvxopt import matrix, spmatrix, solvers
 import numpy as np
 
+# consider of using dictionary as policy_matrix
 
 def compute_policies(disc_rate, eps):
     value_iteration_n_iter = 30
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
-    p_random_action = .05
+    p_random_action = .6
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
     print('number of iteration of value iteration algorithm:',
