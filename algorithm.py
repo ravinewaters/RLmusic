@@ -13,7 +13,7 @@ from cvxopt import matrix, spmatrix, solvers
 # consider of using dictionary as policy_matrix
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 10
+    value_iteration_n_iter = 30
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
     p_random_action = .5
@@ -259,7 +259,7 @@ if __name__ == '__main__':
 
         try:
             start_time = time()
-            policies, mu = compute_policies(0.8, 0.3)
+            policies, mu = compute_policies(0.5, 0.2)
             end_time = time()
             duration = end_time - start_time
             print(duration)
@@ -271,8 +271,6 @@ if __name__ == '__main__':
             policy = choose_policy(policies, mu)
 
         except KeyboardInterrupt:
-            # if os.path.exists(DIR + 'TEMP.mat'):
-            #     os.remove(DIR + 'TEMP.mat')
             print('\n', datetime.now())
 
     print('\n', sum(average_time)*1.0/len(average_time))

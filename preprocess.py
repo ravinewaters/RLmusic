@@ -3,9 +3,9 @@ __author__ = 'redhat'
 from music21 import converter, note, harmony, stream
 from common_methods import *
 import itertools
-from pprint import pprint
+import shutil
 
-# Method name should start with a verb
+# NEED TO REDUCE K
 
 def parse(filename):
     """
@@ -236,6 +236,8 @@ def save_elem_range(figheads):
     save_obj([min_elem, max_elem], 'ELEM_RANGE')
 
 def preprocess():
+    if os.path.exists('obj'):
+        shutil.rmtree('obj')
     filenames = get_corpus('corpus/')
     list_of_song_states = []
     for filename in filenames:

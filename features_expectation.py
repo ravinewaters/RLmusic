@@ -56,16 +56,4 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
 
 
 if __name__ == '__main__':
-    all_states = load_obj('ALL_STATES')
-    all_actions = load_obj('ALL_ACTIONS')
-    start_states = load_obj('START_STATES')
-
-    policy_matrix = generate_random_policy_matrix(all_states,
-                                                  all_actions,
-                                                  state_elem_size)
-    avg_feat_exp = compute_policy_features_expectation(policy_matrix,
-                                               0.99,
-                                               start_states,
-                                               1,)
-
-    print(avg_feat_exp)
+    pass
