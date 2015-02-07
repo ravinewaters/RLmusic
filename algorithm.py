@@ -7,9 +7,9 @@ from math import sqrt
 from scipy import sparse, io
 from datetime import datetime
 from random import random
-from pprint import pprint
-from cvxopt import matrix, spmatrix, spdiag, solvers
+from cvxopt import matrix, spmatrix, solvers
 import numpy as np
+
 
 def compute_policies(disc_rate, eps):
     value_iteration_n_iter = 3
@@ -52,7 +52,7 @@ def compute_policies(disc_rate, eps):
         counter = 1
 
 
-    print('\ncounter, t')
+    print('\n', 'counter, t')
     while True:
     # for i in range(2):
         if counter == 1:
@@ -279,6 +279,7 @@ def generate_trajectory_based_on_errors(state, term_states,
 
 
 def choose_policy(policies, mu):
+    solvers.options['show_progress'] = False
     n = len(mu) - 1
     B = sparse.vstack(mu)
     A_data = [1]*(n+1)
@@ -292,6 +293,8 @@ def choose_policy(policies, mu):
     P = (B * B.T).tocoo()
     P = 2 * spmatrix(P.data, P.row, P.col)
     lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])
+    print('\n', 'lambdas')
+    [print(item) for item in lambdas]
     save_obj(lambdas, 'LAMBDAS')
     return mix_policies(policies, lambdas)
 
@@ -308,13 +311,11 @@ if __name__ == '__main__':
 
     try:
         policies, mu = compute_policies(0.7, 2)
-        print('\n')
-        pprint(policies)
-        print('\n')
-        print(datetime.now())
+        print('\n', 'policies_nnz')
+        [print(policy.getnnz()) for policy in policies]
+        print('\n', datetime.now())
         policy = choose_policy(policies, mu)
     except KeyboardInterrupt:
         # if os.path.exists(DIR + 'TEMP.mat'):
         #     os.remove(DIR + 'TEMP.mat')
-        print('\n')
-        print(datetime.now())
+        print('\n', datetime.now())
