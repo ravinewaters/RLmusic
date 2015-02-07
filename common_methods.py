@@ -74,12 +74,6 @@ def is_valid_action(state, action):
     assert False, "Shouldn't get here"
 
 
-def choose_random_action(q_states, state, action_size):
-    action = choice(q_states[state])
-    int_a = array_to_int(action[:2][::-1], action_size[::-1])
-    return int_a, action
-
-
 def generate_all_possible_q_states(all_states, all_actions):
     # assume complete states and actions, not reduced ones.
     q_states = {}
@@ -97,7 +91,7 @@ def generate_all_possible_q_states(all_states, all_actions):
 
 
 def weighted_choice(choices):
-    choices = list(choices)
+    choices = tuple(choices)
     total = sum(w for c, w in choices)
     r = random() * total
     upto = 0

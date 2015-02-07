@@ -208,3 +208,17 @@ def generate_possible_action(state_action_dict):
             possible_action[state_action[0]] = [state_action[1]]
     return possible_action
 
+
+def choose_action_from_policy_matrix(policy_matrix, all_actions,
+                          state, state_size, action_size):
+    # doesn't check whether state is a terminal state
+    reduced_state = state[:3]
+    int_s = array_to_int(reduced_state[::-1], state_size[::-1])
+    indices = policy_matrix[int_s].indices
+    row = policy_matrix[int_s].data
+    prob = row/sum(row)
+    int_a = np.random.choice(indices, p=prob)  # int
+    key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
+    # print(key_a)
+    action = key_a + all_actions[key_a]
+    return action

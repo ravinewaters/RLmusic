@@ -26,11 +26,9 @@ def compute_policies(disc_rate, eps):
     print('terminal states reward:', max_reward)
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
-    state_size = load_obj('STATE_ELEM_SIZE')
 
     try:
         q_states = load_obj('Q_STATES')
-        # print('Loaded Q_STATES')
     except FileNotFoundError:
         all_states = load_obj('ALL_STATES')
         list_of_all_states = [k+v for k, v in all_states.items()]
@@ -39,16 +37,14 @@ def compute_policies(disc_rate, eps):
                                                   list_of_all_actions)
 
     try:
-        # print('LOAD SAVED STATE.')
         temp = io.loadmat(DIR + 'TEMP')
-        policies = temp['policies'].tolist()[0]
+        policies = load_obj('POLICIES')
         mu_expert = temp['mu_expert']
         mu = temp['mu'].tolist()[0]
         mu_bar = temp['mu_bar']
         counter = temp['counter'][0][0]
     except FileNotFoundError:
-        policy_matrix = generate_random_policy_matrix(q_states,
-                                                      state_size)
+        policy_matrix = generate_random_policy_matrix(q_states)
         policies = [policy_matrix]
         mu_expert = compute_expert_features_expectation(disc_rate)
         mu = []
@@ -57,12 +53,10 @@ def compute_policies(disc_rate, eps):
 
     print('\n', 'counter, t')
     while True:
-    # for i in range(2):
         if counter == 1:
             mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate,
-                                                               start_states,
-                                                               1,)
+                                                               start_states)
             mu.append(mu_value)
             mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
         else:  # counter >= 2
@@ -75,23 +69,18 @@ def compute_policies(disc_rate, eps):
             break
         w /= t
 
-        policy_matrix = compute_optimal_policy(w, disc_rate,
-                                               value_iteration_error_threshold,
-                                               max_reward,
-                                               all_actions,
-                                               q_states,
+        policy_matrix = compute_optimal_policy(w, disc_rate, eps,
+                                               max_reward, q_states,
                                                value_iteration_n_iter,
                                                p_random_action)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(policy_matrix,
                                                        disc_rate,
-                                                       start_states,
-                                                       1)
+                                                       start_states)
         # print('mu_value:', mu_value)
         mu.append(mu_value)
         counter += 1
-        io.savemat(DIR + 'TEMP', {'policies': policies,
-                            'mu_expert': mu_expert,
+        io.savemat(DIR + 'TEMP', {'mu_expert': mu_expert,
                             'mu': mu,
                             'mu_bar': mu_bar,
                             'counter': counter})
@@ -116,107 +105,66 @@ def compute_projection(mu_bar, mu, mu_expert):
     return numerator/denominator * mu_mu_bar_distance
 
 
-def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
-                           q_states, value_iteration_n_iter, p_random_action):
+def compute_optimal_policy(w, disc_rate, eps, max_reward, q_states,
+                           value_iteration_n_iter, p_random_action):
     term_states = load_obj('TERM_STATES')
     start_states = load_obj('START_STATES')
-    state_size = load_obj('STATE_ELEM_SIZE')
-    action_size = state_size[:2]
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
-    all_actions = load_obj('ALL_ACTIONS')
 
-    # try:
-    #     # load saved state
-    #     print('Loading saved state.')
-    #     temp = io.loadmat(DIR + 'temp')
-    #     q_matrix = temp['q_matrix'].todok()
-    #     errors = temp['errors'].todok()
-    # except Exception as e:
-        # print(e)
     q_matrix = dict()
     errors = dict()
 
     start_states = list(start_states)
 
     threshold = 2*eps*(1-disc_rate)/disc_rate
-    # delta = threshold
-    # print('threshold:', threshold)
     iteration = 1
-    # while delta >= threshold:
-    # number_of_states = 0
-    # number_of_states_greater_than_delta = 0
+
     for i in range(value_iteration_n_iter):
         delta = threshold
-        # print('delta:', delta)
-        # print('\niteration:', iteration)
-        # print('number of states went through:', number_of_states)
-        # print('number of states greater than delta:',
-        #       number_of_states_greater_than_delta)
-        # number_of_states = 0
-        # number_of_states_greater_than_delta = 0
         for start_state in start_states:
             trajectory = generate_trajectory_based_on_errors(start_state,
                                                     term_states,
-                                                    all_actions,
                                                     q_states,
-                                                    errors,
-                                                    state_size,
-                                                    action_size, p_random_action)
+                                                    errors, p_random_action)
             for j in range(0, len(trajectory), 2):
-                # number_of_states += 1
-                int_s, state = trajectory[j]
+                state = trajectory[j]
                 try:
-                    int_a, action = trajectory[j+1]
+                    action = trajectory[j+1]
                 except IndexError:
                     # terminal state
-                    q_matrix[int_s] = {1: max_reward}
+                    q_matrix[state] = {1: max_reward}
                     break
-                # print('\nerrors({}, {}): {}'.format(int_s, int_a,
-                #                                     errors[int_s, int_a]))
+
                 feat_exp = compute_binary_features_expectation(state, action,
                                                 min_elem, max_elem,
                                                 fignotes_dict, chords_dict,
                                                 term_states)
 
-                # print('row.size:', row.size)
-                if int_s in q_matrix:
-                    max_q_value = max(q_matrix[int_s].values())
+                if state in q_matrix:
+                    max_q_value = max(q_matrix[state].values())
                     new_q_value = w.dot(feat_exp.T)[0, 0] + disc_rate * max_q_value
-                    if int_a not in q_matrix[int_s]:
+                    if action not in q_matrix[state]:
                         diff = abs(new_q_value)
                     else:
-                        diff = abs(new_q_value - q_matrix[int_s][int_a])
-                    q_matrix[int_s][int_a] = new_q_value
-                    errors[int_s][int_a] = diff
+                        diff = abs(new_q_value - q_matrix[state][action])
+                    q_matrix[state][action] = new_q_value
+                    errors[state][action] = diff
                 else:
                     new_q_value = w.dot(feat_exp.T)[0, 0]
                     diff = abs(new_q_value)
-                    q_matrix[int_s] = {int_a: new_q_value}
-                    errors[int_s] = {int_a: diff}
+                    q_matrix[state] = {action: new_q_value}
+                    errors[state] = {action: diff}
 
                 if diff > delta:
                     delta = diff
-                    # number_of_states_greater_than_delta += 1
-                    # print('delta:', delta)
 
         iteration += 1
 
-    n_rows = np.array(state_size).prod()
-    n_cols = np.array(action_size).prod()
-    shape = (n_rows, n_cols)
+    policy_matrix = {k: ((dict_argmax(v)), 1.0,) for k, v in q_matrix}
 
-    rows = []
-    cols = []
-    for int_s in q_matrix:
-        rows.append(int_s)
-        max_index = dict_argmax(q_matrix[int_s])
-        cols.append(max_index)
-    data = [1] * len(rows)
-    policy_matrix = sparse.coo_matrix((data, (rows, cols)), shape=shape,
-                                      dtype=np.uint8)
-    return policy_matrix.tocsr()
+    return policy_matrix
 
 
 def dict_argmax(dict):
@@ -249,37 +197,31 @@ def compute_expert_features_expectation(disc_rate):
     expert_feat_exp /= len(trajectories)
     return expert_feat_exp
 
-def generate_trajectory_based_on_errors(state, term_states,
-                               all_actions, q_states, errors, state_size,
-                               action_size, gamma):
+def generate_trajectory_based_on_errors(state, term_states, q_states,
+                                        errors, gamma):
     # original state
     # all_actions dict
     trajectory = []
     while state not in term_states:
-        int_s = array_to_int(state[:3][::-1], state_size[::-1])
-        trajectory.append((int_s, state))
+        trajectory.append(state)
 
-        if int_s in errors:  # if the row has nonzero entries.
-            row = errors[int_s]
+        if state in errors:  # if the row has nonzero entries.
+            row = errors[state]
             # with prob. gamma, choose random action
             if random() < gamma:
-                int_a, action = choose_random_action(q_states, state,
-                                                     action_size)
+                action = choice(q_states[state])
             # with prob. 1-gamma, based on errors. Smaller error,
             # lesser chance to be chosen.
             else:
                 # simulate probability
-                int_a = weighted_choice(row.items())
-                key_a = tuple(int_to_array(int_a, action_size[::-1])[::-1])
-                action = key_a + all_actions[key_a]
+                action = weighted_choice(row.items())
         else:
-            int_a, action = choose_random_action(q_states, state,
-                                                 action_size)
-        trajectory.append((int_a, action))
+            action = choice(q_states[state])
+
+        trajectory.append(action)
         state = compute_next_state(state, action)
 
-    int_s = array_to_int(state[:3][::-1], state_size[::-1])
-    trajectory.append((int_s, state))  # append terminal state
+    trajectory.append(state)  # append terminal state
     return trajectory
 
 
@@ -317,7 +259,7 @@ if __name__ == '__main__':
     try:
         policies, mu = compute_policies(0.7, 0.7)
         print('\n', 'policies_nnz')
-        [print(policy.getnnz()) for policy in policies]
+        [print(len(policy)) for policy in policies]
         policy = choose_policy(policies, mu)
         print('\n', datetime.now())
 
