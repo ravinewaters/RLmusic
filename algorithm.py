@@ -8,15 +8,14 @@ from scipy import sparse, io
 from datetime import datetime
 from random import random
 from cvxopt import matrix, spmatrix, solvers
-import numpy as np
 
 # consider of using dictionary as policy_matrix
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 30
+    value_iteration_n_iter = 10
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
-    p_random_action = .6
+    p_random_action = .75
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
     print('number of iteration of value iteration algorithm:',
@@ -159,10 +158,9 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, q_states,
 
                 if diff > delta:
                     delta = diff
-
         iteration += 1
 
-    policy_matrix = {k: ((dict_argmax(v)), 1.0,) for k, v in q_matrix}
+    policy_matrix = {k: ((dict_argmax(v), 1.0),) for k, v in q_matrix.items()}
 
     return policy_matrix
 
