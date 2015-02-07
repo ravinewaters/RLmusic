@@ -158,7 +158,7 @@ def compute_optimal_policy(w, disc_rate, eps, max_reward, all_actions,
                                                     q_states,
                                                     errors,
                                                     state_size,
-                                                    action_size, .75)
+                                                    action_size, .05)
             for j in range(0, len(trajectory), 2):
                 # number_of_states += 1
                 int_s, state = trajectory[j]
