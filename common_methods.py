@@ -1,7 +1,8 @@
 __author__ = 'redhat'
 
 import pickle
-from random import random, choice
+from random import random
+import bisect
 import os
 import numpy as np
 from constants import *
@@ -76,16 +77,21 @@ def is_valid_action(state, action):
 
 def generate_all_possible_q_states(all_states, all_actions):
     # assume complete states and actions, not reduced ones.
+    # initalize a dictionary
+
+    # row_idx is a row number in which we store feat_exp of corresponding
+    # state, action into.
+    row_idx = 0
     q_states = {}
     for state in all_states:
         for action in all_actions:
             if is_valid_action(state, action):
                 if state in q_states:
-                    q_states[state].append(action)
+                    q_states[state][action] = row_idx
                 else:
-                    q_states[state] = [action]
-    for state in q_states:
-        q_states[state] = tuple(q_states[state])
+                    q_states[state] = {action: row_idx}
+                row_idx += 1
+
     save_obj(q_states, 'Q_STATES')
     return q_states
 
@@ -100,3 +106,23 @@ def weighted_choice(choices):
          return c
       upto += w
     assert False, "Shouldn't get here"
+    
+
+def weighted_choice_b(weights):
+    totals = []
+    running_total = 0
+    
+    for w in weights:
+        running_total += w
+        totals.append(running_total)
+
+    rnd = random() * running_total
+    return bisect.bisect_right(totals, rnd)
+
+if __name__ == '__main__':
+    all_states = load_obj('ALL_STATES')
+    all_actions = load_obj('ALL_ACTIONS')
+    list_of_all_states = [k+v for k, v in all_states.items()]
+    list_of_all_actions = [k+v for k, v in all_actions.items()]
+    q_states = generate_all_possible_q_states(list_of_all_states,
+                                                  list_of_all_actions)

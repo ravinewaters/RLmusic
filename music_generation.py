@@ -2,6 +2,7 @@ __author__ = 'redhat'
 
 from common_methods import *
 import music21 as m
+from random import choice
 
 
 def generate_trajectory(start_state, term_states, policy_matrix):
@@ -10,10 +11,12 @@ def generate_trajectory(start_state, term_states, policy_matrix):
     counter = 0
     while state not in term_states:
         states.append(state)
+        
+        # should use weighted_choice
         action = policy_matrix[state][0][0]
         state = compute_next_state(state, action)
         counter += 1
-        if counter == 100:
+        if counter == 30:
             break
     states.append(state)  # append terminal state
     save_obj(states, 'GENERATED_SEQUENCE_OF_STATES')
@@ -28,7 +31,6 @@ def get_original_state(states, fignotes_dict, chords_dict):
 
     new_states = []
     for state in states:
-        print(state)
         new_state = [fignotes_dict[1][state[0]],
                      chords_dict[1][state[1]],
                      int(state[2] / 4.0),

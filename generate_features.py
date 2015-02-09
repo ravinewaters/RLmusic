@@ -2,7 +2,8 @@ __author__ = 'redhat'
 
 # import numpy as np
 # from constants import *
-from scipy import sparse
+from scipy.sparse import csr_matrix
+from scipy import io
 from common_methods import *
 # from itertools import product
 # from pprint import pprint
@@ -126,29 +127,26 @@ def compute_features(state, action, fignotes_dict, chords_dict,term_states):
 
 ############
 
-def compute_binary_features_expectation(state, action, min_elem, max_elem,
+def compute_binary_features_expectation(cols, rows, row_idx, state, action,
+                                        min_elem,
+                                        max_elem,
                                         fignotes_dict, chords_dict,
                                         term_states):
-    # USE COO_MATRIX
+    # Append to list cols
     # compute given state and action features expectation.
+    # return number of columns which have value 1
     tup = compute_features(state, action, fignotes_dict,
                            chords_dict, term_states)
     # print(tup)
     coord_size = np.array(max_elem) - np.array(min_elem) + 1
     coord_size = np.concatenate((np.array([0]), coord_size))
-    col = []
     index = 0
     for i in range(len(tup)):
         index = index + coord_size[i]
-        col.append(index + tup[i] - min_elem[i])
-    row = [0] * len(col)
-    data = [1] * len(col)
-    mtx = sparse.coo_matrix((data, (row, col)), (1, sum(coord_size)),
-                            dtype=np.uint8)
-    return mtx
+        cols.append(index + tup[i] - min_elem[i])
+        rows.append(row_idx)
 
-
-def generate_binary_features_expectation_table():
+def generate_features_expectation_table():
     min_elem, max_elem = load_obj('ELEM_RANGE')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
@@ -157,7 +155,7 @@ def generate_binary_features_expectation_table():
 
     try:
         q_states = load_obj('Q_STATES')
-        print('Loaded Q_STATES')
+        print('Q_STATES loaded.')
     except FileNotFoundError:
         all_states = load_obj('ALL_STATES')
         list_of_all_states = [k+v for k, v in all_states.items()]
@@ -165,20 +163,32 @@ def generate_binary_features_expectation_table():
         q_states = generate_all_possible_q_states(list_of_all_states,
                                                   list_of_all_actions)
 
-    features_expectation_dict = dict()
-    for state in q_states:
-        # print('state:', state)
-        for action in q_states[state]:
-            # print('action:', action)
-            feat_exp = compute_binary_features_expectation(state, action,
-                                                min_elem, max_elem,
-                                                fignotes_dict, chords_dict,
-                                                term_states)
-            # print('feat_exp:', feat_exp)
-            features_expectation_dict[(state, action)] = feat_exp
-
-    save_obj(features_expectation_dict, 'FEATURES_EXPECTATION_DICT')
-    return features_expectation_dict
+    # use row_idx for row which to store feat_exp into
+    # use csr_matrix
+    cols = []  # this will be a list of column
+    rows = []
+    counter = 1
+    for state, actions in q_states.items():
+        for action, row_idx in actions.items():
+            compute_binary_features_expectation(cols,
+                                                             rows,
+                                                             row_idx,
+                                                             state,
+                                                             action,
+                                                             min_elem,
+                                                             max_elem,
+                                                             fignotes_dict,
+                                                             chords_dict,
+                                                             term_states)
+            counter += 1
+    data = [1] * len(cols)
+    n_rows = counter
+    n_cols = sum(np.array(max_elem) - np.array(min_elem) + 1)
+    mtx = csr_matrix((data, (rows, cols)),
+                     dtype=np.uint8,
+                     shape=(n_rows, n_cols))
+    io.savemat(DIR + 'FEATURES_EXPECTATION_MATRIX', {'mtx': mtx})
+    return mtx
 
 if __name__ == "__main__":
-    pass
+    generate_features_expectation_table()

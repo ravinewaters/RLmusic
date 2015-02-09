@@ -1,9 +1,8 @@
 __author__ = 'redhat'
 
-from scipy import sparse, io
 from common_methods import *
 from generate_features import compute_binary_features_expectation
-
+from random import choice
 
 def generate_random_policy_matrix(q_states):
     # generate matrix of 0-1 value with size:
@@ -13,11 +12,12 @@ def generate_random_policy_matrix(q_states):
     # not stochastic
     # Should add stochastic policy to the matrix.
 
-    policy_matrix = {k: ((choice(v), 1.0),) for k, v in q_states.items()}
+    policy_matrix = {k: ((choice(list(v)), 1.0),) for k, v in q_states.items()}
     return policy_matrix
 
 
-def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
+def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
+                                        disc_rate, start_states,
                                         n_iter=1):
     # Basically what the function does is walk through the states and
     # actions. The actions are gotten by choosing randomly according to the
@@ -28,9 +28,6 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
     # discounted feature expectation. If we have a deterministic policy we
     # can just set the n_iter to be 1.
 
-    min_elem, max_elem = load_obj('ELEM_RANGE')
-    fignotes_dict = load_obj('FIGNOTES_DICT')
-    chords_dict = load_obj('CHORDS_DICT')
     term_states = load_obj('TERM_STATES')
     state = choice(list(start_states))
     # what is s and a? tuple of integers
@@ -41,10 +38,8 @@ def compute_policy_features_expectation(policy_matrix, disc_rate, start_states,
         t = 0
         while state not in term_states:
             action = weighted_choice(policy_matrix[state])
-            feat_exp = compute_binary_features_expectation(state, action,
-                                                min_elem, max_elem,
-                                                fignotes_dict, chords_dict,
-                                                term_states)
+            row = q_states[state][action]
+            feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp
             sum_of_feat_exp += discounted_feat_exp
             if discounted_feat_exp.sum() <= 1e-5:
