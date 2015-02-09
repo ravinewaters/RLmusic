@@ -222,3 +222,37 @@ def choose_action_from_policy_matrix(policy_matrix, all_actions,
     # print(key_a)
     action = key_a + all_actions[key_a]
     return action
+
+
+def generate_trajectory_based_on_errors(state, term_states, q_states,
+                                        errors, gamma):
+    # original state
+    # all_actions dict
+    trajectory = []
+    while True:
+        trajectory.append(state)
+        if state in errors:  # if the row has nonzero entries.
+
+            # with prob. gamma, choose random action
+            if random() < gamma:
+                # q_states[state] is a dictionary
+                action = choice(list(q_states[state]))
+            # with prob. 1-gamma, based on errors. Smaller error,
+            # lesser chance to be chosen.
+            else:
+                # simulate probability
+                idx = weighted_choice_b(errors[state].values())
+                actions = list(errors[state])
+                try:
+                    action = actions[idx]
+                except IndexError:
+                    action = actions[-1]
+        else:
+            action = choice(list(q_states[state]))
+        trajectory.append(action)
+
+        if state in term_states and action == -1:
+            break
+
+        state = compute_next_state(state, action)
+    return trajectory

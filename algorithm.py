@@ -14,16 +14,9 @@ from cvxopt import matrix, spmatrix, solvers
 # consider of using dictionary as policy_matrix
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = None
-    value_iteration_error_threshold = 1e-1
     max_reward = 1000
-    p_random_action = .5
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
-    print('number of iteration of value iteration algorithm:',
-          value_iteration_n_iter)
-    print('Probability of random action:', p_random_action)
-    print('value_iteration_error_threshold:', value_iteration_error_threshold)
     print('terminal states reward:', max_reward)
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
@@ -41,14 +34,13 @@ def compute_policies(disc_rate, eps):
                                                   list_of_all_actions)
                                                   
     try:
-        # save computation
+        # Load computation
         temp = io.loadmat(DIR + 'TEMP')
         policies = load_obj('TEMP_POLICIES')
         mu_expert = temp['mu_expert']
         mu = temp['mu'].tolist()[0]
         mu_bar = temp['mu_bar']
         counter = temp['counter'][0][0]
-        print('loading saved state')
     except FileNotFoundError:
         policy_matrix = generate_random_policy_matrix(q_states)
         policies = [policy_matrix]
@@ -78,9 +70,7 @@ def compute_policies(disc_rate, eps):
         reward_mtx = compute_reward_mtx(feat_mtx, w)
         policy_matrix = compute_optimal_policy(reward_mtx, q_states,
                                                disc_rate, eps,
-                                               max_reward,
-                                               p_random_action,
-                                               value_iteration_n_iter)
+                                               max_reward)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(feat_mtx,
                                                        q_states,
@@ -122,20 +112,19 @@ def compute_reward_mtx(feat_mtx, w):
     return (feat_mtx * w.T).data
 
 
-def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
-                           p_random_action, value_iteration_n_iter=None):
+def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
     # start_states = load_obj('START_STATES')
     # start_states = list(start_states)
     q_matrix = {}
     errors = {}
     threshold = 2*eps*(1-disc_rate)/disc_rate
     delta = threshold
+    print('threshold:', threshold)
     iteration = 1
     # for i in range(value_iteration_n_iter):
     while delta >= threshold:
         print('iteration:', iteration)
-        print('delta', delta)
-        delta = 0
+        delta = -1
         # for start_state in start_states:
         #     trajectory = generate_trajectory_based_on_errors(start_state,
         #                                             term_states,
@@ -157,9 +146,9 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
                 if action == -1:
                     # if action 'exit'
                     if state in q_matrix:
-                        q_matrix[state][action] = 1000
+                        q_matrix[state][action] = max_reward
                     else:
-                        q_matrix[state] = {action: 1000}
+                        q_matrix[state] = {action: max_reward}
                     continue
 
                 row = q_states[state][action]
@@ -182,6 +171,7 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
                 if diff > delta:
                     delta = diff
         iteration += 1
+        print('delta', delta)
     policy_matrix = {k: ((dict_argmax(v), 1.0),) for k, v in q_matrix.items()}
     return policy_matrix
 
@@ -208,40 +198,6 @@ def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
         expert_feat_exp += sum_of_feat_exp
     expert_feat_exp /= len(trajectories)
     return expert_feat_exp
-
-def generate_trajectory_based_on_errors(state, term_states, q_states,
-                                        errors, gamma):
-    # original state
-    # all_actions dict
-    trajectory = []
-    while True:
-        trajectory.append(state)
-        if state in errors:  # if the row has nonzero entries.
-
-            # with prob. gamma, choose random action
-            if random() < gamma:
-                # q_states[state] is a dictionary
-                action = choice(list(q_states[state]))
-            # with prob. 1-gamma, based on errors. Smaller error,
-            # lesser chance to be chosen.
-            else:
-                # simulate probability
-                idx = weighted_choice_b(errors[state].values())
-                actions = list(errors[state])
-                try:
-                    action = actions[idx]
-                except IndexError:
-                    action = actions[-1]
-        else:
-            action = choice(list(q_states[state]))
-        trajectory.append(action)
-
-        if state in term_states and action == -1:
-            break
-
-        state = compute_next_state(state, action)
-    return trajectory
-
 
 def choose_policy(policies, mu):
     solvers.options['show_progress'] = False
@@ -276,7 +232,7 @@ if __name__ == '__main__':
 
     try:
         # start_time = time()
-        policies, mu = compute_policies(0.5, 0.15)
+        policies, mu = compute_policies(0.5, 0.7)
         # end_time = time()
         # duration = end_time - start_time
         # print(duration)
@@ -284,7 +240,7 @@ if __name__ == '__main__':
         # print('\n', 'policies_nnz')
         # [print(len(policy)) for policy in policies]
 
-        # policy = choose_policy(policies, mu)
+        policy = choose_policy(policies, mu)
 
     except KeyboardInterrupt:
         # print('\n', datetime.now())

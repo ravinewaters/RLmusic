@@ -9,16 +9,16 @@ def generate_trajectory(start_state, term_states, policy_matrix):
     state = start_state
     states = []
     counter = 0
-    while state not in term_states:
+    while True:
         states.append(state)
-        
         # should use weighted_choice
         action = policy_matrix[state][0][0]
+        if state in term_states and action == -1:
+            break
         state = compute_next_state(state, action)
         counter += 1
         if counter == 30:
             break
-    states.append(state)  # append terminal state
     save_obj(states, 'GENERATED_SEQUENCE_OF_STATES')
     return states
 
