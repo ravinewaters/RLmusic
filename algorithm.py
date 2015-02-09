@@ -115,12 +115,11 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
     # start_states = load_obj('START_STATES')
     # start_states = list(start_states)
     q_matrix = {}
-    errors = {}
-    threshold = 2*eps*(1-disc_rate)/disc_rate
+    max_values = dict.fromkeys(list(q_states), (0, 0))
+    threshold = eps*(1-disc_rate)/disc_rate
     delta = threshold
     print('threshold:', threshold)
     iteration = 1
-    # for i in range(value_iteration_n_iter):
     while delta >= threshold:
         print('iteration:', iteration)
         delta = -1
@@ -129,34 +128,33 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
 
                 if action == -1:
                     # if action 'exit'
-                    if state in q_matrix:
-                        q_matrix[state][action] = max_reward
-                    else:
-                        q_matrix[state] = {action: max_reward}
+                    if (state, action) in q_matrix:
+                        q_matrix[(state, action)] = max_reward
+                    max_values[state] = (max_reward, action)
                     continue
 
                 row = q_states[state][action]
                 reward = reward_mtx[row]
-                if state in q_matrix:
-                    max_q_value = max(q_matrix[state].values())
-                    new_q_value = reward + disc_rate * max_q_value
-                    if action not in q_matrix[state]:
-                        diff = abs(new_q_value)
-                    else:
-                        diff = abs(new_q_value - q_matrix[state][action])
-                    q_matrix[state][action] = new_q_value
-                    errors[state][action] = diff
-                else:
-                    new_q_value = reward
+                state_prime = compute_next_state(state, action)
+                opt_future_val = max_values[state_prime][0]
+                new_q_value = reward + disc_rate * opt_future_val
+                if (state, action) not in q_matrix:
                     diff = abs(new_q_value)
-                    q_matrix[state] = {action: new_q_value}
-                    errors[state] = {action: diff}
+                    q_matrix[(state, action)] = new_q_value
+                else:
+                    # if (state, action) in q_matrix
+                    diff = abs(new_q_value - q_matrix[(state, action)])
+                    q_matrix[(state, action)] = new_q_value
+
+                # update max_values
+                if max_values[state][0] < new_q_value:
+                    max_values[state] = (new_q_value, action)
 
                 if diff > delta:
                     delta = diff
         iteration += 1
         print('delta', delta)
-    policy_matrix = {k: ((dict_argmax(v), 1.0),) for k, v in q_matrix.items()}
+    policy_matrix = {k: ((v[1], 1.0),) for k, v in max_values.items()}
     return policy_matrix
 
 
