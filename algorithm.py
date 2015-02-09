@@ -14,7 +14,7 @@ from cvxopt import matrix, spmatrix, solvers
 # consider of using dictionary as policy_matrix
 
 def compute_policies(disc_rate, eps):
-    value_iteration_n_iter = 5
+    value_iteration_n_iter = None
     value_iteration_error_threshold = 1e-1
     max_reward = 1000
     p_random_action = .5
@@ -59,7 +59,7 @@ def compute_policies(disc_rate, eps):
 
     print('\n', 'counter, t')
 
-    for k in range(5):
+    for k in range(10):
         if counter == 1:
             mu_value = compute_policy_features_expectation(
                 feat_mtx, q_states, policy_matrix,
@@ -85,8 +85,8 @@ def compute_policies(disc_rate, eps):
         policy_matrix = compute_optimal_policy(reward_mtx, q_states,
                                                disc_rate, eps,
                                                max_reward,
-                                               value_iteration_n_iter,
-                                               p_random_action)
+                                               p_random_action,
+                                               value_iteration_n_iter)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(feat_mtx,
                                                        q_states,
@@ -129,7 +129,7 @@ def compute_reward_mtx(feat_mtx, w):
 
 
 def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
-                           value_iteration_n_iter, p_random_action):
+                           p_random_action, value_iteration_n_iter=None):
     term_states = load_obj('TERM_STATES')
     start_states = load_obj('START_STATES')
     start_states = list(start_states)
@@ -138,9 +138,11 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
     errors = {}
 
     threshold = 2*eps*(1-disc_rate)/disc_rate
+    delta = threshold
     iteration = 1
-
-    for i in range(value_iteration_n_iter):
+    # for i in range(value_iteration_n_iter):
+    while delta >= threshold:
+        print('iteration:', iteration)
         delta = threshold
         for start_state in start_states:
             trajectory = generate_trajectory_based_on_errors(start_state,
@@ -224,7 +226,12 @@ def generate_trajectory_based_on_errors(state, term_states, q_states,
             # lesser chance to be chosen.
             else:
                 # simulate probability
-                action = weighted_choice(errors[state].items())
+                idx = weighted_choice_b(errors[state].values())
+                actions = list(errors[state])
+                try:
+                    action = actions[idx]
+                except IndexError:
+                    action = actions[-1]
         else:
             action = choice(list(q_states[state]))
 
