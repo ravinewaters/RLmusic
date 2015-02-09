@@ -129,13 +129,13 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
     q_matrix = {}
     errors = {}
     threshold = 2*eps*(1-disc_rate)/disc_rate
-    print('threshold:', threshold)
-    delta = 0
+    delta = threshold
     iteration = 1
     # for i in range(value_iteration_n_iter):
-    while delta < threshold:
+    while delta >= threshold:
         print('iteration:', iteration)
         print('delta', delta)
+        delta = 0
         # for start_state in start_states:
         #     trajectory = generate_trajectory_based_on_errors(start_state,
         #                                             term_states,
