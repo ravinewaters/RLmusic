@@ -81,17 +81,23 @@ def generate_all_possible_q_states(all_states, all_actions):
 
     # row_idx is a row number in which we store feat_exp of corresponding
     # state, action into.
+    term_states = load_obj('TERM_STATES')
     row_idx = 0
     q_states = {}
     for state in all_states:
+        if state in term_states:
+            # key 'state' wasn't existed.
+            # for exit action
+            q_states[state] = {-1: 0}
         for action in all_actions:
+            if action == -1:
+                continue
             if is_valid_action(state, action):
                 if state in q_states:
                     q_states[state][action] = row_idx
                 else:
                     q_states[state] = {action: row_idx}
                 row_idx += 1
-
     save_obj(q_states, 'Q_STATES')
     return q_states
 

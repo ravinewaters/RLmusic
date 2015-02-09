@@ -67,20 +67,14 @@ def compute_policies(disc_rate, eps):
                                                                start_states)
             mu.append(mu_value)
             mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
-
         else:  # counter >= 2
             mu_bar += compute_projection(mu_bar, mu[counter-1], mu_expert)
-
         w = mu_expert - mu_bar
         t = sqrt((w.data**2).sum())
-
         print('{}, {}'.format(counter, t))
-
         if t <= eps:
             break
-
         w /= t
-
         reward_mtx = compute_reward_mtx(feat_mtx, w)
         policy_matrix = compute_optimal_policy(reward_mtx, q_states,
                                                disc_rate, eps,
@@ -130,39 +124,46 @@ def compute_reward_mtx(feat_mtx, w):
 
 def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
                            p_random_action, value_iteration_n_iter=None):
-    term_states = load_obj('TERM_STATES')
-    start_states = load_obj('START_STATES')
-    start_states = list(start_states)
-
+    # start_states = load_obj('START_STATES')
+    # start_states = list(start_states)
     q_matrix = {}
     errors = {}
-
     threshold = 2*eps*(1-disc_rate)/disc_rate
-    delta = threshold
+    print('threshold:', threshold)
+    delta = 0
     iteration = 1
     # for i in range(value_iteration_n_iter):
-    while delta >= threshold:
+    while delta < threshold:
         print('iteration:', iteration)
-        delta = threshold
-        for start_state in start_states:
-            trajectory = generate_trajectory_based_on_errors(start_state,
-                                                    term_states,
-                                                    q_states,
-                                                    errors, p_random_action)
+        print('delta', delta)
+        # for start_state in start_states:
+        #     trajectory = generate_trajectory_based_on_errors(start_state,
+        #                                             term_states,
+        #                                             q_states,
+        #                                             errors, p_random_action)
+        #
+        #     for j in range(0, len(trajectory), 2):
+        #         state = trajectory[j]
+        #         try:
+        #             action = trajectory[j+1]
+        #         except IndexError:
+        #             # terminal state
+        #             if state not in q_matrix:
+        #                 q_matrix[state] = {1: max_reward}
+        #             break
+        for state, actions in q_states.items():
+            for action in actions:
 
-            for j in range(0, len(trajectory), 2):
-                state = trajectory[j]
-                try:
-                    action = trajectory[j+1]
-                except IndexError:
-                    # terminal state
-                    if state not in q_matrix:
-                        q_matrix[state] = {1: max_reward}
-                    break
+                if action == -1:
+                    # if action 'exit'
+                    if state in q_matrix:
+                        q_matrix[state][action] = 1000
+                    else:
+                        q_matrix[state] = {action: 1000}
+                    continue
 
                 row = q_states[state][action]
                 reward = reward_mtx[row]
-
                 if state in q_matrix:
                     max_q_value = max(q_matrix[state].values())
                     new_q_value = reward + disc_rate * max_q_value
@@ -196,9 +197,9 @@ def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
         sum_of_feat_exp = 0
         t = 0
         # from the first state to the penultimate state
-        for i in range(0, len(trajectory)-2, 2):
-            state = trajectory[i]
-            action = trajectory[i+1]
+        for state, action in zip(trajectory[::2], trajectory[1::2]):
+            if action == -1:
+                break
             row = q_states[state][action]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp
@@ -213,9 +214,8 @@ def generate_trajectory_based_on_errors(state, term_states, q_states,
     # original state
     # all_actions dict
     trajectory = []
-    while state not in term_states:
+    while True:
         trajectory.append(state)
-
         if state in errors:  # if the row has nonzero entries.
 
             # with prob. gamma, choose random action
@@ -234,11 +234,12 @@ def generate_trajectory_based_on_errors(state, term_states, q_states,
                     action = actions[-1]
         else:
             action = choice(list(q_states[state]))
-
         trajectory.append(action)
-        state = compute_next_state(state, action)
 
-    trajectory.append(state)  # append terminal state
+        if state in term_states and action == -1:
+            break
+
+        state = compute_next_state(state, action)
     return trajectory
 
 

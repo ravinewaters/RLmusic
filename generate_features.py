@@ -170,6 +170,8 @@ def generate_features_expectation_table():
     counter = 1
     for state, actions in q_states.items():
         for action, row_idx in actions.items():
+            if action == -1:
+                continue
             compute_binary_features_expectation(cols,
                                                              rows,
                                                              row_idx,

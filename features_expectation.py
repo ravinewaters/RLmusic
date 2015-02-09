@@ -36,8 +36,10 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
     for i in range(n_iter):
         sum_of_feat_exp = 0
         t = 0
-        while state not in term_states:
+        while True:
             action = weighted_choice(policy_matrix[state])
+            if state in term_states and action == -1:
+                break
             row = q_states[state][action]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp

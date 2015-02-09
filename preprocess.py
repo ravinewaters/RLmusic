@@ -173,6 +173,7 @@ def get_trajectories(list_of_song_states):
             action = compute_action(state)
             trajectory.append(action)
             trajectory.append(state)
+        trajectory.append(-1)  # exit action for terminal state
         trajectories.append(trajectory)
     save_obj(trajectories, 'TRAJECTORIES')
     return trajectories
@@ -180,7 +181,7 @@ def get_trajectories(list_of_song_states):
 def get_terminal_states(trajectories):
     terminal_states = []
     for trajectory in trajectories:
-        terminal_states.append(trajectory[-1])
+        terminal_states.append(trajectory[-2])
     save_obj(terminal_states, 'TERM_STATES')
     return set(terminal_states)
 
@@ -224,6 +225,7 @@ def get_all_actions(all_states):
         else:
             if state[:2] not in all_actions:
                 all_actions[state[:2]] = state[-2:]
+    all_actions[-1] = 0
     save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 
@@ -255,7 +257,6 @@ def preprocess():
 
     figheads = set(figheads)
     save_obj(figheads, 'FIGHEADS_ELEM')  # save set of figheads for later use
-
     save_elem_range(figheads)
 
     fignotes_dict = make_dict_of_elem(fignotes, 'FIGNOTES_DICT')
