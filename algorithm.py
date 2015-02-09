@@ -8,7 +8,6 @@ from math import sqrt
 from scipy import sparse, io
 # from datetime import datetime
 # from time import time
-from random import random, choice
 from cvxopt import matrix, spmatrix, solvers
 
 # consider of using dictionary as policy_matrix
@@ -125,21 +124,6 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
     while delta >= threshold:
         print('iteration:', iteration)
         delta = -1
-        # for start_state in start_states:
-        #     trajectory = generate_trajectory_based_on_errors(start_state,
-        #                                             term_states,
-        #                                             q_states,
-        #                                             errors, p_random_action)
-        #
-        #     for j in range(0, len(trajectory), 2):
-        #         state = trajectory[j]
-        #         try:
-        #             action = trajectory[j+1]
-        #         except IndexError:
-        #             # terminal state
-        #             if state not in q_matrix:
-        #                 q_matrix[state] = {1: max_reward}
-        #             break
         for state, actions in q_states.items():
             for action in actions:
 
@@ -214,8 +198,6 @@ def choose_policy(policies, mu):
     P = (B * B.T).tocoo()
     P = spmatrix(P.data, P.row, P.col)
     lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
-    print('\n', 'lambdas')
-    [print(item) for item in lambdas]
     save_obj(lambdas, 'LAMBDAS')
     return mix_policies(policies, lambdas)
 

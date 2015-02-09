@@ -17,7 +17,7 @@ def generate_trajectory(start_state, term_states, policy_matrix):
             break
         state = compute_next_state(state, action)
         counter += 1
-        if counter == 30:
+        if counter == 100:
             break
     save_obj(states, 'GENERATED_SEQUENCE_OF_STATES')
     return states
