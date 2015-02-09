@@ -212,7 +212,7 @@ if __name__ == '__main__':
 
     try:
         # start_time = time()
-        policies, mu = compute_policies(0.5, 0.7)
+        policies, mu = compute_policies(0.99, 0.7)
         # end_time = time()
         # duration = end_time - start_time
         # print(duration)

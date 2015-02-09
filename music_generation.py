@@ -47,10 +47,14 @@ def translate_states_to_song(original_states, title='', composer=''):
     part = m.stream.Part()
     stream = m.stream.Stream()
 
+    Cmaj = m.key.Key('C')
+    tc = m.clef.TrebleClef()
     common_time = m.meter.TimeSignature('4/4')
     instrument = m.instrument.Violin()
 
     score.append(m.metadata.Metadata())
+    part.append(tc)
+    part.append(Cmaj)
     part.append(instrument)
     stream.append(common_time)
 
