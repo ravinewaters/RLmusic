@@ -7,6 +7,7 @@ from features_expectation import compute_policy_features_expectation, \
 from math import sqrt
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
+from random import choice
 
 
 # IMPLEMENT SOFTMAX POLICY?
@@ -52,7 +53,7 @@ def compute_policies(disc_rate, eps):
 
     print('\n', 'counter, t')
 
-    for k in range(10):
+    for k in range(20):
         if counter == 1:
             mu_value = compute_policy_features_expectation(feat_mtx,
                                                            q_states,
@@ -75,14 +76,14 @@ def compute_policies(disc_rate, eps):
         reward_mtx = compute_reward_mtx(feat_mtx, w)
 
         # q-value iteration
-        # policy_matrix = compute_optimal_policy(reward_mtx, q_states,
+        # policy_matrix = value_iteration(reward_mtx, q_states,
         #                                        disc_rate, value_error,
         #                                        max_reward)
 
         # q-learning
-        policy_matrix = compute_optimal_policy(reward_mtx, q_states,
-                                               disc_rate, value_error,
-                                               max_reward, 0.01)
+        policy_matrix = q_learning(reward_mtx,
+                                   q_states,
+                                   disc_rate)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(feat_mtx,
                                                        q_states,
@@ -124,61 +125,8 @@ def compute_reward_mtx(feat_mtx, w):
     return (feat_mtx * w.T).data
 
 
-# def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
-#     # q-value iteration
-#
-#     # start_states = load_obj('START_STATES')
-#     # start_states = list(start_states)
-#     q_matrix = {}
-#     max_values = dict.fromkeys(list(q_states), (0, 0))
-#     threshold = eps*(1-disc_rate)/disc_rate
-#     delta = threshold
-#     # print('threshold:', threshold)
-#     iteration = 1
-#     while delta >= threshold:
-#         print('iteration:', iteration)
-#         delta = -1
-#         for state, actions in q_states.items():
-#             for action in actions:
-#
-#                 if action == -1:
-#                     # if action 'exit'
-#                     if (state, action) in q_matrix:
-#                         q_matrix[(state, action)] = max_reward
-#                     max_values[state] = (max_reward, action)
-#                     continue
-#
-#                 row = q_states[state][action][0]
-#                 state_prime = q_states[state][action][1]
-#                 reward = reward_mtx[row]
-#                 opt_future_val = max_values[state_prime][0]
-#                 new_q_value = reward + disc_rate * opt_future_val
-#                 if (state, action) not in q_matrix:
-#                     diff = new_q_value
-#                     if diff < 0:
-#                         diff = -diff
-#                     q_matrix[(state, action)] = new_q_value
-#                 else:
-#                     # if (state, action) in q_matrix
-#                     diff = new_q_value - q_matrix[(state, action)]
-#                     if diff < 0:
-#                         diff = -diff
-#                     q_matrix[(state, action)] = new_q_value
-#
-#                 # update max_values
-#                 if max_values[state][0] < new_q_value:
-#                     max_values[state] = (new_q_value, action)
-#
-#                 if diff > delta:
-#                     delta = diff
-#         iteration += 1
-#         print('delta', delta)
-#     policy_matrix = {k: ((v[1], 1.0),) for k, v in max_values.items()}
-#     return policy_matrix
-
-def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
-                           learning_rate):
-    # q-learning
+def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
+    # q-value iteration
 
     # start_states = load_obj('START_STATES')
     # start_states = list(start_states)
@@ -226,6 +174,39 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward,
                     delta = diff
         iteration += 1
         print('delta', delta)
+    policy_matrix = {k: ((v[1], 1.0),) for k, v in max_values.items()}
+    return policy_matrix
+
+
+def q_learning(reward_mtx, q_states, disc_rate, n_iter=30):
+    # q-learning
+    # use for loop over all actions. The size of states and actions is not
+    # too large
+
+    q_matrix = {(s, a): (0, 1) for s, acts in q_states.items() for a in acts}
+
+    # should init max_values with random actions
+    max_values = {s: (0, next(iter(a))) for s, a in q_states.items()}
+
+    for k in range(0, n_iter):
+        for state, actions in q_states.items():
+            for action in actions:
+                if action == -1:
+                    # if action 'exit'
+                    break
+                row = q_states[state][action][0]
+                reward = reward_mtx[row]
+                state_prime = q_states[state][action][1]
+                sample = reward + disc_rate * max_values[state_prime][0]
+                n_visit = q_matrix[(state, action)][1]
+                alpha = 1/n_visit
+                new_q_value = alpha * sample + (1-alpha)*q_matrix[(state,
+                                                                   action)][0]
+                q_matrix[(state, action)] = (new_q_value, n_visit+1)
+
+                # update max_values
+                if max_values[state][0] < new_q_value:
+                    max_values[state] = (new_q_value, action)
     policy_matrix = {k: ((v[1], 1.0),) for k, v in max_values.items()}
     return policy_matrix
 
