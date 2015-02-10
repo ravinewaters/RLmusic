@@ -28,9 +28,12 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
     # discounted feature expectation. If we have a deterministic policy we
     # can just set the n_iter to be 1.
 
+    # policy_matrix:
+    # {state: ((a1, .05), (a2, .1), (a3, .85))}
+
+
     term_states = load_obj('TERM_STATES')
     state = choice(list(start_states))
-    # what is s and a? tuple of integers
 
     mean_feat_exp = 0
     for i in range(n_iter):
@@ -40,7 +43,7 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
             action = weighted_choice(policy_matrix[state])
             if state in term_states and action == -1:
                 break
-            row = q_states[state][action]
+            row = q_states[state][action][0]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp
             sum_of_feat_exp += discounted_feat_exp

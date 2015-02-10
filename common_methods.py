@@ -93,10 +93,11 @@ def generate_all_possible_q_states(all_states, all_actions):
             if action == -1:
                 continue
             if is_valid_action(state, action):
+                next_state = compute_next_state(state, action)
                 if state in q_states:
-                    q_states[state][action] = row_idx
+                    q_states[state][action] = (row_idx, next_state)
                 else:
-                    q_states[state] = {action: row_idx}
+                    q_states[state] = {action: (row_idx, next_state)}
                 row_idx += 1
     save_obj(q_states, 'Q_STATES')
     return q_states

@@ -5,6 +5,11 @@ import music21 as m
 from random import choice
 
 
+def mix_policies(policies, lambdas):
+    idx = weighted_choice_b(lambdas)
+    return policies[idx]
+
+
 def generate_trajectory(start_state, term_states, policy_matrix):
     state = start_state
     states = []
@@ -80,12 +85,12 @@ def translate_states_to_song(original_states, title='', composer=''):
 
 if __name__ == '__main__':
     policies = load_obj('POLICIES')
+    lambdas = load_obj('LAMBDAS')
     start_states = load_obj('START_STATES')
     term_states = load_obj('TERM_STATES')
-    index = load_obj('OPTIMAL_POLICY_INDEX')
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
-    policy = policies[index]
+    policy = mix_policies(policies, lambdas)
     trajectory = generate_trajectory(choice(list(start_states)), term_states,
                                 policy)
     song = get_original_state(trajectory, fignotes_dict, chords_dict)

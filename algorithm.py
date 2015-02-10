@@ -6,16 +6,18 @@ from features_expectation import compute_policy_features_expectation, \
     generate_random_policy_matrix
 from math import sqrt
 from scipy import sparse, io
-# from datetime import datetime
-# from time import time
 from cvxopt import matrix, spmatrix, solvers
 
-# consider of using dictionary as policy_matrix
+
+# IMPLEMENT SOFTMAX POLICY?
+
 
 def compute_policies(disc_rate, eps):
-    max_reward = 1000
+    max_reward = 6
+    value_error = 0.01
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
+    print('value_error:', value_error)
     print('terminal states reward:', max_reward)
     all_actions = load_obj('ALL_ACTIONS')
     start_states = load_obj('START_STATES')
@@ -68,7 +70,7 @@ def compute_policies(disc_rate, eps):
         w /= t
         reward_mtx = compute_reward_mtx(feat_mtx, w)
         policy_matrix = compute_optimal_policy(reward_mtx, q_states,
-                                               disc_rate, eps,
+                                               disc_rate, value_error,
                                                max_reward)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(feat_mtx,
@@ -118,7 +120,7 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
     max_values = dict.fromkeys(list(q_states), (0, 0))
     threshold = eps*(1-disc_rate)/disc_rate
     delta = threshold
-    print('threshold:', threshold)
+    # print('threshold:', threshold)
     iteration = 1
     while delta >= threshold:
         print('iteration:', iteration)
@@ -133,17 +135,21 @@ def compute_optimal_policy(reward_mtx, q_states, disc_rate, eps, max_reward):
                     max_values[state] = (max_reward, action)
                     continue
 
-                row = q_states[state][action]
+                row = q_states[state][action][0]
+                state_prime = q_states[state][action][1]
                 reward = reward_mtx[row]
-                state_prime = compute_next_state(state, action)
                 opt_future_val = max_values[state_prime][0]
                 new_q_value = reward + disc_rate * opt_future_val
                 if (state, action) not in q_matrix:
-                    diff = abs(new_q_value)
+                    diff = new_q_value
+                    if diff < 0:
+                        diff = -diff
                     q_matrix[(state, action)] = new_q_value
                 else:
                     # if (state, action) in q_matrix
-                    diff = abs(new_q_value - q_matrix[(state, action)])
+                    diff = new_q_value - q_matrix[(state, action)]
+                    if diff < 0:
+                        diff = -diff
                     q_matrix[(state, action)] = new_q_value
 
                 # update max_values
@@ -172,7 +178,7 @@ def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
         for state, action in zip(trajectory[::2], trajectory[1::2]):
             if action == -1:
                 break
-            row = q_states[state][action]
+            row = q_states[state][action][0]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp
             sum_of_feat_exp += discounted_feat_exp
@@ -181,7 +187,7 @@ def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
     expert_feat_exp /= len(trajectories)
     return expert_feat_exp
 
-def choose_policy(policies, mu):
+def choose_policy(mu):
     solvers.options['show_progress'] = False
     n = len(mu) - 1
     A_data = [1]*(n+1)
@@ -197,32 +203,14 @@ def choose_policy(policies, mu):
     P = spmatrix(P.data, P.row, P.col)
     lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
     save_obj(lambdas, 'LAMBDAS')
-    return mix_policies(policies, lambdas)
+    return lambdas
 
-
-def mix_policies(policies, lambdas):
-    opt_pol_index = weighted_choice(zip(range(len(policies)), lambdas))
-    save_obj(opt_pol_index, 'OPTIMAL_POLICY_INDEX')
-    return policies[opt_pol_index]
 
 
 if __name__ == '__main__':
-    # print('\n')
-    # print('\n', datetime.now())
-
     try:
-        # start_time = time()
-        policies, mu = compute_policies(0.99, 0.7)
-        # end_time = time()
-        # duration = end_time - start_time
-        # print(duration)
-
-        # print('\n', 'policies_nnz')
-        # [print(len(policy)) for policy in policies]
-
-        policy = choose_policy(policies, mu)
-
+        policies, mu = compute_policies(0.8, 0.7)
+        choose_policy(mu)
     except KeyboardInterrupt:
-        # print('\n', datetime.now())
         pass
 
