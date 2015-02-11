@@ -256,3 +256,7 @@ def generate_trajectory_based_on_errors(state, term_states, q_states,
 
         state = compute_next_state(state, action)
     return trajectory
+
+
+def dict_argmax(dict):
+    return max(dict.items(), key=lambda x: x[1])[0]

@@ -49,8 +49,8 @@ def compute_next_fig_beat(state):
     return (state[3] + state[2])/2
 
 
-def is_to_term_state(state, action, term_states):
-    if compute_next_state(state, action) in term_states:
+def is_in_term_state(state, term_states):
+    if state in term_states:
         return 1
     return 0
 
@@ -80,7 +80,7 @@ def compute_features(state, action, fignotes_dict, chords_dict,term_states):
             0,
             0,
             get_fig_contour(action, fignotes_dict),
-            is_to_term_state(state, action, term_states),
+            is_in_term_state(state, term_states),
             0,
             0,
             1,
@@ -105,7 +105,7 @@ def compute_features(state, action, fignotes_dict, chords_dict,term_states):
             compute_figure_head_movement(state, action),
             get_fig_contour(state, fignotes_dict),
             get_fig_contour(action, fignotes_dict),
-            is_to_term_state(state, action, term_states),
+            is_in_term_state(state, term_states),
             1,
             is_to_rest(action),
             0,
@@ -117,13 +117,13 @@ def compute_features(state, action, fignotes_dict, chords_dict,term_states):
             compute_figure_head_movement(state, action),
             get_fig_contour(state, fignotes_dict),
             get_fig_contour(action, fignotes_dict),
-            is_to_term_state(state, action, term_states),
+            is_in_term_state(state, term_states),
             0,
             is_to_rest(action),
             0,
             compute_next_fig_beat(state),
         )
-    return np.array(tup)
+    return tup
 
 ############
 
@@ -174,15 +174,15 @@ def generate_features_expectation_table():
                 continue
             row_idx = value[0]
             compute_binary_features_expectation(cols,
-                                                             rows,
-                                                             row_idx,
-                                                             state,
-                                                             action,
-                                                             min_elem,
-                                                             max_elem,
-                                                             fignotes_dict,
-                                                             chords_dict,
-                                                             term_states)
+                                                rows,
+                                                row_idx,
+                                                state,
+                                                action,
+                                                min_elem,
+                                                max_elem,
+                                                fignotes_dict,
+                                                chords_dict,
+                                                term_states)
             counter += 1
     data = [1] * len(cols)
     n_rows = counter

@@ -12,7 +12,7 @@ def generate_random_policy_matrix(q_states):
     # not stochastic
     # Should add stochastic policy to the matrix.
 
-    policy_matrix = {k: ((choice(list(v)), 1.0),) for k, v in q_states.items()}
+    policy_matrix = {k: ((choice(list(v)), 1),) for k, v in q_states.items()}
     return policy_matrix
 
 

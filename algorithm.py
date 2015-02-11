@@ -7,20 +7,16 @@ from features_expectation import compute_policy_features_expectation, \
 from math import sqrt
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
-from random import choice
-
-
-# IMPLEMENT SOFTMAX POLICY?
 
 
 def compute_policies(disc_rate, eps):
-    max_reward = 6
-    value_error = 0.01
+    # max_reward = 6
+    # value_error = 0.01
     print('\ndisc_rate', disc_rate)
     print('eps:', eps)
-    print('value_error:', value_error)
-    print('terminal states reward:', max_reward)
-    all_actions = load_obj('ALL_ACTIONS')
+    # print('value_error:', value_error)
+    # print('terminal states reward:', max_reward)
+
     start_states = load_obj('START_STATES')
 
     try:
@@ -30,6 +26,7 @@ def compute_policies(disc_rate, eps):
     except FileNotFoundError:
         feat_mtx = generate_features_expectation_table()
         all_states = load_obj('ALL_STATES')
+        all_actions = load_obj('ALL_ACTIONS')
         list_of_all_states = [k+v for k, v in all_states.items()]
         list_of_all_actions = [k+v for k, v in all_actions.items()]
         q_states = generate_all_possible_q_states(list_of_all_states,
@@ -53,7 +50,7 @@ def compute_policies(disc_rate, eps):
 
     print('\n', 'counter, t')
 
-    for k in range(20):
+    while True:
         if counter == 1:
             mu_value = compute_policy_features_expectation(feat_mtx,
                                                            q_states,
@@ -76,14 +73,14 @@ def compute_policies(disc_rate, eps):
         reward_mtx = compute_reward_mtx(feat_mtx, w)
 
         # q-value iteration
-        # policy_matrix = value_iteration(reward_mtx, q_states,
-        #                                        disc_rate, value_error,
-        #                                        max_reward)
+        policy_matrix = value_iteration(reward_mtx, q_states,
+                                               disc_rate, 0.001,
+                                               100)
 
         # q-learning
-        policy_matrix = q_learning(reward_mtx,
-                                   q_states,
-                                   disc_rate)
+        # policy_matrix = q_learning(reward_mtx,
+        #                            q_states,
+        #                            disc_rate)
         policies.append(policy_matrix)
         mu_value = compute_policy_features_expectation(feat_mtx,
                                                        q_states,
@@ -128,13 +125,13 @@ def compute_reward_mtx(feat_mtx, w):
 def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
     # q-value iteration
 
-    # start_states = load_obj('START_STATES')
-    # start_states = list(start_states)
+    # max_values = {s : (q_value, [a1, a2, ..., an])}
+    # q_matrix = {(state, action): (row_index, state_prime}
+
     q_matrix = {}
-    max_values = dict.fromkeys(list(q_states), (0, 0))
+    max_values = dict.fromkeys(list(q_states), (0, [0]))
     threshold = eps*(1-disc_rate)/disc_rate
     delta = threshold
-    # print('threshold:', threshold)
     iteration = 1
     while delta >= threshold:
         print('iteration:', iteration)
@@ -146,12 +143,12 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
                     # if action 'exit'
                     if (state, action) in q_matrix:
                         q_matrix[(state, action)] = max_reward
-                    max_values[state] = (max_reward, action)
+                    max_values[state] = (max_reward, [action])
                     continue
 
-                row = q_states[state][action][0]
+                row_idx = q_states[state][action][0]
                 state_prime = q_states[state][action][1]
-                reward = reward_mtx[row]
+                reward = reward_mtx[row_idx]
                 opt_future_val = max_values[state_prime][0]
                 new_q_value = reward + disc_rate * opt_future_val
                 if (state, action) not in q_matrix:
@@ -168,17 +165,19 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
 
                 # update max_values
                 if max_values[state][0] < new_q_value:
-                    max_values[state] = (new_q_value, action)
+                    max_values[state] = (new_q_value, [action])
+                elif max_values[state][0] == new_q_value:
+                    max_values[state][1].append(action)
 
                 if diff > delta:
                     delta = diff
         iteration += 1
         print('delta', delta)
-    policy_matrix = {k: ((v[1], 1.0),) for k, v in max_values.items()}
+    policy_matrix = {k: tuple([(a, 1) for a in v[1]]) for k, v in max_values.items()}
     return policy_matrix
 
 
-def q_learning(reward_mtx, q_states, disc_rate, n_iter=30):
+def q_learning(reward_mtx, q_states, disc_rate, n_iter=50):
     # q-learning
     # use for loop over all actions. The size of states and actions is not
     # too large
@@ -207,12 +206,9 @@ def q_learning(reward_mtx, q_states, disc_rate, n_iter=30):
                 # update max_values
                 if max_values[state][0] < new_q_value:
                     max_values[state] = (new_q_value, action)
-    policy_matrix = {k: ((v[1], 1.0),) for k, v in max_values.items()}
+    policy_matrix = {k: ((v[1], 1),) for k, v in max_values.items()}
     return policy_matrix
 
-
-def dict_argmax(dict):
-    return max(dict.items(), key=lambda x: x[1])[0]
 
 
 def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
@@ -256,7 +252,7 @@ def choose_policy(mu):
 
 if __name__ == '__main__':
     try:
-        policies, mu = compute_policies(0.8, 0.7)
+        policies, mu = compute_policies(0.95, 6.33)
         choose_policy(mu)
     except KeyboardInterrupt:
         pass
