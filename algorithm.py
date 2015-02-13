@@ -177,6 +177,35 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
     return policy_matrix
 
 
+def finite_horizon_value_iteration(reward_mtx, q_states, disc_rate, horizon,
+                              max_reward):
+    # q-value iteration
+
+    # max_values = {s : (q_value, [a1, a2, ..., an])}
+    # q_states = {state: {action: (row_index, state_prime}}
+    # q_matrix = {(state, action): q-value}
+
+    max_values = dict.fromkeys(list(q_states), 0)  # need to initialize for
+    # terminal states
+    policy_table = dict.fromkeys(list(q_states), [-1]*horizon)
+
+    for k in range(horizon)
+        print('time step:', horizon)
+        for state, actions in q_states.items():
+            for action in actions:
+                row_idx = q_states[state][action][0]
+                state_prime = q_states[state][action][1]
+                reward = reward_mtx[row_idx]
+                new_q_value = reward + max_values[state_prime]
+
+                # update max_values
+                if max_values[state] < new_q_value:
+                    max_values[state] = new_q_value
+                    policy_table[state][k] = action
+
+    return policy_matrix
+
+
 def q_learning(reward_mtx, q_states, disc_rate, n_iter=50):
     # q-learning
     # use for loop over all actions. The size of states and actions is not
