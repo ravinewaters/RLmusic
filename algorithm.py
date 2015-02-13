@@ -215,8 +215,6 @@ def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
         t = 0
         # from the first state to the penultimate state
         for state, action in zip(trajectory[::2], trajectory[1::2]):
-            if action == -1:
-                break
             row = q_states[state][action][0]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp

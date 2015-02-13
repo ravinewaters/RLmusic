@@ -22,6 +22,16 @@ def parse_chord(chord):
 
 def compute_root_movement(state, action, chords_dict):
     # TROUBLE, how to parse chord?
+    if action == -1:
+        return 99
+    if state[-1] == -1:
+        return 100
+    if action[-1] == -1:
+        # next fig is rest
+        return 101
+    if state[2] == 1:
+        # pickup, no chord
+        return 102
     chord_root = chords_dict[1][state[2]]
     next_chord_root = chords_dict[1][action[1]]
     int_chord_root = CHORD_ROOT_TO_INT[parse_chord(chord_root)]
@@ -33,16 +43,30 @@ def get_bar_number(state):
     return state[0]
 
 
-def get_current_figure_head(state):
+def get_current_figure_head_pitch(state):
+    if state[-1] == -1:
+        return 100
     return state[-1]
 
 
 def compute_figure_head_movement(state, action):
+    if action == -1:
+        # exit action
+        return 99
+    if state[-1] == -1:
+        # current is rest
+        return 100
+    if action[-1] == -1:
+        # next fig is rest
+        return 101
     return action[-1] - state[-1]
 
+def get_current_beat(state):
+    return state[3]
 
-def compute_next_fig_beat(state):
-    return (state[4] + state[3])/2
+
+def get_next_beat(state):
+    return state[4] + state[3]
 
 
 def is_in_goal_state(state, action, term_states):
@@ -57,69 +81,28 @@ def is_rest(state):
     return 0
 
 
-def compute_features(state, action, fignotes_dict, chords_dict,term_states):
+def compute_features(state, action, fignotes_dict, chords_dict, term_states):
     # (root mvt,
+    # current bar number
+    # current fighead pitch,
     # fighead mvt,
-    # fig contour,
-    # next_fig_contour,
-    # to_term_state,
-    # from_pickup,
-    # to_rest,
-    # from_rest,
-    # next_beat,
+    # get_current_beat
+    # get_next_beat,
+    # is_in_goal_state,
+    # is_rest,
     # )
 
-    # from rest and not to rest
-    if state[-1] == -1 and action[-1] != -1:
-        tup = [
-            0,
-            0,
-            0,
-            get_fig_contour(action, fignotes_dict),
-            is_in_term_state(state, term_states),
-            0,
-            0,
-            1,
-            compute_next_fig_beat(state),
-        ]
-    # to rest
-    elif action[-1] == -1:
-        # from rest
-        if state[-1] == -1:
-            tup = [
-                0, 0, 0, 0, 0, 0, 1, 1, compute_next_fig_beat(state),
-            ]
-        # not from rest
-        else:
-            tup = [
-                0, 0, 0, 0, 0, 0, 1, 0, compute_next_fig_beat(state),
-            ]
-    # pickup when chord == 1
-    elif state[1] == 1:
-        tup = [
-            0,
-            compute_figure_head_movement(state, action),
-            get_fig_contour(state, fignotes_dict),
-            get_fig_contour(action, fignotes_dict),
-            is_in_term_state(state, term_states),
-            1,
-            is_to_rest(action),
-            0,
-            compute_next_fig_beat(state),
-        ]
-    else:
-        tup = [
-            compute_root_movement(state, action, chords_dict),
-            compute_figure_head_movement(state, action),
-            get_fig_contour(state, fignotes_dict),
-            get_fig_contour(action, fignotes_dict),
-            is_in_term_state(state, term_states),
-            0,
-            is_to_rest(action),
-            0,
-            compute_next_fig_beat(state),
-        ]
-    return tup
+    feat_l = [
+        compute_root_movement(state, action, chords_dict),
+        get_bar_number(state),
+        get_current_figure_head_pitch(state),
+        compute_figure_head_movement(state, action),
+        get_current_beat(state),
+        get_next_beat(state),
+        is_in_goal_state(state, action, term_states),
+        is_rest(state),
+    ]
+    return feat_l
 
 ############
 
@@ -140,12 +123,9 @@ def compute_proper_features(state, action, fignotes_dict,
 
 
 def compute_binary_features_expectation(cols, rows, row_idx, feat, coord_size):
-    # Append to list cols
-    # compute given state and action features expectation.
-    # return number of columns which have value 1
+    # modify cols and rows list
+    # called after we know the size of each coordinate
 
-    # wrong logic
-    # length of each coordinate is changing every loop in the parent function.
     index = 0
     for i in range(len(feat)):
         index = index + coord_size[i]
@@ -166,7 +146,7 @@ def generate_features_expectation_table():
         q_states = generate_all_possible_q_states(all_states,
                                                   all_actions)
 
-    num_of_features = 9
+    num_of_features = 8
     dictionaries = [{} for x in range(num_of_features)]
     counters = [0] * num_of_features
 
@@ -175,8 +155,6 @@ def generate_features_expectation_table():
     # this loop is to get proper features and the size of each coordinate
     for state, actions in q_states.items():
         for action, value in actions.items():
-            if action == - 1:
-                continue
             row_idx = value[0]
             feat = compute_proper_features(state,
                                                 action,
@@ -188,21 +166,16 @@ def generate_features_expectation_table():
                                                 num_of_features)
             temp_dict[row_idx] = feat
 
-    coord_size = [len(dict) for dict in dictionaries]
-    coord_size = np.concatenate((np.array([0]), coord_size))
-    print('coord_size:', coord_size)
+    coord_size = [0] + [len(dict) for dict in dictionaries]
+    print('coord_size:', coord_size[1:])
 
     # use row_idx as the row number to store feat_exp into
     # use csr_matrix
     cols = []  # this will be a list of column
     rows = []
-    counter = 1
+    n_rows = -1
     for state, actions in q_states.items():
-        for action, value in actions.items():
-            if action == -1:
-                continue
-            print('\nstate:', state)
-            print('action:', action)
+        for value in actions.values():
             row_idx = value[0]
             feat = temp_dict[row_idx]
             compute_binary_features_expectation(cols,
@@ -210,12 +183,15 @@ def generate_features_expectation_table():
                                                 row_idx,
                                                 feat,
                                                 coord_size)
-            counter += 1
+            if row_idx > n_rows:
+                n_rows = row_idx
 
     # create csr_matrix from data, rows and cols.
     data = [1] * len(cols)
-    n_rows = counter
-    n_cols = sum(coord_size + 1)
+    n_rows += 1  # include index 0
+    n_cols = sum(coord_size) + 1
+    print('n_rows:', n_rows)
+    print('n_cols:', n_cols)
     mtx = csr_matrix((data, (rows, cols)),
                      dtype=np.uint8,
                      shape=(n_rows, n_cols))

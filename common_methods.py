@@ -31,7 +31,7 @@ def make_dir_when_not_exist(dir):
 
 
 def compute_next_state(state, action):
-    bar = state[1]
+    bar = state[0]
     beat = state[3] + state[4]
     if beat == 20:
         beat = 4
@@ -46,7 +46,7 @@ def compute_next_state(state, action):
 
 def is_valid_action(state, action):
     # valid action iff
-    # current_beat + duration + action duration <= 20
+    # get_current_beat + duration + action duration <= 20
     fig_duration = state[4]
     fig_beat = state[3]
     action_fig_duration = action[2]
@@ -73,12 +73,11 @@ def generate_all_possible_q_states(all_states, all_actions):
     q_states = {}
     for state in all_states:
         if state in term_states:
-            # key 'state' wasn't existed.
-            # for exit action
-            q_states[state] = {-1: 0}
+            # only 'exit action' in term_states
+            q_states[state] = {-1: (row_idx, -1)}
+            row_idx += 1
+
         for action in all_actions:
-            if action == -1:
-                continue
             if is_valid_action(state, action):
                 next_state = compute_next_state(state, action)
                 if state in q_states:

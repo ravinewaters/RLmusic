@@ -84,12 +84,12 @@ def parse(filename):
             # Wrap up figure if we encounter Rest or Chord or new bar (beat ==
             # 1.0) or Final Barline
             if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
-                figure = (elem.measureNumber,
-                          tuple(fig_notes),
-                          fig_chord,
-                          fig_start_at_beat,
-                          fig_duration,
-                          fighead)
+                figure = (elem.measureNumber,  #  0
+                          tuple(fig_notes),    #  1
+                          fig_chord,           #  2
+                          fig_start_at_beat,   #  3
+                          fig_duration,        #  4
+                          fighead)             #  5
                 states.append(figure)
 
         elif elem.isRest and not last_item:
@@ -97,7 +97,9 @@ def parse(filename):
             states.append((elem.measureNumber,
                            ('rest', elem.quarterLength),
                            'rest',
-                           elem.beat, elem.quarterLength, -1))
+                           elem.beat,
+                           elem.quarterLength,
+                           -1))
 
     return states
 
@@ -198,7 +200,8 @@ def get_start_states(trajectories):
 
 
 def get_all_states(new_list_of_song_states):
-    all_states = list(set(make_flat_list(new_list_of_song_states)))
+    # get all combinations of possible states
+    all_states = new_list_of_song_states
     save_obj(all_states, 'ALL_STATES')
     return all_states
 
@@ -206,10 +209,10 @@ def get_all_actions(all_states):
     all_actions = []
     for state in all_states:
         if state[2] == 1:
+            # pickup
             continue
         else:
             all_actions.append(state[1:3] + state[-2:])
-    all_actions.append(-1)
     save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 
