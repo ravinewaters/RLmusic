@@ -200,8 +200,9 @@ def get_start_states(trajectories):
 
 
 def get_all_states(new_list_of_song_states):
-    # get all combinations of possible states
-    all_states = new_list_of_song_states
+    # get all combinations of possible stae
+    all_states = make_flat_list(new_list_of_song_states)
+    # do something
     save_obj(all_states, 'ALL_STATES')
     return all_states
 
