@@ -33,7 +33,6 @@ def parse(filename):
         pickup = []
         pickup_fighead = None
 
-
         for elem in first_measure.notesAndRests:
             if elem.isNote:
                 if not pickup_fighead:
@@ -49,7 +48,7 @@ def parse(filename):
                 pickup.append(elem.quarterLength)
                 pickup_duration += elem.quarterLength
 
-        states.append((tuple(pickup), '0', pickup_beat,
+        states.append((elem.measureNumber, tuple(pickup), '0', pickup_beat,
                        pickup_duration, pickup_fighead))
 
     last_item = False
@@ -85,7 +84,8 @@ def parse(filename):
             # Wrap up figure if we encounter Rest or Chord or new bar (beat ==
             # 1.0) or Final Barline
             if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
-                figure = (tuple(fig_notes),
+                figure = (elem.measureNumber,
+                          tuple(fig_notes),
                           fig_chord,
                           fig_start_at_beat,
                           fig_duration,
@@ -94,7 +94,9 @@ def parse(filename):
 
         elif elem.isRest and not last_item:
             # elem is a rest
-            states.append((('rest', elem.quarterLength), 'rest',
+            states.append((elem.measureNumber,
+                           ('rest', elem.quarterLength),
+                           'rest',
                            elem.beat, elem.quarterLength, -1))
 
     return states
@@ -143,11 +145,12 @@ def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict):
     for states in list_of_song_states:
         new_states = []
         for state in states:
-            new_state = [fignotes_dict[0][state[0]],
-                         chords_dict[0][state[1]],
-                         int(state[2] * 4),
+            new_state = [state[0],
+                         fignotes_dict[0][state[1]],
+                         chords_dict[0][state[2]],
                          int(state[3] * 4),
-                         state[4]]
+                         int(state[4] * 4),
+                         state[5]]
             new_states.append(tuple(new_state))
         new_all_states.append(new_states)
     return new_all_states
@@ -155,8 +158,8 @@ def convert_each_elem_to_int(list_of_song_states, fignotes_dict, chords_dict):
 
 def compute_action(s_prime):
     # find a that makes fs transition to s_prime
-
-    action = (s_prime[0], s_prime[1], s_prime[3], s_prime[4])
+    # no bar in action
+    action = s_prime[1:3] + s_prime[-2:]
     return action
 
 
@@ -198,17 +201,17 @@ def generate_all_states(new_list_of_song_states):
     flatten_states = make_flat_list(new_list_of_song_states)
     figure = []
     for item in flatten_states:
-        figure.append(item[:2] + item[-2:],)
+        figure.append(item[:3] + item[-2:],)
 
     figure = set(figure)
     beat = list(range(2, 20, 2))
 
     all_states = {}
     for item in itertools.product(figure, beat):
-        duration = item[0][2]
+        duration = item[0][3]
         beat = item[1]
         if beat + duration <= 20:
-            key = item[0][:2] + (item[1],)
+            key = item[0][:3] + (item[1],)
             if key not in all_states:
                 value = (item[0][-2:])
                 all_states[key] = value
@@ -220,26 +223,19 @@ def get_all_actions(all_states):
     all_actions = {}
     all_states = (k+v for k, v in all_states.items())
     for state in all_states:
-        if state[1] == 1:
+        if state[2] == 1:
             continue
         else:
-            if state[:2] not in all_actions:
-                all_actions[state[:2]] = state[-2:]
+            if state[1:3] not in all_actions:
+                all_actions[state[1:3]] = state[-2:]
     all_actions[-1] = 0
     save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 
-def save_elem_range(figheads):
-    # save range of elemnents in the states
-    figheads.remove(-1)
-    figheads_range = max(figheads) - min(figheads)
-    min_elem = (-11, -figheads_range, 0, 0, 0, 0, 0, 0, 1)
-    max_elem = (11, figheads_range, 2, 2, 1, 1, 1, 1, 10)
-    save_obj([min_elem, max_elem], 'ELEM_RANGE')
-
 def preprocess():
     if os.path.exists('obj'):
         shutil.rmtree('obj')
+
     filenames = get_corpus('corpus/')
     list_of_song_states = []
     for filename in filenames:
@@ -251,13 +247,10 @@ def preprocess():
     figheads = []
     for states in list_of_song_states:
         for state in states:
-            fignotes.append(state[0])
-            chords.append(state[1])
+            fignotes.append(state[1])
+            chords.append(state[2])
             figheads.append(state[-1])
 
-    figheads = set(figheads)
-    save_obj(figheads, 'FIGHEADS_ELEM')  # save set of figheads for later use
-    save_elem_range(figheads)
 
     fignotes_dict = make_dict_of_elem(fignotes, 'FIGNOTES_DICT')
     chords_dict = make_dict_of_elem(chords, 'CHORDS_DICT')

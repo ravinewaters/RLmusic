@@ -30,30 +30,14 @@ def make_dir_when_not_exist(dir):
         os.makedirs(dir)
 
 
-def array_to_int(arr, elem_size):
-    arr = np.array(arr)
-    sizes = np.array((1,) + elem_size[:-1])
-    cum_prod = np.cumprod(sizes)
-    return np.dot(arr, cum_prod)
-
-
-def int_to_array(integer, elem_size):
-    sizes = np.array((1,) + elem_size[:-1])
-    cum_prod = np.cumprod(sizes)
-    index = -1
-    arr = [0]*len(elem_size)
-    for radix in reversed(cum_prod):
-        q, integer = divmod(integer, radix)
-        arr[index] = q
-        index -= 1
-    return arr
-
-
 def compute_next_state(state, action):
-    beat = state[2] + state[3]
+    bar = state[1]
+    beat = state[3] + state[4]
     if beat == 20:
         beat = 4
-    s_prime = (action[0], action[1],
+        bar += 1
+    s_prime = (bar,
+               action[0], action[1],
                beat,
                action[2],
                action[3])
@@ -63,8 +47,8 @@ def compute_next_state(state, action):
 def is_valid_action(state, action):
     # valid action iff
     # current_beat + duration + action duration <= 20
-    fig_duration = state[3]
-    fig_beat = state[2]
+    fig_duration = state[4]
+    fig_beat = state[3]
     action_fig_duration = action[2]
     if fig_beat + fig_duration < 20:
         if action_fig_duration + fig_beat + fig_duration <= 20:

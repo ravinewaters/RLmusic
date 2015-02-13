@@ -17,8 +17,7 @@ def generate_random_policy_matrix(q_states):
 
 
 def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
-                                        disc_rate, start_states,
-                                        n_iter=1):
+                                        disc_rate, start_states):
     # Basically what the function does is walk through the states and
     # actions. The actions are gotten by choosing randomly according to the
     # policy matrix. We start from a given start_state and stop when
@@ -33,10 +32,10 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
 
 
     term_states = load_obj('TERM_STATES')
-    state = choice(list(start_states))
 
+    counter = 1
     mean_feat_exp = 0
-    for i in range(n_iter):
+    for state in start_states:
         sum_of_feat_exp = 0
         t = 0
         while True:
@@ -52,7 +51,9 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
             state = compute_next_state(state, action)
             t += 1
         mean_feat_exp += sum_of_feat_exp
-    return mean_feat_exp/n_iter
+        counter += 1
+
+    return mean_feat_exp/counter
 
 
 if __name__ == '__main__':

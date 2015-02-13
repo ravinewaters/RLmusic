@@ -260,3 +260,23 @@ def generate_trajectory_based_on_errors(state, term_states, q_states,
 
 def dict_argmax(dict):
     return max(dict.items(), key=lambda x: x[1])[0]
+
+
+
+def array_to_int(arr, elem_size):
+    arr = np.array(arr)
+    sizes = np.array((1,) + elem_size[:-1])
+    cum_prod = np.cumprod(sizes)
+    return np.dot(arr, cum_prod)
+
+
+def int_to_array(integer, elem_size):
+    sizes = np.array((1,) + elem_size[:-1])
+    cum_prod = np.cumprod(sizes)
+    index = -1
+    arr = [0]*len(elem_size)
+    for radix in reversed(cum_prod):
+        q, integer = divmod(integer, radix)
+        arr[index] = q
+        index -= 1
+    return arr

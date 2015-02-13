@@ -47,9 +47,8 @@ def compute_policies(disc_rate, eps):
                                                         disc_rate)
         mu = []
         counter = 1
-
+    print('mu_expert:', mu_expert)
     print('\n', 'counter, t')
-
     while True:
         if counter == 1:
             mu_value = compute_policy_features_expectation(feat_mtx,
@@ -74,8 +73,7 @@ def compute_policies(disc_rate, eps):
 
         # q-value iteration
         policy_matrix = value_iteration(reward_mtx, q_states,
-                                               disc_rate, 0.001,
-                                               100)
+                                               disc_rate, 0.01, 100)
 
         # q-learning
         # policy_matrix = q_learning(reward_mtx,
@@ -177,35 +175,6 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
     return policy_matrix
 
 
-def finite_horizon_value_iteration(reward_mtx, q_states, disc_rate, horizon,
-                              max_reward):
-    # q-value iteration
-
-    # max_values = {s : (q_value, [a1, a2, ..., an])}
-    # q_states = {state: {action: (row_index, state_prime}}
-    # q_matrix = {(state, action): q-value}
-
-    max_values = dict.fromkeys(list(q_states), 0)  # need to initialize for
-    # terminal states
-    policy_table = dict.fromkeys(list(q_states), [-1]*horizon)
-
-    for k in range(horizon)
-        print('time step:', horizon)
-        for state, actions in q_states.items():
-            for action in actions:
-                row_idx = q_states[state][action][0]
-                state_prime = q_states[state][action][1]
-                reward = reward_mtx[row_idx]
-                new_q_value = reward + max_values[state_prime]
-
-                # update max_values
-                if max_values[state] < new_q_value:
-                    max_values[state] = new_q_value
-                    policy_table[state][k] = action
-
-    return policy_matrix
-
-
 def q_learning(reward_mtx, q_states, disc_rate, n_iter=50):
     # q-learning
     # use for loop over all actions. The size of states and actions is not
@@ -281,7 +250,7 @@ def choose_policy(mu):
 
 if __name__ == '__main__':
     try:
-        policies, mu = compute_policies(0.95, 6.33)
+        policies, mu = compute_policies(0.95, 4.24128)
         choose_policy(mu)
     except KeyboardInterrupt:
         pass
