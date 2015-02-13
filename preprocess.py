@@ -196,39 +196,20 @@ def get_start_states(trajectories):
     save_obj(start_states, 'START_STATES')
     return set(start_states)
 
-def generate_all_states(new_list_of_song_states):
-    # combine all figures with all beat, but subjected to restriction
-    flatten_states = make_flat_list(new_list_of_song_states)
-    figure = []
-    for item in flatten_states:
-        figure.append(item[:3] + item[-2:],)
 
-    figure = set(figure)
-    beat = list(range(2, 20, 2))
-
-    all_states = {}
-    for item in itertools.product(figure, beat):
-        duration = item[0][3]
-        beat = item[1]
-        if beat + duration <= 20:
-            key = item[0][:3] + (item[1],)
-            if key not in all_states:
-                value = (item[0][-2:])
-                all_states[key] = value
-
+def get_all_states(new_list_of_song_states):
+    all_states = list(set(make_flat_list(new_list_of_song_states)))
     save_obj(all_states, 'ALL_STATES')
     return all_states
 
 def get_all_actions(all_states):
-    all_actions = {}
-    all_states = (k+v for k, v in all_states.items())
+    all_actions = []
     for state in all_states:
         if state[2] == 1:
             continue
         else:
-            if state[1:3] not in all_actions:
-                all_actions[state[1:3]] = state[-2:]
-    all_actions[-1] = 0
+            all_actions.append(state[1:3] + state[-2:])
+    all_actions.append(-1)
     save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 
@@ -262,7 +243,7 @@ def preprocess():
     start_states = get_start_states(trajectories)
     terminal_states = get_terminal_states(trajectories)
 
-    all_states = generate_all_states(new_list_of_song_states)
+    all_states = get_all_states(new_list_of_song_states)
     all_actions = get_all_actions(all_states)
 
 

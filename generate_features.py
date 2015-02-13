@@ -9,6 +9,7 @@ from common_methods import *
 # from pprint import pprint
 
 # all wrong need to reconsider all these
+
 def parse_chord(chord):
     if len(chord) == 1:
         return chord
@@ -21,42 +22,37 @@ def parse_chord(chord):
 
 def compute_root_movement(state, action, chords_dict):
     # TROUBLE, how to parse chord?
-    chord_root = chords_dict[1][state[1]]
+    chord_root = chords_dict[1][state[2]]
     next_chord_root = chords_dict[1][action[1]]
     int_chord_root = CHORD_ROOT_TO_INT[parse_chord(chord_root)]
     int_next_chord_root = CHORD_ROOT_TO_INT[parse_chord(next_chord_root)]
     return int_next_chord_root - int_chord_root
 
 
+def get_bar_number(state):
+    return state[0]
+
+
+def get_current_figure_head(state):
+    return state[-1]
+
+
 def compute_figure_head_movement(state, action):
     return action[-1] - state[-1]
 
 
-def get_fig_contour(state, fignotes_dict):
-    #  UP or DOWN or STAY
-    # state is an integer tuple
-    fignotes = fignotes_dict[1][state[0]]
-    fig_contour = fignotes[0] - fignotes[-2]
-    if fig_contour > 0:
-        return 2
-    elif fig_contour < 0:
-        return 0
-    else:
-        return 1
-
-
 def compute_next_fig_beat(state):
-    return (state[3] + state[2])/2
+    return (state[4] + state[3])/2
 
 
-def is_in_term_state(state, term_states):
-    if state in term_states:
+def is_in_goal_state(state, action, term_states):
+    if state in term_states and action == -1:
         return 1
     return 0
 
 
-def is_to_rest(action):
-    if action[-1] == -1:
+def is_rest(state):
+    if state[-1] == -1:
         return 1
     return 0
 
@@ -167,10 +163,8 @@ def generate_features_expectation_table():
     except FileNotFoundError:
         all_states = load_obj('ALL_STATES')
         all_actions = load_obj('ALL_ACTIONS')
-        list_of_all_states = [k+v for k, v in all_states.items()]
-        list_of_all_actions = [k+v for k, v in all_actions.items()]
-        q_states = generate_all_possible_q_states(list_of_all_states,
-                                                  list_of_all_actions)
+        q_states = generate_all_possible_q_states(all_states,
+                                                  all_actions)
 
     num_of_features = 9
     dictionaries = [{} for x in range(num_of_features)]

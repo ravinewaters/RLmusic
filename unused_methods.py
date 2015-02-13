@@ -280,3 +280,27 @@ def int_to_array(integer, elem_size):
         arr[index] = q
         index -= 1
     return arr
+
+def generate_all_states(new_list_of_song_states):
+    # combine all figures with all beat, but subjected to restriction
+    # return list of all_states
+    flatten_states = make_flat_list(new_list_of_song_states)
+    figure = []
+    for item in flatten_states:
+        figure.append(item[:3] + item[-2:],)
+
+    figure = set(figure)
+    beat = list(range(2, 20, 2))
+
+    all_states = []
+    for item in itertools.product(figure, beat):
+        duration = item[0][3]
+        beat = item[1]
+        if beat + duration <= 20:
+            key = item[0][:3] + (item[1],)
+            if key not in all_states:
+                value = (item[0][-2:])
+                all_states.append(value)
+
+    save_obj(all_states, 'ALL_STATES')
+    return all_states

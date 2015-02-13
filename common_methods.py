@@ -9,7 +9,7 @@ from constants import *
 
 
 def make_flat_list(list_of_lists):
-    flat_list = (item for lists in list_of_lists for item in lists)
+    flat_list = [item for lists in list_of_lists for item in lists]
     return flat_list
 
 
@@ -65,6 +65,9 @@ def generate_all_possible_q_states(all_states, all_actions):
 
     # row_idx is a row number in which we store feat_exp of corresponding
     # state, action into.
+
+    # q_states = {s : {a: row_idx}}
+    # need to make sure that only the terminal states has action 'exit' = -1.
     term_states = load_obj('TERM_STATES')
     row_idx = 0
     q_states = {}
@@ -113,7 +116,4 @@ def weighted_choice_b(weights):
 if __name__ == '__main__':
     all_states = load_obj('ALL_STATES')
     all_actions = load_obj('ALL_ACTIONS')
-    list_of_all_states = [k+v for k, v in all_states.items()]
-    list_of_all_actions = [k+v for k, v in all_actions.items()]
-    q_states = generate_all_possible_q_states(list_of_all_states,
-                                                  list_of_all_actions)
+    q_states = generate_all_possible_q_states(all_states, all_actions)

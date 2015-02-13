@@ -27,10 +27,8 @@ def compute_policies(disc_rate, eps):
         feat_mtx = generate_features_expectation_table()
         all_states = load_obj('ALL_STATES')
         all_actions = load_obj('ALL_ACTIONS')
-        list_of_all_states = [k+v for k, v in all_states.items()]
-        list_of_all_actions = [k+v for k, v in all_actions.items()]
-        q_states = generate_all_possible_q_states(list_of_all_states,
-                                                  list_of_all_actions)
+        q_states = generate_all_possible_q_states(all_states,
+                                                  all_actions)
                                                   
     try:
         # Load computation
