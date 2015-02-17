@@ -66,8 +66,9 @@ def generate_all_possible_q_states(all_states, all_actions):
     # row_idx is a row number in which we store feat_exp of corresponding
     # state, action into.
 
-    # q_states = {s : {a: row_idx}}
+    # q_states = {s : {a: (row_idx, s')}}
     # a is possible state for s
+    # s' is the next state from s after having chosen action a
     # need to make sure that only the terminal states has action 'exit' = -1.
     term_states = load_obj('TERM_STATES')
     row_idx = 0

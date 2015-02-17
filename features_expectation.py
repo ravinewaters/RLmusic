@@ -12,7 +12,7 @@ def generate_random_policy_matrix(q_states):
     # not stochastic
     # Should add stochastic policy to the matrix.
 
-    policy_matrix = {s: ((choice(list(v)), 1),) for s, v in q_states.items()}
+    policy_matrix = {s: choice(list(v)) for s, v in q_states.items()}
     return policy_matrix
 
 
@@ -40,7 +40,7 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
         t = 0
         while True:
             print('state:', state)
-            action = weighted_choice(policy_matrix[state])
+            action = policy_matrix[state]
             row = q_states[state][action][0]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp

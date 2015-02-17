@@ -7,6 +7,7 @@ from features_expectation import compute_policy_features_expectation, \
 from math import sqrt
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
+from random import choice
 
 
 def compute_policies(disc_rate, eps):
@@ -169,7 +170,7 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
                     delta = diff
         iteration += 1
         print('delta', delta)
-    policy_matrix = {k: tuple([(a, 1) for a in v[1]]) for k, v in max_values.items()}
+    policy_matrix = {s: choice(v[1]) for s, v in max_values.items()}
     return policy_matrix
 
 
@@ -202,7 +203,7 @@ def q_learning(reward_mtx, q_states, disc_rate, n_iter=50):
                 # update max_values
                 if max_values[state][0] < new_q_value:
                     max_values[state] = (new_q_value, action)
-    policy_matrix = {k: ((v[1], 1),) for k, v in max_values.items()}
+    policy_matrix = {s: choice(v[1]) for s, v in max_values.items()}
     return policy_matrix
 
 

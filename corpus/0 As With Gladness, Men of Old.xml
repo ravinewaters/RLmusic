@@ -7,7 +7,7 @@
     <creator type="composer">William Chatterton Dix, 1859</creator>
     <encoding>
       <software>MuseScore 1.3</software>
-      <encoding-date>2015-01-23</encoding-date>
+      <encoding-date>2015-02-17</encoding-date>
       </encoding>
     </identification>
   <defaults>
@@ -36,10 +36,10 @@
     <credit-words default-x="595.238" default-y="1626.98" font-size="24" justify="center" valign="top">As With Gladness, Men of Old</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="1133.79" default-y="1559.98" font-size="12" justify="right" valign="top">William Chatterton Dix, 1859</credit-words>
+    <credit-words default-x="1133.79" default-y="1558.48" font-size="12" justify="right" valign="top">William Chatterton Dix, 1859</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="56.6893" default-y="1559.98" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
+    <credit-words default-x="56.6893" default-y="1558.48" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
     </credit>
   <part-list>
     <score-part id="P1">
@@ -56,11 +56,11 @@
       </score-part>
     </part-list>
   <part id="P1">
-    <measure number="1" width="193.14">
+    <measure number="1" width="197.07">
       <print>
         <system-layout>
           <system-margins>
-            <left-margin>25.87</left-margin>
+            <left-margin>26.50</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
           <top-system-distance>180.00</top-system-distance>
@@ -83,20 +83,20 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="74.65" default-y="-50.00">
+      <note default-x="79.15" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="102.15" default-y="-55.00">
+      <note default-x="106.48" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -104,10 +104,10 @@
         <stem>down</stem>
         <beam number="1">begin</beam>
         </note>
-      <note default-x="119.34" default-y="-50.00">
+      <note default-x="123.64" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -115,20 +115,20 @@
         <stem>down</stem>
         <beam number="1">end</beam>
         </note>
-      <note default-x="136.53" default-y="-45.00">
+      <note default-x="140.80" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="164.04" default-y="-50.00">
+      <note default-x="168.14" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -136,27 +136,27 @@
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="2" width="96.90">
+    <measure number="2" width="96.33">
       <harmony print-frame="no">
         <root>
           <root-step>F</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-35.00">
+      <note default-x="12.00" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="35.14" default-y="-35.00">
+      <note default-x="34.98" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -169,10 +169,10 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="58.28" default-y="-40.00">
+      <note default-x="57.96" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -180,36 +180,26 @@
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="3" width="113.33">
+    <measure number="3" width="112.76">
       <harmony print-frame="no">
         <root>
           <root-step>A</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="36.93" default-y="-55.00">
+      <note default-x="36.79" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>2</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>down</stem>
-        </note>
-      <note default-x="61.86" default-y="-50.00">
-        <pitch>
-          <step>C</step>
           <octave>4</octave>
           </pitch>
         <duration>2</duration>
@@ -217,10 +207,20 @@
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="86.80" default-y="-60.00">
+      <note default-x="61.58" default-y="-15.00">
+        <pitch>
+          <step>C</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>2</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>down</stem>
+        </note>
+      <note default-x="86.37" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -228,37 +228,37 @@
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="4" width="96.90">
+    <measure number="4" width="96.33">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-65.00">
+      <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="35.14" default-y="-65.00">
+      <note default-x="34.98" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="58.28" default-y="-65.00">
+      <note default-x="57.96" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -266,7 +266,7 @@
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="5" width="130.49">
+    <measure number="5" width="129.92">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -279,20 +279,20 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="39.50" default-y="-55.00">
+      <note default-x="39.33" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -300,10 +300,10 @@
         <stem>down</stem>
         <beam number="1">begin</beam>
         </note>
-      <note default-x="56.69" default-y="-50.00">
+      <note default-x="56.49" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -311,20 +311,20 @@
         <stem>down</stem>
         <beam number="1">end</beam>
         </note>
-      <note default-x="73.88" default-y="-45.00">
+      <note default-x="73.66" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="101.39" default-y="-50.00">
+      <note default-x="100.99" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -332,27 +332,27 @@
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="6" width="96.90">
+    <measure number="6" width="96.33">
       <harmony print-frame="no">
         <root>
           <root-step>F</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-35.00">
+      <note default-x="12.00" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="35.14" default-y="-35.00">
+      <note default-x="34.98" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -365,10 +365,10 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="58.28" default-y="-40.00">
+      <note default-x="57.96" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -376,27 +376,27 @@
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="7" width="113.33">
+    <measure number="7" width="112.76">
       <harmony print-frame="no">
         <root>
           <root-step>A</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="36.93" default-y="-55.00">
+      <note default-x="36.79" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -409,20 +409,20 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="61.86" default-y="-50.00">
+      <note default-x="61.58" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="86.80" default-y="-60.00">
+      <note default-x="86.37" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -430,7 +430,7 @@
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="8" width="96.90">
+    <measure number="8" width="96.33">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -443,30 +443,30 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-65.00">
+      <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="35.14" default-y="-65.00">
+      <note default-x="34.98" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="58.28" default-y="-65.00">
+      <note default-x="57.96" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -474,47 +474,47 @@
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="9" width="113.33">
+    <measure number="9" width="112.76">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="36.93" default-y="-45.00">
+      <note default-x="36.79" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="61.86" default-y="-50.00">
+      <note default-x="61.58" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="86.80" default-y="-40.00">
+      <note default-x="86.37" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -538,10 +538,10 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="53.15" default-y="-30.00">
+      <note default-x="53.15" default-y="5.00">
         <pitch>
           <step>G</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -549,20 +549,20 @@
         <dot/>
         <stem>down</stem>
         </note>
-      <note default-x="178.86" default-y="-35.00">
+      <note default-x="178.86" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>eighth</type>
         <stem>down</stem>
         </note>
-      <note default-x="243.30" default-y="-40.00">
+      <note default-x="243.30" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -577,20 +577,20 @@
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="96.96" default-y="-55.00">
+      <note default-x="96.96" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -603,20 +603,20 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="181.92" default-y="-50.00">
+      <note default-x="181.92" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="266.87" default-y="-35.00">
+      <note default-x="266.87" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -631,30 +631,30 @@
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="101.84" default-y="-45.00">
+      <note default-x="101.84" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="191.67" default-y="-50.00">
+      <note default-x="191.67" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>

@@ -8,7 +8,7 @@ Veni Emmanuel</movement-title>
     <creator type="composer">Trad. 15C</creator>
     <encoding>
       <software>MuseScore 1.3</software>
-      <encoding-date>2015-01-23</encoding-date>
+      <encoding-date>2015-02-17</encoding-date>
       </encoding>
     </identification>
   <defaults>
@@ -38,10 +38,10 @@ Veni Emmanuel</movement-title>
 Veni Emmanuel</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="1133.79" default-y="1559.98" font-size="12" justify="right" valign="top">Trad. 15C</credit-words>
+    <credit-words default-x="1133.79" default-y="1558.48" font-size="12" justify="right" valign="top">Trad. 15C</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="56.6893" default-y="1559.98" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
+    <credit-words default-x="56.6893" default-y="1558.48" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
     </credit>
   <part-list>
     <score-part id="P1">
@@ -58,12 +58,12 @@ Veni Emmanuel</credit-words>
       </score-part>
     </part-list>
   <part id="P1">
-    <measure number="1" width="170.68">
+    <measure number="1" width="174.66">
       <print>
         <system-layout>
           <system-margins>
-            <left-margin>25.87</left-margin>
-            <right-margin>-0.00</right-margin>
+            <left-margin>26.50</left-margin>
+            <right-margin>0.00</right-margin>
             </system-margins>
           <top-system-distance>180.00</top-system-distance>
           </system-layout>
@@ -85,40 +85,40 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="74.65" default-y="-60.00">
+      <note default-x="79.15" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="98.26" default-y="-50.00">
+      <note default-x="102.63" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="121.86" default-y="-40.00">
+      <note default-x="126.11" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="145.47" default-y="-40.00">
+      <note default-x="149.58" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -126,11 +126,11 @@ Veni Emmanuel</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="2" width="108.03">
-      <note default-x="12.00" default-y="-40.00">
+    <measure number="2" width="107.51">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -143,30 +143,30 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="35.61" default-y="-45.00">
+      <note default-x="35.48" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="59.21" default-y="-35.00">
+      <note default-x="58.96" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="82.82" default-y="-40.00">
+      <note default-x="82.43" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -174,17 +174,17 @@ Veni Emmanuel</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="3" width="82.94">
+    <measure number="3" width="82.43">
       <harmony print-frame="no">
         <root>
           <root-step>G</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-45.00">
+      <note default-x="12.00" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -197,10 +197,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="35.50" default-y="-50.00">
+      <note default-x="35.32" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -209,17 +209,17 @@ Veni Emmanuel</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="4" width="108.03">
+    <measure number="4" width="107.51">
       <harmony print-frame="no">
         <root>
           <root-step>D</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-45.00">
+      <note default-x="12.00" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -232,10 +232,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="35.61" default-y="-40.00">
+      <note default-x="35.48" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -248,20 +248,20 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="59.21" default-y="-50.00">
+      <note default-x="58.96" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="82.82" default-y="-60.00">
+      <note default-x="82.43" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -269,11 +269,11 @@ Veni Emmanuel</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="5" width="108.03">
-      <note default-x="12.00" default-y="-50.00">
+    <measure number="5" width="107.51">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -286,9 +286,19 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="35.61" default-y="-45.00">
+      <note default-x="35.48" default-y="-10.00">
         <pitch>
           <step>D</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>down</stem>
+        </note>
+      <note default-x="58.96" default-y="-20.00">
+        <pitch>
+          <step>B</step>
           <octave>4</octave>
           </pitch>
         <duration>1</duration>
@@ -296,20 +306,10 @@ Veni Emmanuel</credit-words>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="59.21" default-y="-55.00">
-        <pitch>
-          <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>down</stem>
-        </note>
-      <note default-x="82.82" default-y="-60.00">
+      <note default-x="82.43" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -317,27 +317,27 @@ Veni Emmanuel</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="6" width="82.94">
+    <measure number="6" width="82.43">
       <harmony print-frame="no">
         <root>
           <root-step>A</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-65.00">
+      <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="35.50" default-y="-60.00">
+      <note default-x="35.32" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -346,47 +346,47 @@ Veni Emmanuel</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="7" width="108.03">
+    <measure number="7" width="107.51">
       <harmony print-frame="no">
         <root>
           <root-step>D</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-45.00">
+      <note default-x="12.00" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="35.61" default-y="-45.00">
+      <note default-x="35.48" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="59.21" default-y="-60.00">
+      <note default-x="58.96" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="82.82" default-y="-60.00">
+      <note default-x="82.43" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -394,11 +394,11 @@ Veni Emmanuel</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="8" width="91.60">
-      <note default-x="12.00" default-y="-55.00">
+    <measure number="8" width="91.09">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -411,20 +411,20 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="33.09" default-y="-50.00">
+      <note default-x="32.90" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>down</stem>
         </note>
-      <note default-x="66.84" default-y="-55.00">
+      <note default-x="66.33" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -432,11 +432,11 @@ Veni Emmanuel</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="9" width="82.94">
-      <note default-x="12.00" default-y="-60.00">
+    <measure number="9" width="82.43">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -449,10 +449,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="35.50" default-y="-65.00">
+      <note default-x="35.32" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -461,47 +461,47 @@ Veni Emmanuel</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="10" width="108.03">
+    <measure number="10" width="107.51">
       <harmony print-frame="no">
         <root>
           <root-step>A</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="35.61" default-y="-45.00">
+      <note default-x="35.48" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="59.21" default-y="-40.00">
+      <note default-x="58.96" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="82.82" default-y="-40.00">
+      <note default-x="82.43" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -519,20 +519,20 @@ Veni Emmanuel</credit-words>
           <system-distance>92.50</system-distance>
           </system-layout>
         </print>
-      <note default-x="53.15" default-y="-40.00">
+      <note default-x="53.15" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="81.25" default-y="-45.00">
+      <note default-x="81.25" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -545,20 +545,20 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="109.35" default-y="-35.00">
+      <note default-x="109.35" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="137.45" default-y="-40.00">
+      <note default-x="137.45" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -573,10 +573,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-45.00">
+      <note default-x="12.00" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -589,10 +589,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="41.59" default-y="-50.00">
+      <note default-x="41.59" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -608,20 +608,20 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-30.00">
+      <note default-x="12.00" default-y="5.00">
         <pitch>
           <step>G</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="41.59" default-y="-30.00">
+      <note default-x="41.59" default-y="5.00">
         <pitch>
           <step>G</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -637,20 +637,20 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="41.59" default-y="-40.00">
+      <note default-x="41.59" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -660,10 +660,10 @@ Veni Emmanuel</credit-words>
         </note>
       </measure>
     <measure number="15" width="125.99">
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -676,30 +676,30 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="40.10" default-y="-45.00">
+      <note default-x="40.10" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="68.20" default-y="-35.00">
+      <note default-x="68.20" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="96.30" default-y="-40.00">
+      <note default-x="96.30" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -708,10 +708,10 @@ Veni Emmanuel</credit-words>
         </note>
       </measure>
     <measure number="16" width="125.99">
-      <note default-x="12.00" default-y="-45.00">
+      <note default-x="12.00" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -724,20 +724,20 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="40.10" default-y="-50.00">
+      <note default-x="40.10" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="68.20" default-y="-45.00">
+      <note default-x="68.20" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -750,10 +750,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="96.30" default-y="-40.00">
+      <note default-x="96.30" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -762,30 +762,30 @@ Veni Emmanuel</credit-words>
         </note>
       </measure>
     <measure number="17" width="125.99">
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="40.10" default-y="-60.00">
+      <note default-x="40.10" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="68.20" default-y="-50.00">
+      <note default-x="68.20" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -798,10 +798,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="96.30" default-y="-45.00">
+      <note default-x="96.30" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -810,20 +810,20 @@ Veni Emmanuel</credit-words>
         </note>
       </measure>
     <measure number="18" width="125.99">
-      <note default-x="12.00" default-y="-55.00">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="40.10" default-y="-60.00">
+      <note default-x="40.10" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -836,10 +836,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="68.20" default-y="-65.00">
+      <note default-x="68.20" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -852,10 +852,10 @@ Veni Emmanuel</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="96.30" default-y="-60.00">
+      <note default-x="96.30" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <tie type="start"/>
@@ -868,10 +868,10 @@ Veni Emmanuel</credit-words>
         </note>
       </measure>
     <measure number="19" width="103.25">
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>3</duration>
         <tie type="stop"/>
