@@ -49,7 +49,8 @@ def compute_policies(disc_rate, eps):
         counter = 1
 
     print('\n', 'counter, t')
-    while True:
+    t = 0
+    while counter <= 30:
         if counter == 1:
             mu_value = compute_policy_features_expectation(feat_mtx,
                                                            q_states,
@@ -64,12 +65,15 @@ def compute_policies(disc_rate, eps):
             mu_bar += compute_projection(mu_bar, mu[counter-1], mu_expert)
 
         w = mu_expert - mu_bar
+        temp = t
         t = sqrt((w.data**2).sum())
-        print('{}, {}'.format(counter, t))
-        if t <= eps:
+
+        if abs(t - temp) < 1e-10 or t <= eps:
+            print('temp:', temp)
+            print('t:', t)
             break
         w /= t
-
+        print('{}, {}'.format(counter, t))
         reward_mtx = compute_reward_mtx(feat_mtx, w)
 
         # q-value iteration
@@ -88,11 +92,8 @@ def compute_policies(disc_rate, eps):
                                                        start_states,
                                                        term_states)
         mu.append(mu_value)
-        difference = ((mu[-2] - mu[-1]).data ** 2).sum()
-        if difference <= 1e-15:
-            break
         counter += 1
-        
+
         # save mu_expert, mu, mu_bar counter, policies for later computation
         io.savemat(DIR + 'TEMP', {'mu_expert': mu_expert,
                             'mu': mu,
@@ -115,9 +116,7 @@ def compute_policies(disc_rate, eps):
 
 def compute_projection(mu_bar, mu, mu_expert):
     mu_mu_bar_distance = mu - mu_bar
-    # print('mu - mu_bar:', mu_mu_bar_distance)
     mu_bar_mu_expert_distance = mu_expert - mu_bar
-    # print('mu_expert - mu_bar:', mu_bar_mu_expert_distance)
     numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)[0, 0]
     denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)[0, 0]
     return numerator/denominator * mu_mu_bar_distance
@@ -146,10 +145,14 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
                 if action == -1:
                     # if action 'exit'
                     # reward = max_reward*exp(-((state[0]-16)/10)**2)
-                    reward = max_reward
+
                     if (state, action) not in q_matrix:
+                        reward = max_reward
+                        if 12 <= state[0] <= 16:
+                            # inflate reward if in bar 12-16.
+                            reward *= 3
                         q_matrix[(state, action)] = reward
-                    max_values[state] = (reward, [action])
+                        max_values[state] = (reward, [action])
                     continue
 
                 row_idx = q_states[state][action][0]
@@ -179,7 +182,7 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
                     delta = diff
         iteration += 1
         # print('delta', delta)
-    policy_matrix = {s: v[1] for s, v in max_values.items()}
+    policy_matrix = {s: list(set(v[1])) for s, v in max_values.items()}
     return policy_matrix
 
 
@@ -256,7 +259,7 @@ def choose_policy(mu):
 
 if __name__ == '__main__':
     try:
-        policies, mu = compute_policies(0.99, 1)
+        policies, mu = compute_policies(0.9999, 0.1)
         choose_policy(mu)
     except KeyboardInterrupt:
         pass
