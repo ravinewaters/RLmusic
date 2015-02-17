@@ -4,7 +4,7 @@ from common_methods import *
 from generate_features import generate_features_expectation_table
 from features_expectation import compute_policy_features_expectation, \
     generate_random_policy_matrix
-from math import sqrt
+from math import sqrt, exp
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
 from random import choice
@@ -19,9 +19,10 @@ def compute_policies(disc_rate, eps):
     # print('terminal states reward:', max_reward)
 
     start_states = load_obj('START_STATES')
+    term_states = load_obj('TERM_STATES')
 
     try:
-        # required files
+        # load feat_mtx and q_states
         feat_mtx = io.loadmat(DIR + 'FEATURES_EXPECTATION_MATRIX')['mtx']
         q_states = load_obj('Q_STATES')
     except FileNotFoundError:
@@ -32,7 +33,7 @@ def compute_policies(disc_rate, eps):
                                                   all_actions)
                                                   
     try:
-        # Load computation
+        # Load saved computation state
         temp = io.loadmat(DIR + 'TEMP')
         policies = load_obj('TEMP_POLICIES')
         mu_expert = temp['mu_expert']
@@ -46,6 +47,7 @@ def compute_policies(disc_rate, eps):
                                                         disc_rate)
         mu = []
         counter = 1
+
     print('\n', 'counter, t')
     while True:
         if counter == 1:
@@ -53,7 +55,8 @@ def compute_policies(disc_rate, eps):
                                                            q_states,
                                                            policy_matrix,
                                                            disc_rate,
-                                                           start_states)
+                                                           start_states,
+                                                           term_states)
             mu.append(mu_value)
             mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
 
@@ -82,8 +85,12 @@ def compute_policies(disc_rate, eps):
                                                        q_states,
                                                        policy_matrix,
                                                        disc_rate,
-                                                       start_states)
+                                                       start_states,
+                                                       term_states)
         mu.append(mu_value)
+        difference = ((mu[-2] - mu[-1]).data ** 2).sum()
+        if difference <= 1e-15:
+            break
         counter += 1
         
         # save mu_expert, mu, mu_bar counter, policies for later computation
@@ -92,8 +99,6 @@ def compute_policies(disc_rate, eps):
                             'mu_bar': mu_bar,
                             'counter': counter})
         save_obj(policies, 'TEMP_POLICIES')
-        if counter == 7:
-            break
 
     mu = [mu_expert] + mu
 
@@ -110,7 +115,9 @@ def compute_policies(disc_rate, eps):
 
 def compute_projection(mu_bar, mu, mu_expert):
     mu_mu_bar_distance = mu - mu_bar
+    # print('mu - mu_bar:', mu_mu_bar_distance)
     mu_bar_mu_expert_distance = mu_expert - mu_bar
+    # print('mu_expert - mu_bar:', mu_bar_mu_expert_distance)
     numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)[0, 0]
     denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)[0, 0]
     return numerator/denominator * mu_mu_bar_distance
@@ -132,16 +139,17 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
     delta = threshold
     iteration = 1
     while delta >= threshold:
-        # print('iteration:', iteration)
         delta = -1
+        # print('iteration:', iteration)
         for state, actions in q_states.items():
             for action in actions:
-
                 if action == -1:
                     # if action 'exit'
-                    if (state, action) in q_matrix:
-                        q_matrix[(state, action)] = max_reward
-                    max_values[state] = (max_reward, [action])
+                    # reward = max_reward*exp(-((state[0]-16)/10)**2)
+                    reward = max_reward
+                    if (state, action) not in q_matrix:
+                        q_matrix[(state, action)] = reward
+                    max_values[state] = (reward, [action])
                     continue
 
                 row_idx = q_states[state][action][0]
@@ -171,7 +179,7 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
                     delta = diff
         iteration += 1
         # print('delta', delta)
-    policy_matrix = {s: choice(v[1]) for s, v in max_values.items()}
+    policy_matrix = {s: v[1] for s, v in max_values.items()}
     return policy_matrix
 
 

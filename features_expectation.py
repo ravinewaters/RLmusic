@@ -12,12 +12,13 @@ def generate_random_policy_matrix(q_states):
     # not stochastic
     # Should add stochastic policy to the matrix.
 
-    policy_matrix = {s: choice(list(v)) for s, v in q_states.items()}
+    policy_matrix = {s: list(v) for s, v in q_states.items()}
+    # deterministic action
     return policy_matrix
 
 
 def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
-                                        disc_rate, start_states):
+                                        disc_rate, start_states, term_states):
     # Basically what the function does is walk through the states and
     # actions. The actions are gotten by choosing randomly according to the
     # policy matrix. We start from a given start_state and stop when
@@ -30,16 +31,12 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
     # policy_matrix:
     # {state: ((a1, .05), (a2, .1), (a3, .85))}
 
-
-    term_states = load_obj('TERM_STATES')
-
-    counter = 1
     mean_feat_exp = 0
     for state in start_states:
         sum_of_feat_exp = 0
         t = 0
         while True:
-            action = policy_matrix[state]
+            action = choice(policy_matrix[state])
             row = q_states[state][action][0]
             feat_exp = feat_mtx[row]
             discounted_feat_exp = disc_rate ** t * feat_exp
@@ -47,14 +44,15 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
 
             if state in term_states and action == -1:
                 break
-            elif discounted_feat_exp.sum() <= 1e-5:
+            elif discounted_feat_exp.sum() <= 1e-7:
                 break
-            state = compute_next_state(state, action)
+
+            # next state
+            state = q_states[state][action][1]
             t += 1
         mean_feat_exp += sum_of_feat_exp
-        counter += 1
 
-    return mean_feat_exp/counter
+    return mean_feat_exp/len(start_states)
 
 
 if __name__ == '__main__':
