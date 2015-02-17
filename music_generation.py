@@ -16,7 +16,6 @@ def generate_trajectory(start_state, term_states, policy_matrix):
     counter = 0
     while True:
         states.append(state)
-        print(state)
         # should use weighted_choice
         action = policy_matrix[state]
         print(action)
@@ -38,11 +37,12 @@ def get_original_state(states, fignotes_dict, chords_dict):
 
     new_states = []
     for state in states:
-        new_state = [fignotes_dict[1][state[0]],
-                     chords_dict[1][state[1]],
-                     int(state[2] / 4.0),
+        new_state = [state[0],
+                     fignotes_dict[1][state[1]],
+                     chords_dict[1][state[2]],
                      int(state[3] / 4.0),
-                     state[4]]
+                     int(state[4] / 4.0),
+                     state[5]]
         new_states.append(tuple(new_state))
     return new_states
 
@@ -70,12 +70,12 @@ def translate_states_to_song(original_states, title='', composer=''):
 
     for state in original_states:
         if state[-1] == -1:
-            duration = state[0][1]
+            duration = state[1][1]
             r = m.note.Rest(quarterLength=duration)
             stream.append(r)
         else:
-            pitches = state[0][::2]
-            durations = state[0][1::2]
+            pitches = state[1][::2]
+            durations = state[1][1::2]
             for pitch, duration in zip(pitches, durations):
                 n = m.note.Note(pitch, quarterLength=duration)
                 stream.append(n)

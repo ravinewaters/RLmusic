@@ -17,6 +17,10 @@ def parse(filename):
 
     notes:
     1. In 4/4 beat occurs every quarter.
+
+    state = (elem.measureNumber, tuple(fig_notes), fig_chord,
+             fig_start_at_beat, fig_duration, fighead)
+
     """
     states = []
     song = converter.parse(filename)
@@ -201,7 +205,7 @@ def get_start_states(trajectories):
 
 def get_all_states(new_list_of_song_states):
     # get all combinations of possible stae
-    all_states = make_flat_list(new_list_of_song_states)
+    all_states = set(make_flat_list(new_list_of_song_states))
     # do something
     save_obj(all_states, 'ALL_STATES')
     return all_states
@@ -209,11 +213,13 @@ def get_all_states(new_list_of_song_states):
 def get_all_actions(all_states):
     all_actions = []
     for state in all_states:
-        if state[2] == 1:
-            # pickup
+        chord = state[2]
+        if chord == 0:
+            # '0': 0 < 'A': 1, pickup will be assigned to 0
             continue
         else:
             all_actions.append(state[1:3] + state[-2:])
+    all_actions = set(all_actions)
     save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
 

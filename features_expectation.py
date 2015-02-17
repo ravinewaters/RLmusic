@@ -39,7 +39,6 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
         sum_of_feat_exp = 0
         t = 0
         while True:
-            print('state:', state)
             action = policy_matrix[state]
             row = q_states[state][action][0]
             feat_exp = feat_mtx[row]

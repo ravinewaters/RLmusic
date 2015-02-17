@@ -60,7 +60,9 @@ def is_valid_action(state, action):
 
 
 def generate_all_possible_q_states(all_states, all_actions):
-    # assume complete states and actions, not reduced ones.
+    # assume complete states and actions
+    # all_states is a set of all states
+    # all_actions is a set of all actions
     # initalize a dictionary
 
     # row_idx is a row number in which we store feat_exp of corresponding
@@ -80,11 +82,11 @@ def generate_all_possible_q_states(all_states, all_actions):
             row_idx += 1
 
         for action in all_actions:
-            if is_valid_action(state, action):
-                next_state = compute_next_state(state, action)
-                if state in q_states:
+            next_state = compute_next_state(state, action)
+            if next_state in all_states:
+                try:
                     q_states[state][action] = (row_idx, next_state)
-                else:
+                except KeyError:
                     q_states[state] = {action: (row_idx, next_state)}
                 row_idx += 1
     save_obj(q_states, 'Q_STATES')

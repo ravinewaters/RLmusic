@@ -46,7 +46,6 @@ def compute_policies(disc_rate, eps):
                                                         disc_rate)
         mu = []
         counter = 1
-    print('mu_expert:', mu_expert)
     print('\n', 'counter, t')
     while True:
         if counter == 1:
@@ -93,6 +92,8 @@ def compute_policies(disc_rate, eps):
                             'mu_bar': mu_bar,
                             'counter': counter})
         save_obj(policies, 'TEMP_POLICIES')
+        if counter == 10:
+            break
 
     mu = [mu_expert] + mu
 
@@ -131,7 +132,7 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
     delta = threshold
     iteration = 1
     while delta >= threshold:
-        print('iteration:', iteration)
+        # print('iteration:', iteration)
         delta = -1
         for state, actions in q_states.items():
             for action in actions:
@@ -169,7 +170,7 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
                 if diff > delta:
                     delta = diff
         iteration += 1
-        print('delta', delta)
+        # print('delta', delta)
     policy_matrix = {s: choice(v[1]) for s, v in max_values.items()}
     return policy_matrix
 
@@ -247,7 +248,7 @@ def choose_policy(mu):
 
 if __name__ == '__main__':
     try:
-        policies, mu = compute_policies(0.95, 4.24128)
+        policies, mu = compute_policies(0.95, 1)
         choose_policy(mu)
     except KeyboardInterrupt:
         pass
