@@ -71,7 +71,7 @@ def compute_policies(disc_rate, eps):
 
         # q-value iteration
         policy_matrix = value_iteration(reward_mtx, q_states,
-                                               disc_rate, 0.01, 100)
+                                               disc_rate, 0.001, 100)
 
         # q-learning
         # policy_matrix = q_learning(reward_mtx,
@@ -92,7 +92,7 @@ def compute_policies(disc_rate, eps):
                             'mu_bar': mu_bar,
                             'counter': counter})
         save_obj(policies, 'TEMP_POLICIES')
-        if counter == 10:
+        if counter == 7:
             break
 
     mu = [mu_expert] + mu
@@ -248,7 +248,7 @@ def choose_policy(mu):
 
 if __name__ == '__main__':
     try:
-        policies, mu = compute_policies(0.95, 1)
+        policies, mu = compute_policies(0.99, 1)
         choose_policy(mu)
     except KeyboardInterrupt:
         pass
