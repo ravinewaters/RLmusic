@@ -67,6 +67,7 @@ def generate_all_possible_q_states(all_states, all_actions):
     # state, action into.
 
     # q_states = {s : {a: row_idx}}
+    # a is possible state for s
     # need to make sure that only the terminal states has action 'exit' = -1.
     term_states = load_obj('TERM_STATES')
     row_idx = 0

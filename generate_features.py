@@ -147,7 +147,7 @@ def generate_features_expectation_table():
                                                   all_actions)
 
     num_of_features = 8
-    dictionaries = [{} for x in range(num_of_features)]
+    dictionaries = [{} for _ in range(num_of_features)]
     counters = [0] * num_of_features
 
     temp_dict = {}  # store proper features temporarily {row_idx: feat}
