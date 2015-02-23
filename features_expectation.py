@@ -44,7 +44,7 @@ def compute_policy_features_expectation(feat_mtx, q_states, policy_matrix,
 
             if state in term_states and action == -1:
                 break
-            elif discounted_feat_exp.sum() <= 1e-7:
+            elif discounted_feat_exp.sum() <= 1e-10:
                 break
 
             # next state

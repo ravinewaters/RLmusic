@@ -148,9 +148,9 @@ def value_iteration(reward_mtx, q_states, disc_rate, eps, max_reward):
 
                     if (state, action) not in q_matrix:
                         reward = max_reward
-                        if 12 <= state[0] <= 16:
-                            # inflate reward if in bar 12-16.
-                            reward *= 3
+                        # if 12 <= state[0] <= 16:
+                        #     # inflate reward if in bar 12-16.
+                        #     reward *= 3
                         q_matrix[(state, action)] = reward
                         max_values[state] = (reward, [action])
                     continue
@@ -237,7 +237,12 @@ def compute_expert_features_expectation(feat_mtx, q_states, disc_rate):
     expert_feat_exp /= len(trajectories)
     return expert_feat_exp
 
-def choose_policy(mu):
+def solve_lambdas(mu):
+    """
+    Solve qp problem that will return lambdas, the weights of linear
+    combination of mu_0, mu_1, ..., mu_n which makes the linear combination
+    the closest point to mu_expert.
+    """
     solvers.options['show_progress'] = False
     n = len(mu) - 1
     A_data = [1]*(n+1)
@@ -260,7 +265,7 @@ def choose_policy(mu):
 if __name__ == '__main__':
     try:
         policies, mu = compute_policies(0.9999, 0.1)
-        choose_policy(mu)
+        solve_lambdas(mu)
     except KeyboardInterrupt:
         pass
 
