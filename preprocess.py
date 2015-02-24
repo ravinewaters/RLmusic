@@ -207,7 +207,7 @@ def get_all_states(new_list_of_song_states):
     # get all combinations of possible stae
     all_states = set(make_flat_list(new_list_of_song_states))
     # do something
-    save_obj(all_states, 'ALL_STATES')
+    # save_obj(all_states, 'ALL_STATES')
     return all_states
 
 def get_all_actions(all_states):
@@ -220,8 +220,42 @@ def get_all_actions(all_states):
         else:
             all_actions.append(state[1:3] + state[-2:])
     all_actions = set(all_actions)
-    save_obj(all_actions, 'ALL_ACTIONS')
+    # save_obj(all_actions, 'ALL_ACTIONS')
     return all_actions
+
+
+def generate_all_possible_q_states(all_states, all_actions, term_states):
+    # assume complete states and actions
+    # all_states is a set of all states
+    # all_actions is a set of all actions
+    # initalize a dictionary
+
+    # row_idx is a row number in which we store feat_exp of corresponding
+    # state, action into.
+
+    # q_states = {s : {a: (row_idx, s')}}
+    # a is possible state for s
+    # s' is the next state from s after having chosen action a
+    # need to make sure that only the terminal states has action 'exit' = -1.
+    row_idx = 0
+    q_states = {}
+    for state in all_states:
+        if state in term_states:
+            # only 'exit action' in term_states
+            q_states[state] = {-1: (row_idx, -1)}
+            row_idx += 1
+
+        for action in all_actions:
+            next_state = compute_next_state(state, action)
+            if next_state in all_states:
+                try:
+                    q_states[state][action] = (row_idx, next_state)
+                except KeyError:
+                    q_states[state] = {action: (row_idx, next_state)}
+                row_idx += 1
+    save_obj(q_states, 'Q_STATES')
+    return q_states
+
 
 def preprocess():
     if os.path.exists('obj'):
@@ -256,21 +290,8 @@ def preprocess():
     all_states = get_all_states(new_list_of_song_states)
     all_actions = get_all_actions(all_states)
 
-
-    # print('\nFIGNOTES_DICT')
-    # pprint(fignotes_dict)
-    # print('\nCHORDS_DICT')
-    # pprint(chords_dict)
-    # print('\nALL_STATES')
-    # pprint(all_states)
-    # print('\nALL_ACTIONS')
-    # pprint(all_actions)
-    # print('\nTRAJECTORIES')
-    # pprint(trajectories)
-    # print('\nSTART_STATES')
-    # pprint(start_states)
-    # print('\nTERMINAL_STATES')
-    # pprint(terminal_states)
+    q_states = generate_all_possible_q_states(all_states, all_actions,
+                                              terminal_states)
 
 if __name__ == "__main__":
     preprocess()

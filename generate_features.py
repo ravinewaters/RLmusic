@@ -1,14 +1,9 @@
 __author__ = 'redhat'
 
-# import numpy as np
-# from constants import *
 from scipy.sparse import csr_matrix
 from scipy import io
 from common_methods import *
-# from itertools import product
-# from pprint import pprint
 
-# all wrong need to reconsider all these
 
 def parse_chord(chord):
     if len(chord) == 1:
@@ -133,18 +128,11 @@ def compute_binary_features_expectation(cols, rows, row_idx, feat, coord_size):
         rows.append(row_idx)
 
 def generate_features_expectation_table():
+    # assume original states
     fignotes_dict = load_obj('FIGNOTES_DICT')
     chords_dict = load_obj('CHORDS_DICT')
     term_states = load_obj('TERM_STATES')
-
-    try:
-        q_states = load_obj('Q_STATES')
-        print('Q_STATES loaded.')
-    except FileNotFoundError:
-        all_states = load_obj('ALL_STATES')
-        all_actions = load_obj('ALL_ACTIONS')
-        q_states = generate_all_possible_q_states(all_states,
-                                                  all_actions)
+    q_states = load_obj('Q_STATES')
 
     num_of_features = 8
     dictionaries = [{} for _ in range(num_of_features)]

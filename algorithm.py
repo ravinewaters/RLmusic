@@ -20,17 +20,13 @@ def compute_policies(disc_rate, eps):
 
     start_states = load_obj('START_STATES')
     term_states = load_obj('TERM_STATES')
+    q_states = load_obj('Q_STATES')
 
     try:
-        # load feat_mtx and q_states
+        # load feat_mtx
         feat_mtx = io.loadmat(DIR + 'FEATURES_EXPECTATION_MATRIX')['mtx']
-        q_states = load_obj('Q_STATES')
     except FileNotFoundError:
         feat_mtx = generate_features_expectation_table()
-        all_states = load_obj('ALL_STATES')
-        all_actions = load_obj('ALL_ACTIONS')
-        q_states = generate_all_possible_q_states(all_states,
-                                                  all_actions)
                                                   
     try:
         # Load saved computation state

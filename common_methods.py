@@ -44,65 +44,6 @@ def compute_next_state(state, action):
     return s_prime
 
 
-def is_valid_action(state, action):
-    # valid action iff
-    # get_current_beat + duration + action duration <= 20
-    fig_duration = state[4]
-    fig_beat = state[3]
-    action_fig_duration = action[2]
-    if fig_beat + fig_duration < 20:
-        if action_fig_duration + fig_beat + fig_duration <= 20:
-            return True
-        return False # if > 20, false
-    elif fig_beat + fig_duration == 20:
-        return True
-    assert False, "Shouldn't get here"
-
-
-def generate_all_possible_q_states(all_states, all_actions):
-    # assume complete states and actions
-    # all_states is a set of all states
-    # all_actions is a set of all actions
-    # initalize a dictionary
-
-    # row_idx is a row number in which we store feat_exp of corresponding
-    # state, action into.
-
-    # q_states = {s : {a: (row_idx, s')}}
-    # a is possible state for s
-    # s' is the next state from s after having chosen action a
-    # need to make sure that only the terminal states has action 'exit' = -1.
-    term_states = load_obj('TERM_STATES')
-    row_idx = 0
-    q_states = {}
-    for state in all_states:
-        if state in term_states:
-            # only 'exit action' in term_states
-            q_states[state] = {-1: (row_idx, -1)}
-            row_idx += 1
-
-        for action in all_actions:
-            next_state = compute_next_state(state, action)
-            if next_state in all_states:
-                try:
-                    q_states[state][action] = (row_idx, next_state)
-                except KeyError:
-                    q_states[state] = {action: (row_idx, next_state)}
-                row_idx += 1
-    save_obj(q_states, 'Q_STATES')
-    return q_states
-
-
-def weighted_choice(choices):
-    choices = tuple(choices)
-    total = sum(w for c, w in choices)
-    r = random() * total
-    upto = 0
-    for c, w in choices:
-      if upto + w >= r:
-         return c
-      upto += w
-    assert False, "Shouldn't get here"
     
 
 def weighted_choice_b(weights):
@@ -117,6 +58,4 @@ def weighted_choice_b(weights):
     return bisect.bisect_right(totals, rnd)
 
 if __name__ == '__main__':
-    all_states = load_obj('ALL_STATES')
-    all_actions = load_obj('ALL_ACTIONS')
-    q_states = generate_all_possible_q_states(all_states, all_actions)
+    pass

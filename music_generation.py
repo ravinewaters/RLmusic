@@ -16,7 +16,6 @@ def generate_trajectory(start_state, term_states, policy_matrix):
     counter = 0
     while True:
         states.append(state)
-        # should use weighted_choice
         action = choice(policy_matrix[state])
         if state in term_states and action == -1:
             break

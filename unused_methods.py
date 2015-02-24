@@ -304,3 +304,31 @@ def generate_all_states(new_list_of_song_states):
 
     save_obj(all_states, 'ALL_STATES')
     return all_states
+
+
+
+def weighted_choice(choices):
+    choices = tuple(choices)
+    total = sum(w for c, w in choices)
+    r = random() * total
+    upto = 0
+    for c, w in choices:
+      if upto + w >= r:
+         return c
+      upto += w
+    assert False, "Shouldn't get here"
+
+
+def is_valid_action(state, action):
+    # valid action iff
+    # get_current_beat + duration + action duration <= 20
+    fig_duration = state[4]
+    fig_beat = state[3]
+    action_fig_duration = action[2]
+    if fig_beat + fig_duration < 20:
+        if action_fig_duration + fig_beat + fig_duration <= 20:
+            return True
+        return False # if > 20, false
+    elif fig_beat + fig_duration == 20:
+        return True
+    assert False, "Shouldn't get here"
