@@ -6,12 +6,10 @@ from music_generation import generate_audio_file
 import argparse
 
 
-
-
-
-if __name__ == '__main__':
+def main():
     description="""
     Melody Generator.
+
     Dependencies:
     Python packages: music21, numpy, scipy, cvxopt.
     External programs: fluidsynth, lame.
@@ -50,3 +48,6 @@ if __name__ == '__main__':
     run_AL_algorithm(args.disc_rate, args.eps)
     print('Generate audio file')
     generate_audio_file(args.output, args.soundfont)
+
+if __name__ == '__main__':
+    main()

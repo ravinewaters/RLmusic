@@ -2,7 +2,7 @@ __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
 from common_methods import save_obj, make_flat_list, compute_next_state
-from generate_features import generate_features_expectation_table
+from features_generation import generate_features_expectation_table
 import os
 import shutil
 

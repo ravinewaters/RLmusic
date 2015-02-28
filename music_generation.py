@@ -129,16 +129,15 @@ def generate_audio_file(filename, soundfont_path=None):
     score = translate_states_to_song(song)
     score.write('midi', output_path + '.mid')
     print("{}.midi was created and saved to {} directory.".format(filename,
-                                                                 dir))
+                                                                  dir))
     if soundfont_path is None:
         score.write('musicxml', output_path+'.xml')
         print("{}.xml was created and saved to {} directory.".format(filename,
-                                                                 dir))
+                                                                     dir))
     else:
         convert_midi_to_mp3_file(output_path, soundfont_path)
         print("{}.mp3 was created and saved to {} directory.".format(filename,
-                                                                 dir))
-
+                                                                     dir))
 
 if __name__ == '__main__':
     generate_audio_file('out', 'TimGM6mb.sf2')
