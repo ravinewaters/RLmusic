@@ -2,7 +2,7 @@ __author__ = 'redhat'
 
 from preprocess import preprocess
 from algorithm import run_AL_algorithm
-from music_generation import generate_score
+from music_generation import generate_audio_file
 import argparse
 
 
@@ -10,7 +10,10 @@ import argparse
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Melody Generator.')
+    description="""
+    Melody Generator.
+    """
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--dir',
                         help='Specify the directory of corpus. '
                              '(default = %(default)s)',
@@ -26,6 +29,13 @@ if __name__ == '__main__':
                              '(default = %(default)s)',
                         type=float,
                         default=1)
+    parser.add_argument('--output',
+                        help='Error threshold for AL algorithm. '
+                             '(default = %(default)s)',
+                        type=str,
+                        default='out')
+    parser.add_argument('--soundfont',
+                        help="Path to soundfont file. Required to convert to mp3")
     args = parser.parse_args()
     # print(args)
 
@@ -34,5 +44,5 @@ if __name__ == '__main__':
     print('Done preprocessing...')
     print('Running AL algorithm...')
     run_AL_algorithm(args.disc_rate, args.eps)
-    print('Generate Score')
-    generate_score()
+    print('Generate audio file')
+    generate_audio_file(args.output, args.soundfont)
