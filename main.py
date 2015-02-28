@@ -12,6 +12,10 @@ import argparse
 if __name__ == '__main__':
     description="""
     Melody Generator.
+    Dependencies:
+    Python packages: music21, numpy, scipy, cvxopt.
+    External programs: fluidsynth, lame.
+    Requires files: soundfont for fluidsynth
     """
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--dir',
