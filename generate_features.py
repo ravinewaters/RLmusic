@@ -2,7 +2,8 @@ __author__ = 'redhat'
 
 from scipy.sparse import csr_matrix
 from scipy import io
-from common_methods import *
+from constants import CHORD_ROOT_TO_INT, DIR
+from numpy import uint8
 
 
 def parse_chord(chord):
@@ -99,8 +100,6 @@ def compute_features(state, action, fignotes_dict, chords_dict, term_states):
     ]
     return feat_l
 
-############
-
 
 def compute_proper_features(state, action, fignotes_dict,
                             chords_dict, term_states, dictionaries, counters,
@@ -127,12 +126,8 @@ def compute_binary_features_expectation(cols, rows, row_idx, feat, coord_size):
         cols.append(index + feat[i])
         rows.append(row_idx)
 
-def generate_features_expectation_table():
-    # assume original states
-    fignotes_dict = load_obj('FIGNOTES_DICT')
-    chords_dict = load_obj('CHORDS_DICT')
-    term_states = load_obj('TERM_STATES')
-    q_states = load_obj('Q_STATES')
+def generate_features_expectation_table(fignotes_dict, chords_dict,
+                                        term_states, q_states):
 
     num_of_features = 8
     dictionaries = [{} for _ in range(num_of_features)]
@@ -155,7 +150,7 @@ def generate_features_expectation_table():
             temp_dict[row_idx] = feat
 
     coord_size = [0] + [len(dict) for dict in dictionaries]
-    print('coord_size:', coord_size[1:])
+    print('Size of coordinate elements:', coord_size[1:])
 
     # use row_idx as the row number to store feat_exp into
     # use csr_matrix
@@ -178,10 +173,10 @@ def generate_features_expectation_table():
     data = [1] * len(cols)
     n_rows += 1  # include index 0
     n_cols = sum(coord_size) + 1
-    print('n_rows:', n_rows)
-    print('n_cols:', n_cols)
+    print('Number of state-action pairs:', n_rows)
+    print('Binary features size:', n_cols)
     mtx = csr_matrix((data, (rows, cols)),
-                     dtype=np.uint8,
+                     dtype=uint8,
                      shape=(n_rows, n_cols))
 
     # save matrix to file
@@ -189,4 +184,4 @@ def generate_features_expectation_table():
     return mtx
 
 if __name__ == "__main__":
-    generate_features_expectation_table()
+    pass

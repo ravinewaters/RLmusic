@@ -4,8 +4,7 @@ import pickle
 from random import random
 import bisect
 import os
-import numpy as np
-from constants import *
+from constants import DIR
 
 
 def make_flat_list(list_of_lists):
@@ -43,8 +42,6 @@ def compute_next_state(state, action):
                action[3])
     return s_prime
 
-
-    
 
 def weighted_choice_b(weights):
     totals = []

@@ -1,11 +1,11 @@
 __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
-from common_methods import *
-import itertools
+from common_methods import save_obj, make_flat_list, compute_next_state
+from generate_features import generate_features_expectation_table
+import os
 import shutil
 
-# NEED TO REDUCE K
 
 def parse(filename):
     """
@@ -108,6 +108,9 @@ def parse(filename):
     return states
 
 def get_corpus(corpus_dir):
+    """
+    Return a list of filenames in the corpus.
+    """
     filenames = []
     for f in os.listdir(corpus_dir):
         if '.xml' in f and os.path.isfile(corpus_dir + f):
@@ -115,8 +118,11 @@ def get_corpus(corpus_dir):
     return filenames
 
 def make_dict_of_elem(list_of_elem, filename):
-    # save to filename
-    # initialize list of dictionaries
+    """
+    Given a list of elements, make a dictionary that maps each element to
+    nonnegative integers. Return a list of 2 dictionaries. First dictionary
+    maps the element to int and the second from int to element.
+    """
 
     try:
         elems = sorted(list_of_elem)
@@ -225,23 +231,24 @@ def get_all_actions(all_states):
 
 
 def generate_all_possible_q_states(all_states, all_actions, term_states):
-    # assume complete states and actions
-    # all_states is a set of all states
-    # all_actions is a set of all actions
-    # initalize a dictionary
+    """
+    Return q_states = {s : {a: (row_idx, s')}}
 
-    # row_idx is a row number in which we store feat_exp of corresponding
-    # state, action into.
+    row_idx is a row number in which we store feat_exp of corresponding
+    state, action into.
 
-    # q_states = {s : {a: (row_idx, s')}}
-    # a is possible state for s
-    # s' is the next state from s after having chosen action a
-    # need to make sure that only the terminal states has action 'exit' = -1.
+    s is state
+    a is possible state for s
+    s' is the next state from s after having chosen action a
+
+    A terminal state s have action a = -1 and s' = - 1.
+    """
+
     row_idx = 0
     q_states = {}
     for state in all_states:
         if state in term_states:
-            # only 'exit action' in term_states
+            # Give 'exit' action to terminal states
             q_states[state] = {-1: (row_idx, -1)}
             row_idx += 1
 
@@ -257,24 +264,20 @@ def generate_all_possible_q_states(all_states, all_actions, term_states):
     return q_states
 
 
-def preprocess():
+def preprocess(corpus_dir):
     if os.path.exists('obj'):
         shutil.rmtree('obj')
 
-    filenames = get_corpus('corpus/')
-    list_of_song_states = []
-    for filename in filenames:
-        states = parse(filename)
-        list_of_song_states.append(states)
+    filenames = get_corpus(corpus_dir)
+
+    list_of_song_states = [parse(filename) for filename in filenames]
 
     fignotes = []
     chords = []
-    figheads = []
     for states in list_of_song_states:
         for state in states:
             fignotes.append(state[1])
             chords.append(state[2])
-            figheads.append(state[-1])
 
 
     fignotes_dict = make_dict_of_elem(fignotes, 'FIGNOTES_DICT')
@@ -283,15 +286,18 @@ def preprocess():
     new_list_of_song_states = convert_each_elem_to_int(list_of_song_states,
                                                        fignotes_dict,
                                                        chords_dict)
+
     trajectories = get_trajectories(new_list_of_song_states)
     start_states = get_start_states(trajectories)
-    terminal_states = get_terminal_states(trajectories)
+    term_states = get_terminal_states(trajectories)
 
     all_states = get_all_states(new_list_of_song_states)
     all_actions = get_all_actions(all_states)
 
     q_states = generate_all_possible_q_states(all_states, all_actions,
-                                              terminal_states)
+                                              term_states)
 
+    feat_mtx = generate_features_expectation_table(fignotes_dict, chords_dict,
+                                                   term_states, q_states)
 if __name__ == "__main__":
-    preprocess()
+    pass

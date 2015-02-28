@@ -1,5 +1,3 @@
-__author__ = 'redhat'
-
 CHORD_ROOT_TO_INT = {"C": 0,
                      "C#": 1,
                      "Db": 1,
@@ -27,7 +25,4 @@ CHORD_QUALITY = {'major': 0,
                  'pickup': 6, }
 
 DIR = 'obj/'
-
-DURATION_SIZE = 16
-BEAT_SIZE = 16
 

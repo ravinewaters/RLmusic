@@ -1,7 +1,5 @@
 __author__ = 'redhat'
 
-from common_methods import *
-from generate_features import compute_binary_features_expectation
 from random import choice
 
 def generate_random_policy_matrix(q_states):

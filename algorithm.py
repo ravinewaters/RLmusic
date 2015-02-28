@@ -1,10 +1,10 @@
 __author__ = 'redhat'
 
-from common_methods import *
-from generate_features import generate_features_expectation_table
+from common_methods import load_obj, DIR, save_obj
+import os
 from features_expectation import compute_policy_features_expectation, \
     generate_random_policy_matrix
-from math import sqrt, exp
+from math import sqrt
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
 from random import choice
@@ -21,12 +21,7 @@ def compute_policies(disc_rate, eps):
     start_states = load_obj('START_STATES')
     term_states = load_obj('TERM_STATES')
     q_states = load_obj('Q_STATES')
-
-    try:
-        # load feat_mtx
-        feat_mtx = io.loadmat(DIR + 'FEATURES_EXPECTATION_MATRIX')['mtx']
-    except FileNotFoundError:
-        feat_mtx = generate_features_expectation_table()
+    feat_mtx = io.loadmat(DIR + 'FEATURES_EXPECTATION_MATRIX')['mtx']
                                                   
     try:
         # Load saved computation state
@@ -257,11 +252,14 @@ def solve_lambdas(mu):
     return lambdas
 
 
-
-if __name__ == '__main__':
+def run_AL_algorithm(disc_rate, eps):
     try:
-        policies, mu = compute_policies(0.9999, 0.1)
-        solve_lambdas(mu)
+        policies, mu = compute_policies(disc_rate, eps)
     except KeyboardInterrupt:
         pass
+    solve_lambdas(mu)
+
+
+if __name__ == '__main__':
+    pass
 
