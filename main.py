@@ -1,9 +1,9 @@
 __author__ = 'redhat'
 
-from preprocess import preprocess
-from algorithm import run_AL_algorithm
-from music_generation import generate_audio_file
+from features_generation import FeaturesPreprocessor
+from music_generation import MusicGenerator
 import argparse
+
 
 
 def main():

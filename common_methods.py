@@ -46,7 +46,7 @@ def compute_next_state(state, action):
 def weighted_choice_b(weights):
     totals = []
     running_total = 0
-    
+
     for w in weights:
         running_total += w
         totals.append(running_total)
