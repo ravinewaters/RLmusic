@@ -1,6 +1,7 @@
 __author__ = 'redhat'
 
 from features_generation import FeaturesPreprocessor
+from algorithm import ALAlgorithm
 from music_generation import MusicGenerator
 import argparse
 
@@ -50,4 +51,10 @@ def main():
     generate_audio_file(args.output, args.soundfont)
 
 if __name__ == '__main__':
-    main()
+    preprocessor = FeaturesPreprocessor('corpus/')
+    preprocessor.preprocess()
+    algo = ALAlgorithm(0.95, 1, preprocessor)
+    algo.compute_policies()
+    algo.solve_lambdas()
+    m = MusicGenerator('out', 'TimGM6mb.sf2', 'musicxml', preprocessor, algo)
+    m.run()

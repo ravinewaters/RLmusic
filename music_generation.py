@@ -8,7 +8,6 @@ import music21
 import sys
 
 
-
 class MusicGenerator():
     def __init__(self,
                  outfile,
@@ -43,7 +42,6 @@ class MusicGenerator():
     def mix_policies(self):
         idx = weighted_choice_b(self.lambdas)
         return self.policies[idx]
-
 
     def generate_trajectory(self):
         """
