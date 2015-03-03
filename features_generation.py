@@ -186,7 +186,7 @@ class FeaturesPreprocessor(BasePreprocessor):
         io.savemat(DIR + 'FEATURES_EXPECTATION_MATRIX', {'mtx': mtx})
         return mtx
 
-    def preprocess(self):
+    def run(self):
         if os.path.exists(DIR):
             shutil.rmtree(DIR)
 
@@ -208,4 +208,4 @@ class FeaturesPreprocessor(BasePreprocessor):
 
 if __name__ == "__main__":
     preprocessor = FeaturesPreprocessor('corpus/')
-    preprocessor.preprocess()
+    preprocessor.run()

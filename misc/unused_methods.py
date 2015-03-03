@@ -1,6 +1,6 @@
 __author__ = 'redhat'
 
-# preprocess.py
+# run.py
 # def make_dict_of_elem(list_of_tuples):
 #     """
 #     Assume that we have a list of tuples.

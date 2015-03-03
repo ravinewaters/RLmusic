@@ -315,11 +315,12 @@ class ALAlgorithm():
         self.lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
         save_obj(self.lambdas, 'LAMBDAS')
 
+    def run(self):
+        self.compute_policies()
+        self.solve_lambdas()
+
 if __name__ == '__main__':
     algo = ALAlgorithm(0.95, 1)
-    algo.compute_policies()
-    algo.solve_lambdas()
-    print(algo.policies)
-    print(algo.lambdas)
+    algo.run()
 
 

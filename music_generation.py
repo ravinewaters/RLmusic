@@ -156,6 +156,5 @@ class MusicGenerator():
         self.write()
 
 if __name__ == '__main__':
-    # generate_audio_file('out', 'TimGM6mb.sf2')
     m = MusicGenerator('out', 'TimGM6mb.sf2', 'musicxml')
     m.run()

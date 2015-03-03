@@ -3,12 +3,12 @@ __author__ = 'redhat'
 from features_generation import FeaturesPreprocessor
 from algorithm import ALAlgorithm
 from music_generation import MusicGenerator
-import argparse
+import configparser
 
 
 
 def main():
-    description="""
+    """
     Melody Generator.
 
     Dependencies:
@@ -16,45 +16,27 @@ def main():
     External programs: fluidsynth, lame.
     Requires files: soundfont for fluidsynth
     """
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--dir',
-                        help='Specify the directory of corpus. '
-                             '(default = %(default)s)',
-                        type=str,
-                        default='corpus/')
-    parser.add_argument('--disc_rate',
-                        help='Discount rate for AL algorithm. '
-                             '(default = %(default)s)',
-                        type=float,
-                        default=0.9)
-    parser.add_argument('--eps',
-                        help='Error threshold for AL algorithm. '
-                             '(default = %(default)s)',
-                        type=float,
-                        default=1)
-    parser.add_argument('--output',
-                        help='Error threshold for AL algorithm. '
-                             '(default = %(default)s)',
-                        type=str,
-                        default='out')
-    parser.add_argument('--soundfont',
-                        help="Path to soundfont file. Required to convert to mp3")
-    args = parser.parse_args()
-    # print(args)
 
-    print('Start preprocessing...')
-    preprocess(args.dir)
-    print('Done preprocessing...')
-    print('Running AL algorithm...')
-    run_AL_algorithm(args.disc_rate, args.eps)
-    print('Generate audio file')
-    generate_audio_file(args.output, args.soundfont)
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    corpus_dir = config['preprocessor']['corpus_dir']
+    disc_rate = float(config['al_algorithm']['disc_rate'])
+    eps = float(config['al_algorithm']['eps'])
+    output_filename = config['music_generator']['output_filename']
+    soundfont_path = config['music_generator']['soundfont_path']
+    output_format = config['music_generator']['format']
+
+    preprocessor = FeaturesPreprocessor(corpus_dir)
+    preprocessor.run()
+    al_algorithm = ALAlgorithm(disc_rate, eps, preprocessor)
+    al_algorithm.run()
+    music_generator = MusicGenerator(output_filename,
+                                     soundfont_path,
+                                     output_format,
+                                     preprocessor,
+                                     al_algorithm)
+    music_generator.run()
+
 
 if __name__ == '__main__':
-    preprocessor = FeaturesPreprocessor('corpus/')
-    preprocessor.preprocess()
-    algo = ALAlgorithm(0.95, 1, preprocessor)
-    algo.compute_policies()
-    algo.solve_lambdas()
-    m = MusicGenerator('out', 'TimGM6mb.sf2', 'musicxml', preprocessor, algo)
-    m.run()
+    main()
