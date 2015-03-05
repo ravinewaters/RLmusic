@@ -136,27 +136,24 @@ class ALAlgorithm():
             # print('iteration:', iteration)
             for state, actions in q_states.items():
                 for action in actions:
-                    if action == -1:
-                        # change reward to:
-                        # reward for (s,-1) is reward_mtx[row_idx] + max_reward
-                        if (state, action) not in q_matrix:
-                            reward = max_reward
-                            q_matrix[(state, action)] = reward
-                            max_values[state] = (reward, [action])
-                        continue
+                    # reward for (s, -1) is reward_mtx[row_idx] + max_reward
 
                     row_idx = q_states[state][action][0]
-                    state_prime = q_states[state][action][1]
                     reward = reward_mtx[row_idx]
-                    opt_future_val = max_values[state_prime][0]
+                    if action != -1:
+                        state_prime = q_states[state][action][1]
+                        opt_future_val = max_values[state_prime][0]
+                    else:
+                        reward += max_reward
+                        opt_future_val = 0
                     new_q_value = reward + disc_rate * opt_future_val
+
                     if (state, action) not in q_matrix:
                         diff = new_q_value
                         if diff < 0:
                             diff = -diff
                         q_matrix[(state, action)] = new_q_value
                     else:
-                        # if (state, action) in q_matrix
                         diff = new_q_value - q_matrix[(state, action)]
                         if diff < 0:
                             diff = -diff
