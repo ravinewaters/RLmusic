@@ -1,7 +1,7 @@
 __author__ = 'redhat'
 
 
-from math import sqrt
+from numpy import float64, sqrt, vstack
 from random import choice
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
@@ -47,9 +47,9 @@ class ALAlgorithm():
             # Load saved computation state
             temp = io.loadmat(DIR + 'TEMP')
             policies = load_obj('TEMP_POLICIES')
-            mu_expert = temp['mu_expert']
-            mu = temp['mu'].tolist()[0]
-            mu_bar = temp['mu_bar']
+            mu_expert = temp['mu_expert'].ravel()
+            mu = temp['mu'].tolist()
+            mu_bar = temp['mu_bar'].ravel()
             counter = temp['counter'][0][0]
         except FileNotFoundError:
             policy_matrix = self.generate_random_policy_matrix()
@@ -66,21 +66,21 @@ class ALAlgorithm():
                                                                disc_rate)
                 mu.append(mu_value)
                 mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
-
             else:  # counter >= 2
                 mu_bar += compute_projection(mu_bar, mu[counter-1], mu_expert)
 
             w = mu_expert - mu_bar
             temp = t
-            t = sqrt((w.data**2).sum())
+            t = sqrt(w.dot(w.T))
 
             if abs(t - temp) < 1e-10 or t <= al_error_tolerance:
                 print('temp:', temp)
                 print('t:', t)
                 break
+
             w /= t
             print('{}, {}'.format(counter, t))
-            reward_mtx = (feat_mtx * w.T).data
+            reward_mtx = (feat_mtx * w.T)
 
             # q-value iteration
             policy_matrix = value_iteration(reward_mtx, disc_rate, max_reward)
@@ -102,15 +102,13 @@ class ALAlgorithm():
             save_obj(policies, 'TEMP_POLICIES')
 
         mu = [mu_expert] + mu
-
-        # save policies and mu
         save_obj(policies, 'POLICIES')
         save_obj(mu, 'MU')
 
-        # delete TEMP.mat
         if os.path.exists(DIR + 'TEMP.mat'):
             os.remove(DIR + 'TEMP.mat')
             os.remove(DIR + 'TEMP_POLICIES.pkl')
+
         self.policies = policies
         self.mu = mu
 
@@ -118,8 +116,8 @@ class ALAlgorithm():
     def compute_projection(mu_bar, mu, mu_expert):
         mu_mu_bar_distance = mu - mu_bar
         mu_bar_mu_expert_distance = mu_expert - mu_bar
-        numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)[0, 0]
-        denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)[0, 0]
+        numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)
+        denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)
         return numerator/denominator * mu_mu_bar_distance
 
     def value_iteration(self, reward_mtx, disc_rate, max_reward):
@@ -214,6 +212,7 @@ class ALAlgorithm():
         policy_matrix = {s: choice(v[1]) for s, v in max_values.items()}
         return policy_matrix
 
+
     def generate_random_policy_matrix(self):
         # generate matrix of 0-1 value with size:
         # rows = # states
@@ -226,8 +225,9 @@ class ALAlgorithm():
         # deterministic action
         return policy_matrix
 
+
     def compute_policy_features_expectation(self, policy_matrix, disc_rate):
-        # Basically what the function does is walk through the states and
+        # Walk through the states and
         # actions. The actions are gotten by choosing randomly according to the
         # policy matrix. We start from a given start_state and stop when
         # reaching a terminal state or the features expectation is very small
@@ -238,15 +238,18 @@ class ALAlgorithm():
 
         # policy_matrix:
         # {state: ((a1, .05), (a2, .1), (a3, .85))}
+        # row_ind, col_ind, data to construct discount_mtx
 
         feat_mtx = self.feat_mtx
         q_states = self.q_states
         start_states = self.start_states
         term_states = self.term_states
 
-        mean_feat_exp = 0
+        row = 0
+        row_ind = []
+        col_ind = []
+        data = []
         for state in start_states:
-            sum_of_feat_exp = 0
             t = 0
             while True:
                 # can be vectorized. current approach is slow
@@ -257,21 +260,25 @@ class ALAlgorithm():
                 # the dot product the slice with discounts
                 action = choice(policy_matrix[state])
                 row_idx = q_states[state][action][0]
-                feat_exp = feat_mtx[row_idx]
-                discounted_feat_exp = disc_rate ** t * feat_exp
-                sum_of_feat_exp += discounted_feat_exp
+                row_ind.append(row)
+                col_ind.append(row_idx)
+                data.append(disc_rate ** t)
 
                 if state in term_states and action == -1:
-                    break
-                elif discounted_feat_exp.sum() <= 1e-10:
                     break
 
                 # next state
                 state = q_states[state][action][1]
                 t += 1
-            mean_feat_exp += sum_of_feat_exp
+            row += 1
 
-        return mean_feat_exp/len(start_states)
+        discount_mtx = sparse.csr_matrix((data, (row_ind, col_ind)),
+                                         shape=(row, feat_mtx.shape[0]),
+                                         dtype=float64)
+
+        # mean_feat_exp should be an array or csr_mtx.
+        # how to multiply 2 sparse matrix and take its mean?
+        return (discount_mtx * feat_mtx).mean(0).A1
 
 
     def compute_expert_features_expectation(self, disc_rate):
@@ -279,22 +286,26 @@ class ALAlgorithm():
         q_states = self.q_states
         trajectories = self.trajectories
 
-        expert_feat_exp = 0
+        row = 0
+        row_ind = []
+        col_ind = []
+        data = []
         for trajectory in trajectories:
-            sum_of_feat_exp = 0
             t = 0
             # from the first state to the penultimate state
             for state, action in zip(trajectory[::2], trajectory[1::2]):
                 # can be vectorized as well, like the
                 # compute_policy_features_expectation
-                row = q_states[state][action][0]
-                feat_exp = feat_mtx[row]
-                discounted_feat_exp = disc_rate ** t * feat_exp
-                sum_of_feat_exp += discounted_feat_exp
+                row_idx = q_states[state][action][0]
+                row_ind.append(row)
+                col_ind.append(row_idx)
+                data.append(disc_rate ** t)
                 t += 1
-            expert_feat_exp += sum_of_feat_exp
-        expert_feat_exp /= len(trajectories)
-        return expert_feat_exp
+            row += 1
+        discount_mtx = sparse.csr_matrix((data, (row_ind, col_ind)),
+                                         shape=(row, feat_mtx.shape[0]),
+                                         dtype=float64)
+        return (discount_mtx * feat_mtx).mean(0).A1
 
     def solve_lambdas(self):
         """
@@ -302,6 +313,10 @@ class ALAlgorithm():
         combination of mu_0, mu_1, ..., mu_n which makes the linear combination
         the closest point to mu_expert.
         """
+
+        # check once again whether the matrix P, q, G, h, A, b is already
+        # correct
+
         solvers.options['show_progress'] = False
         n = len(self.mu) - 1
         A_data = [1]*(n+1)
@@ -312,9 +327,8 @@ class ALAlgorithm():
         G = spmatrix([-1]*n, range(0, n), range(1, n+1), (n, n+1))
         h = matrix([0.0]*n)
         q = matrix([0.0]*(n+1))
-        B = sparse.vstack(self.mu)
-        P = (B * B.T).tocoo()
-        P = spmatrix(P.data, P.row, P.col)
+        B = vstack(self.mu)
+        P = matrix(B.dot(B.T))
         self.lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
         save_obj(self.lambdas, 'LAMBDAS')
 
