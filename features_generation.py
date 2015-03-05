@@ -6,13 +6,11 @@ from scipy import io
 from constants import CHORD_ROOT_TO_INT, DIR
 from numpy import uint8
 from common_methods import make_flat_list
+import argparse
 import shutil
 import os
 
 class FeaturesPreprocessor(BasePreprocessor):
-    def __init__(self, corpus_dir):
-        self.corpus_dir = corpus_dir
-
     @staticmethod
     def parse_chord(chord):
         if len(chord) == 1:
@@ -186,11 +184,14 @@ class FeaturesPreprocessor(BasePreprocessor):
         io.savemat(DIR + 'FEATURES_EXPECTATION_MATRIX', {'mtx': mtx})
         return mtx
 
-    def run(self):
+    def run(self, corpus_dir='corpus/'):
         if os.path.exists(DIR):
             shutil.rmtree(DIR)
 
-        filenames = self.get_corpus(self.corpus_dir)
+        if corpus_dir[-1] != '/':
+            corpus_dir += '/'
+
+        filenames = self.get_corpus(corpus_dir)
         list_of_song_states = [self.parse(filename) for filename in filenames]
 
         new_list_of_song_states, self.fignotes_dict, self.chords_dict \
@@ -207,5 +208,10 @@ class FeaturesPreprocessor(BasePreprocessor):
         self.feat_mtx = self.generate_features_expectation_mtx()
 
 if __name__ == "__main__":
-    preprocessor = FeaturesPreprocessor('corpus/')
-    preprocessor.run()
+    parser = argparse.ArgumentParser(prog="Preprocessor module",
+                                     usage="Specify the directory of "
+                                           "the corpus")
+    parser.add_argument('-d', '--dir', default='corpus/')
+    args = parser.parse_args()
+    preprocessor = FeaturesPreprocessor()
+    preprocessor.run(args.dir)

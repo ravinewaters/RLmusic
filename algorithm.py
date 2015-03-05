@@ -1,17 +1,17 @@
 __author__ = 'redhat'
 
-from common_methods import load_obj, DIR, save_obj
+
 from math import sqrt
+from random import choice
 from scipy import sparse, io
 from cvxopt import matrix, spmatrix, solvers
-from random import choice
+from common_methods import load_obj, DIR, save_obj
 import os
+import argparse
 
 
 class ALAlgorithm():
-    def __init__(self, disc_rate, eps, preprocessor=None):
-        self.disc_rate = disc_rate
-        self.eps = eps
+    def __init__(self, preprocessor=None):
 
         if preprocessor is not None:
             self.start_states = preprocessor.start_states
@@ -27,20 +27,18 @@ class ALAlgorithm():
                 'mtx']
             self.trajectories = load_obj('TRAJECTORIES')
 
-    def compute_policies(self):
-        # max_reward = 6
-        # value_error = 0.01
-        print('\ndisc_rate', self.disc_rate)
-        print('eps:', self.eps)
-        # print('value_error:', value_error)
-        # print('terminal states reward:', max_reward)
-
+    def compute_policies(self, disc_rate=0.95,
+                         al_error_tolerance=1,
+                         max_reward=100):
         # bind to name for faster access
-        eps = self.eps
         feat_mtx = self.feat_mtx
         compute_policy_features_expectation = self.compute_policy_features_expectation
         compute_projection = self.compute_projection
         value_iteration = self.value_iteration
+
+        print('\ndisc_rate', disc_rate)
+        print('al_error_tolerance:', al_error_tolerance)
+        print('max_reward:', max_reward)
 
         try:
             # Load saved computation state
@@ -53,7 +51,7 @@ class ALAlgorithm():
         except FileNotFoundError:
             policy_matrix = self.generate_random_policy_matrix()
             policies = [policy_matrix]
-            mu_expert = self.compute_expert_features_expectation()
+            mu_expert = self.compute_expert_features_expectation(disc_rate)
             mu = []
             counter = 1
 
@@ -61,7 +59,8 @@ class ALAlgorithm():
         t = 0
         while counter <= 30:
             if counter == 1:
-                mu_value = compute_policy_features_expectation(policy_matrix)
+                mu_value = compute_policy_features_expectation(policy_matrix,
+                                                               disc_rate)
                 mu.append(mu_value)
                 mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
 
@@ -72,7 +71,7 @@ class ALAlgorithm():
             temp = t
             t = sqrt((w.data**2).sum())
 
-            if abs(t - temp) < 1e-10 or t <= eps:
+            if abs(t - temp) < 1e-10 or t <= al_error_tolerance:
                 print('temp:', temp)
                 print('t:', t)
                 break
@@ -81,14 +80,14 @@ class ALAlgorithm():
             reward_mtx = (feat_mtx * w.T).data
 
             # q-value iteration
-            policy_matrix = value_iteration(reward_mtx, 0.001, 100)
+            policy_matrix = value_iteration(reward_mtx, disc_rate, max_reward)
 
             # q-learning
             # policy_matrix = q_learning(reward_mtx,
-            #                            q_states,
-            #                            disc_rate)
+            #                            disc_rate,
+            #                            100)
             policies.append(policy_matrix)
-            mu_value = compute_policy_features_expectation(policy_matrix)
+            mu_value = compute_policy_features_expectation(policy_matrix, disc_rate)
             mu.append(mu_value)
             counter += 1
 
@@ -120,14 +119,14 @@ class ALAlgorithm():
         denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)[0, 0]
         return numerator/denominator * mu_mu_bar_distance
 
-    def value_iteration(self, reward_mtx, eps, max_reward):
+    def value_iteration(self, reward_mtx, disc_rate, max_reward):
         # q-value iteration
 
         # max_values = {s : (q_value, [a1, a2, ..., an])}
-        # q_matrix = {(state, action): (row_index, state_prime}
-        disc_rate = self.disc_rate
-        q_states = self.q_states
+        # q_matrix = {(state, action): (row_index, next_state}
 
+        eps = 0.001
+        q_states = self.q_states
         q_matrix = {}
         max_values = dict.fromkeys(list(q_states), (0, [0]))
         threshold = eps*(1-disc_rate)/disc_rate
@@ -139,14 +138,10 @@ class ALAlgorithm():
             for state, actions in q_states.items():
                 for action in actions:
                     if action == -1:
-                        # if action 'exit'
-                        # reward = max_reward*exp(-((state[0]-16)/10)**2)
-
+                        # change reward to:
+                        # reward for (s,-1) is reward_mtx[row_idx] + max_reward
                         if (state, action) not in q_matrix:
                             reward = max_reward
-                            # if 12 <= state[0] <= 16:
-                            #     # inflate reward if in bar 12-16.
-                            #     reward *= 3
                             q_matrix[(state, action)] = reward
                             max_values[state] = (reward, [action])
                         continue
@@ -182,13 +177,12 @@ class ALAlgorithm():
         return policy_matrix
 
 
-    def q_learning(self, reward_mtx, n_iter=50):
+    def q_learning(self, reward_mtx, disc_rate, n_iter=50):
         # q-learning
         # use for loop over all actions. The size of states and actions is not
         # too large
 
         q_states = self.q_states
-        disc_rate = self.disc_rate
 
         q_matrix = {(s, a): (0, 1) for s, acts in q_states.items() for a in acts}
 
@@ -229,7 +223,7 @@ class ALAlgorithm():
         # deterministic action
         return policy_matrix
 
-    def compute_policy_features_expectation(self, policy_matrix):
+    def compute_policy_features_expectation(self, policy_matrix, disc_rate):
         # Basically what the function does is walk through the states and
         # actions. The actions are gotten by choosing randomly according to the
         # policy matrix. We start from a given start_state and stop when
@@ -244,7 +238,6 @@ class ALAlgorithm():
 
         feat_mtx = self.feat_mtx
         q_states = self.q_states
-        disc_rate = self.disc_rate
         start_states = self.start_states
         term_states = self.term_states
 
@@ -253,9 +246,15 @@ class ALAlgorithm():
             sum_of_feat_exp = 0
             t = 0
             while True:
+                # can be vectorized. current approach is slow
+                # 2 vectors
+                # discounts = [disc_rate**t for t=1:n]
+                # row_idxes = [row_idx]
+                # then slice the feat_mtx using row_idxes
+                # the dot product the slice with discounts
                 action = choice(policy_matrix[state])
-                row = q_states[state][action][0]
-                feat_exp = feat_mtx[row]
+                row_idx = q_states[state][action][0]
+                feat_exp = feat_mtx[row_idx]
                 discounted_feat_exp = disc_rate ** t * feat_exp
                 sum_of_feat_exp += discounted_feat_exp
 
@@ -272,8 +271,7 @@ class ALAlgorithm():
         return mean_feat_exp/len(start_states)
 
 
-    def compute_expert_features_expectation(self):
-        disc_rate = self.disc_rate
+    def compute_expert_features_expectation(self, disc_rate):
         feat_mtx = self.feat_mtx
         q_states = self.q_states
         trajectories = self.trajectories
@@ -284,6 +282,8 @@ class ALAlgorithm():
             t = 0
             # from the first state to the penultimate state
             for state, action in zip(trajectory[::2], trajectory[1::2]):
+                # can be vectorized as well, like the
+                # compute_policy_features_expectation
                 row = q_states[state][action][0]
                 feat_exp = feat_mtx[row]
                 discounted_feat_exp = disc_rate ** t * feat_exp
@@ -315,12 +315,21 @@ class ALAlgorithm():
         self.lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
         save_obj(self.lambdas, 'LAMBDAS')
 
-    def run(self):
-        self.compute_policies()
+    def run(self, disc_rate, eps, max_reward):
+        self.compute_policies(disc_rate, eps, max_reward)
         self.solve_lambdas()
 
 if __name__ == '__main__':
-    algo = ALAlgorithm(0.95, 1)
-    algo.run()
+    parser = argparse.ArgumentParser(prog="Apprenticeship Learning Algorithm module",
+                                     usage="Specify the discount rate, "
+                                           "eps and max_reward for the "
+                                           "learning algorithm.")
+    parser.add_argument('-dr', '--disc_rate', default=0.95, type=float)
+    parser.add_argument('--eps', default=1, type=float)
+    parser.add_argument('-mr', '--max_reward', default=1000, type=float)
+    args = parser.parse_args()
+
+    alg = ALAlgorithm()
+    alg.run(args.disc_rate, args.eps, args.max_reward)
 
 

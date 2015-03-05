@@ -6,24 +6,14 @@ from random import choice
 import subprocess
 import music21
 import sys
+import argparse
 
 
 class MusicGenerator():
     def __init__(self,
-                 outfile,
-                 soundfont_path=None,
-                 format='midi',
                  preprocessor=None,
                  al_algorithm=None):
 
-        out_dir = 'output/'
-        make_dir_when_not_exist(out_dir)
-
-        self.out_path = out_dir + outfile
-        self.soundfont_path = soundfont_path
-        self.format = format
-
-        # need fix
         if preprocessor is None or al_algorithm is None:
             self.policies = load_obj('POLICIES')
             self.lambdas = load_obj('LAMBDAS')
@@ -103,13 +93,13 @@ class MusicGenerator():
         return score
 
 
-    def convert_midi_to_mp3_file(self):
+    def convert_midi_to_mp3_file(self, outpath, soundfont_path):
         # requires fluidsynth and lame
 
-        wavfile = self.out_path+'.wav'
-        midifile = self.out_path+'.mid'
+        wavfile = outpath + '.wav'
+        midifile = outpath + '.mid'
         midi_to_wav_cmd = "fluidsynth -F {} {} {}".format(wavfile,
-                                                          self.soundfont_path,
+                                                          soundfont_path,
                                                           midifile)
         wav_to_mp3_cmd = "lame {} -V 9".format(wavfile)
         rm_wavfile_cmd = "rm {}".format(wavfile)
@@ -123,38 +113,53 @@ class MusicGenerator():
             sys.exit(1)
         subprocess.call(rm_wavfile_cmd.split(' '))
 
-    def write(self):
+    def write(self, outfile, outdir, soundfont_path, format):
+        if outdir[-1] != '/':
+            outdir += '/'
+        make_dir_when_not_exist(outdir)
+        outpath = outdir + outfile
         avail_format = ('midi', 'musicxml', 'mp3')
 
         # write midi
-        if self.format == 'midi' or format is None:
-            filename = self.out_path + '.mid'
+        if format == 'midi' or format is None:
+            filename = outpath + '.mid'
             self.score.write('midi', filename)
             print("File saved to {}.".format(filename))
 
-        elif self.format == 'musicxml':
-            filename = self.out_path + '.xml'
+        elif format == 'musicxml':
+            filename = outpath + '.xml'
             self.score.write('musicxml', filename)
             print("File saved to {}.".format(filename))
 
-        elif self.format == 'mp3':
-            if self.soundfont_path is None:
+        elif format == 'mp3':
+            if soundfont_path is None:
                 print("You do not have soundfont configured.")
             else:
-                filename = self.out_path + '.mp3'
-                self.convert_midi_to_mp3_file()
+                filename = outpath + '.mp3'
+                self.convert_midi_to_mp3_file(outpath, soundfont_path)
                 print("File saved to {}.".format(filename))
         else:
-            print("Wrong format chosen. Available formats: {}.".format(
-                avail_format))
+            print("Wrong format chosen. You chose: {}. Available formats: {"
+                  "}.".format(format, avail_format))
 
-    def run(self):
+    def run(self, outfile, outdir, soundfont_path=None, format='midi'):
         # randomly chosen policy
         self.policy = self.mix_policies()
         self.trajectory = self.generate_trajectory()
         self.score = self.translate_trajectory_to_music21()
-        self.write()
+        self.write(outfile, outdir, soundfont_path, format)
 
 if __name__ == '__main__':
-    m = MusicGenerator('out', 'TimGM6mb.sf2', 'musicxml')
-    m.run()
+    parser = argparse.ArgumentParser(prog="Music Generation module",
+                            description="Generate a melody in the specified "
+                                        "format.")
+    parser.add_argument('filename')
+    parser.add_argument('-d', '--outdir', default='output/')
+    parser.add_argument('--sfpath', default='TimGM6mb.sf2')
+    parser.add_argument('-f', '--format',
+                        default='midi',
+                        choices=('musicxml', 'midi', 'mp3'))
+    args = parser.parse_args()
+
+    mg = MusicGenerator()
+    mg.run(args.filename, args.outdir, args.sfpath, args.format)
