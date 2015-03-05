@@ -1,7 +1,7 @@
 __author__ = 'redhat'
 
 from features_generation import FeaturesPreprocessor
-from algorithm import ALAlgorithm
+from al_algorithm import ALAlgorithm
 from music_generation import MusicGenerator
 from sys import exit
 import configparser
