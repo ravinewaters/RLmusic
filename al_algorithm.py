@@ -1,6 +1,5 @@
 __author__ = 'redhat'
 
-
 from numpy import float64, sqrt, vstack
 from random import choice
 from scipy import sparse, io
@@ -90,15 +89,14 @@ class ALAlgorithm():
             #                            disc_rate,
             #                            100)
             policies.append(policy_matrix)
-            mu_value = compute_policy_features_expectation(policy_matrix, disc_rate)
+            mu_value = compute_policy_features_expectation(policy_matrix,
+                                                           disc_rate)
             mu.append(mu_value)
             counter += 1
 
-            # save mu_expert, mu, mu_bar counter, policies for later computation
-            io.savemat(DIR + 'TEMP', {'mu_expert': mu_expert,
-                                'mu': mu,
-                                'mu_bar': mu_bar,
-                                'counter': counter})
+            # save for later computation
+            io.savemat(DIR + 'TEMP', {'mu_expert': mu_expert, 'mu': mu,
+                                      'mu_bar': mu_bar, 'counter': counter})
             save_obj(policies, 'TEMP_POLICIES')
 
         mu = [mu_expert] + mu
@@ -177,7 +175,6 @@ class ALAlgorithm():
         policy_matrix = {s: list(set(v[1])) for s, v in max_values.items()}
         return policy_matrix
 
-
     def q_learning(self, reward_mtx, disc_rate, n_iter=50):
         # q-learning
         # use for loop over all actions. The size of states and actions is not
@@ -202,8 +199,8 @@ class ALAlgorithm():
                     sample = reward + disc_rate * max_values[state_prime][0]
                     n_visit = q_matrix[(state, action)][1]
                     alpha = 1/n_visit
-                    new_q_value = alpha * sample + (1-alpha)*q_matrix[(state,
-                                                                       action)][0]
+                    new_q_value = alpha * sample + \
+                                  (1-alpha)*q_matrix[(state, action)][0]
                     q_matrix[(state, action)] = (new_q_value, n_visit+1)
 
                     # update max_values
@@ -224,7 +221,6 @@ class ALAlgorithm():
         policy_matrix = {s: list(v) for s, v in self.q_states.items()}
         # deterministic action
         return policy_matrix
-
 
     def compute_policy_features_expectation(self, policy_matrix, disc_rate):
         # Walk through the states and
@@ -279,7 +275,6 @@ class ALAlgorithm():
         # mean_feat_exp should be an array or csr_mtx.
         # how to multiply 2 sparse matrix and take its mean?
         return (discount_mtx * feat_mtx).mean(0).A1
-
 
     def compute_expert_features_expectation(self, disc_rate):
         feat_mtx = self.feat_mtx
@@ -337,7 +332,8 @@ class ALAlgorithm():
         self.solve_lambdas()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog="Apprenticeship Learning Algorithm module",
+    parser = argparse.ArgumentParser(prog="Apprenticeship Learning "
+                                          "Algorithm module",
                                      usage="Specify the discount rate, "
                                            "eps and max_reward for the "
                                            "learning algorithm.")
