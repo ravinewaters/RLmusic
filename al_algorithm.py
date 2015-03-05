@@ -124,7 +124,7 @@ class ALAlgorithm():
         eps = 0.001
         q_states = self.q_states
         q_matrix = {}
-        max_values = dict.fromkeys(list(q_states), (0, [0]))
+        max_values = dict.fromkeys(list(q_states), (0, None))
         threshold = eps*(1-disc_rate)/disc_rate
         delta = threshold
         while delta >= threshold:
@@ -155,14 +155,14 @@ class ALAlgorithm():
 
                     # update max_values
                     if max_values[state][0] < new_q_value:
-                        max_values[state] = (new_q_value, [action])
-                    elif max_values[state][0] == new_q_value:
-                        # many double values here........
-                        max_values[state][1].append(action)
+                        max_values[state] = (new_q_value, {action})
+                    elif max_values[state][0] == new_q_value and \
+                         action not in max_values[state][1]:
+                        max_values[state][1].add(action)
 
                     if diff > delta:
                         delta = diff
-        policy_matrix = {s: list(set(v[1])) for s, v in max_values.items()}
+        policy_matrix = {s: list(v[1]) for s, v in max_values.items()}
         return policy_matrix
 
     def q_learning(self, reward_mtx, disc_rate, n_iter=50):

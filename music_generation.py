@@ -82,7 +82,6 @@ class MusicGenerator():
             stream.append(music21.meter.TimeSignature(duration_str + '/4'))
             self.translate_figure_to_music21(first_figure, stream)
 
-
         stream.append(common_time)
         for state in self.trajectory:
             if state[-1] == -1:
