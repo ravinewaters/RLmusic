@@ -201,7 +201,6 @@ class BasePreprocessor():
         terminal_states = []
         for trajectory in self.trajectories:
             terminal_states.append(trajectory[-2])
-        save_obj(terminal_states, 'TERM_STATES')
         return set(terminal_states)
 
 
@@ -222,11 +221,11 @@ class BasePreprocessor():
                 continue
             else:
                 all_actions.append(state[1:3] + state[-2:])
-        all_actions = set(all_actions)
-        return all_actions
+        return set(all_actions)
 
 
-    def generate_all_possible_q_states(self, all_states, all_actions):
+    def generate_all_possible_q_states(self, all_states, all_actions,
+                                       term_states):
         """
         Return q_states = {s : {a: (row_idx, s')}}
 
@@ -239,8 +238,6 @@ class BasePreprocessor():
 
         A terminal state s have action a = -1 and s' = - 1.
         """
-
-        term_states = self.term_states
 
         row_idx = 0
         q_states = {}

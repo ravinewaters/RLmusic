@@ -18,14 +18,12 @@ class MusicGenerator():
             self.policies = load_obj('POLICIES')
             self.lambdas = load_obj('LAMBDAS')
             self.start_states = load_obj('START_STATES')
-            self.term_states = load_obj('TERM_STATES')
             self.fignotes_dict = load_obj('FIGNOTES_DICT')
             self.chords_dict = load_obj('CHORDS_DICT')
         else:
             self.policies = al_algorithm.policies
             self.lambdas = al_algorithm.lambdas
             self.start_states = preprocessor.start_states
-            self.term_states = preprocessor.term_states
             self.fignotes_dict = preprocessor.fignotes_dict
             self.chords_dict = preprocessor.chords_dict
 
@@ -36,14 +34,14 @@ class MusicGenerator():
     def generate_trajectory(self):
         """
         Generate trajectory using start_state as the start state and
-        policy_matrix as the policy until landing on term_states and action == -1.
+        policy_matrix as the policy until landing on action == -1.
         """
         state = choice(list(self.start_states))
         original_trajectory = []
         counter = 0
         while counter <= 30:
             action = choice(self.policy[state])
-            if state in self.term_states and action == -1:
+            if action == -1:
                 break
             state = compute_next_state(state, action)
             original_state = (state[0],

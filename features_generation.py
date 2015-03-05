@@ -73,7 +73,7 @@ class FeaturesPreprocessor(BasePreprocessor):
         return state[4] + state[3]
 
     def is_in_goal_state(self, state, action):
-        if state in self.term_states and action == -1:
+        if action == -1:
             return 1
         return 0
 
@@ -202,9 +202,10 @@ class FeaturesPreprocessor(BasePreprocessor):
 
         self.trajectories = self.get_trajectories(new_list_of_song_states)
         self.start_states = self.get_start_states()
-        self.term_states = self.get_terminal_states()
+        term_states = self.get_terminal_states()
         self.q_states = self.generate_all_possible_q_states(all_states,
-                                                            all_actions)
+                                                            all_actions,
+                                                            term_states)
         self.feat_mtx = self.generate_features_expectation_mtx()
 
 if __name__ == "__main__":

@@ -1,26 +1,24 @@
 __author__ = 'redhat'
 
-from numpy import float64, sqrt, vstack
 from random import choice
 from scipy import sparse, io
+from numpy import float64, sqrt, vstack
 from cvxopt import matrix, spmatrix, solvers
 from common_methods import load_obj, DIR, save_obj
 import os
 import argparse
+import itertools
 
 
 class ALAlgorithm():
     def __init__(self, preprocessor=None):
-
         if preprocessor is not None:
             self.start_states = preprocessor.start_states
-            self.term_states = preprocessor.term_states
             self.q_states = preprocessor.q_states
             self.feat_mtx = preprocessor.feat_mtx
             self.trajectories = preprocessor.trajectories
         else:
             self.start_states = load_obj('START_STATES')
-            self.term_states = load_obj('TERM_STATES')
             self.q_states = load_obj('Q_STATES')
             self.feat_mtx = io.loadmat(DIR + 'FEATURES_EXPECTATION_MATRIX')[
                 'mtx']
@@ -120,7 +118,6 @@ class ALAlgorithm():
 
     def value_iteration(self, reward_mtx, disc_rate, max_reward):
         # q-value iteration
-
         # max_values = {s : (q_value, [a1, a2, ..., an])}
         # q_matrix = {(state, action): (row_index, next_state}
 
@@ -130,10 +127,8 @@ class ALAlgorithm():
         max_values = dict.fromkeys(list(q_states), (0, [0]))
         threshold = eps*(1-disc_rate)/disc_rate
         delta = threshold
-        iteration = 1
         while delta >= threshold:
             delta = -1
-            # print('iteration:', iteration)
             for state, actions in q_states.items():
                 for action in actions:
                     # reward for (s, -1) is reward_mtx[row_idx] + max_reward
@@ -146,29 +141,27 @@ class ALAlgorithm():
                     else:
                         reward += max_reward
                         opt_future_val = 0
+
                     new_q_value = reward + disc_rate * opt_future_val
 
-                    if (state, action) not in q_matrix:
-                        diff = new_q_value
-                        if diff < 0:
-                            diff = -diff
-                        q_matrix[(state, action)] = new_q_value
-                    else:
+                    if (state, action) in q_matrix:
                         diff = new_q_value - q_matrix[(state, action)]
-                        if diff < 0:
-                            diff = -diff
-                        q_matrix[(state, action)] = new_q_value
+                    else:
+                        diff = new_q_value
+
+                    if diff < 0:
+                        diff = -diff
+                    q_matrix[(state, action)] = new_q_value
 
                     # update max_values
                     if max_values[state][0] < new_q_value:
                         max_values[state] = (new_q_value, [action])
                     elif max_values[state][0] == new_q_value:
+                        # many double values here........
                         max_values[state][1].append(action)
 
                     if diff > delta:
                         delta = diff
-            iteration += 1
-            # print('delta', delta)
         policy_matrix = {s: list(set(v[1])) for s, v in max_values.items()}
         return policy_matrix
 
@@ -184,14 +177,14 @@ class ALAlgorithm():
         # should init max_values with random actions
         max_values = {s: (0, next(iter(a))) for s, a in q_states.items()}
 
-        for k in range(0, n_iter):
+        for _ in itertools.repeat(None, 10):
             for state, actions in q_states.items():
                 for action in actions:
                     if action == -1:
                         # if action 'exit'
                         break
-                    row = q_states[state][action][0]
-                    reward = reward_mtx[row]
+                    row_idx = q_states[state][action][0]
+                    reward = reward_mtx[row_idx]
                     state_prime = q_states[state][action][1]
                     sample = reward + disc_rate * max_values[state_prime][0]
                     n_visit = q_matrix[(state, action)][1]
@@ -216,7 +209,6 @@ class ALAlgorithm():
         # Should add stochastic policy to the matrix.
 
         policy_matrix = {s: list(v) for s, v in self.q_states.items()}
-        # deterministic action
         return policy_matrix
 
     def compute_policy_features_expectation(self, policy_matrix, disc_rate):
@@ -236,41 +228,32 @@ class ALAlgorithm():
         feat_mtx = self.feat_mtx
         q_states = self.q_states
         start_states = self.start_states
-        term_states = self.term_states
 
         row = 0
         row_ind = []
         col_ind = []
         data = []
-        for state in start_states:
-            t = 0
-            while True:
-                # can be vectorized. current approach is slow
-                # 2 vectors
-                # discounts = [disc_rate**t for t=1:n]
-                # row_idxes = [row_idx]
-                # then slice the feat_mtx using row_idxes
-                # the dot product the slice with discounts
-                action = choice(policy_matrix[state])
-                row_idx = q_states[state][action][0]
-                row_ind.append(row)
-                col_ind.append(row_idx)
-                data.append(disc_rate ** t)
+        for _ in itertools.repeat(None, 10):
+            for state in start_states:
+                t = 0
+                while True:
+                    action = choice(policy_matrix[state])
+                    row_idx = q_states[state][action][0]
+                    row_ind.append(row)
+                    col_ind.append(row_idx)
+                    data.append(disc_rate ** t)
 
-                if state in term_states and action == -1:
-                    break
+                    if action == -1:
+                        break
 
-                # next state
-                state = q_states[state][action][1]
-                t += 1
-            row += 1
+                    state = q_states[state][action][1]  # next state
+                    t += 1
+                row += 1
 
         discount_mtx = sparse.csr_matrix((data, (row_ind, col_ind)),
                                          shape=(row, feat_mtx.shape[0]),
                                          dtype=float64)
 
-        # mean_feat_exp should be an array or csr_mtx.
-        # how to multiply 2 sparse matrix and take its mean?
         return (discount_mtx * feat_mtx).mean(0).A1
 
     def compute_expert_features_expectation(self, disc_rate):
@@ -284,10 +267,9 @@ class ALAlgorithm():
         data = []
         for trajectory in trajectories:
             t = 0
+
             # from the first state to the penultimate state
             for state, action in zip(trajectory[::2], trajectory[1::2]):
-                # can be vectorized as well, like the
-                # compute_policy_features_expectation
                 row_idx = q_states[state][action][0]
                 row_ind.append(row)
                 col_ind.append(row_idx)
