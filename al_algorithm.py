@@ -155,14 +155,14 @@ class ALAlgorithm():
 
                     # update max_values
                     if max_values[state][0] < new_q_value:
-                        max_values[state] = (new_q_value, {action})
-                    elif max_values[state][0] == new_q_value and \
-                         action not in max_values[state][1]:
-                        max_values[state][1].add(action)
+                        max_values[state] = (new_q_value, [action])
+                    elif max_values[state][0] == new_q_value:
+                        max_values[state][1].append(action)
 
                     if diff > delta:
                         delta = diff
-        policy_matrix = {s: list(v[1]) for s, v in max_values.items()}
+        policy_matrix = {s: tuple(set(v[1])) for s, v in max_values.items()}
+        print(policy_matrix)
         return policy_matrix
 
     def q_learning(self, reward_mtx, disc_rate, n_iter=50):
@@ -233,7 +233,7 @@ class ALAlgorithm():
         row_ind = []
         col_ind = []
         data = []
-        for _ in itertools.repeat(None, 10):
+        for _ in itertools.repeat(None, 4):
             for state in start_states:
                 t = 0
                 while True:
@@ -267,7 +267,6 @@ class ALAlgorithm():
         data = []
         for trajectory in trajectories:
             t = 0
-
             # from the first state to the penultimate state
             for state, action in zip(trajectory[::2], trajectory[1::2]):
                 row_idx = q_states[state][action][0]
