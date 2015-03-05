@@ -162,7 +162,6 @@ class ALAlgorithm():
                     if diff > delta:
                         delta = diff
         policy_matrix = {s: tuple(set(v[1])) for s, v in max_values.items()}
-        print(policy_matrix)
         return policy_matrix
 
     def q_learning(self, reward_mtx, disc_rate, n_iter=50):
