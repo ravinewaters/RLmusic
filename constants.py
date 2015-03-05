@@ -24,5 +24,6 @@ CHORD_QUALITY = {'major': 0,
                  'rest': 5,
                  'pickup': 6, }
 
+# where to save temporary objects created during the process
 DIR = 'obj/'
 

@@ -120,10 +120,11 @@ class MusicGenerator():
         outpath = outdir + outfile
         avail_format = ('midi', 'musicxml', 'mp3')
 
-        # write midi
-        if format == 'midi' or format is None:
-            filename = outpath + '.mid'
-            self.score.write('midi', filename)
+        # always write midi
+        filename = outpath + '.mid'
+        self.score.write('midi', filename)
+
+        if format == 'midi':
             print("File saved to {}.".format(filename))
 
         elif format == 'musicxml':
@@ -154,11 +155,17 @@ if __name__ == '__main__':
                             description="Generate a melody in the specified "
                                         "format.")
     parser.add_argument('filename')
-    parser.add_argument('-d', '--outdir', default='output/')
-    parser.add_argument('--sfpath', default='TimGM6mb.sf2')
+    parser.add_argument('-d',
+                        '--outdir',
+                        default='output/',
+                        help="The output will be in this directory.")
+    parser.add_argument('--sfpath',
+                        default='TimGM6mb.sf2',
+                        help="Path of soundfont file.")
     parser.add_argument('-f', '--format',
                         default='midi',
-                        choices=('musicxml', 'midi', 'mp3'))
+                        choices=('musicxml', 'midi', 'mp3'),
+                        help="The format of the output file.")
     args = parser.parse_args()
 
     mg = MusicGenerator()

@@ -40,6 +40,9 @@ class ALAlgorithm():
         print('al_error_tolerance:', al_error_tolerance)
         print('max_reward:', max_reward)
 
+        # check for bug
+        # the rate of decrease of t is very low after only few iterations
+
         try:
             # Load saved computation state
             temp = io.loadmat(DIR + 'TEMP')

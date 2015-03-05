@@ -262,4 +262,5 @@ class BasePreprocessor():
         return q_states
 
 if __name__ == "__main__":
+    print("This module can't be use directly")
     pass
