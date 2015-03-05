@@ -8,7 +8,7 @@ Garton</movement-title>
     <creator type="composer">Trad.</creator>
     <encoding>
       <software>MuseScore 1.3</software>
-      <encoding-date>2015-01-23</encoding-date>
+      <encoding-date>2015-03-05</encoding-date>
       </encoding>
     </identification>
   <defaults>
@@ -38,10 +38,10 @@ Garton</movement-title>
 Garton</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="1133.79" default-y="1559.98" font-size="12" justify="right" valign="top">Trad.</credit-words>
+    <credit-words default-x="1133.79" default-y="1558.48" font-size="12" justify="right" valign="top">Trad.</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="56.6893" default-y="1559.98" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
+    <credit-words default-x="56.6893" default-y="1558.48" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
     </credit>
   <part-list>
     <score-part id="P1">
@@ -58,12 +58,12 @@ Garton</credit-words>
       </score-part>
     </part-list>
   <part id="P1">
-    <measure number="1" width="203.55">
+    <measure number="1" width="207.32">
       <print>
         <system-layout>
           <system-margins>
-            <left-margin>25.87</left-margin>
-            <right-margin>-0.00</right-margin>
+            <left-margin>26.50</left-margin>
+            <right-margin>0.00</right-margin>
             </system-margins>
           <top-system-distance>180.00</top-system-distance>
           </system-layout>
@@ -85,7 +85,7 @@ Garton</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="74.65" default-y="-50.00">
+      <note default-x="79.15" default-y="-50.00">
         <pitch>
           <step>C</step>
           <octave>4</octave>
@@ -96,7 +96,7 @@ Garton</credit-words>
         <dot/>
         <stem>up</stem>
         </note>
-      <note default-x="112.95" default-y="-45.00">
+      <note default-x="117.18" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -112,7 +112,7 @@ Garton</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="139.13" default-y="-40.00">
+      <note default-x="143.35" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -122,7 +122,7 @@ Garton</credit-words>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="170.54" default-y="-25.00">
+      <note default-x="174.53" default-y="-25.00">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -133,7 +133,7 @@ Garton</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="2" width="90.55">
+    <measure number="2" width="89.81">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -150,13 +150,7 @@ Garton</credit-words>
         <type>half</type>
         <stem>up</stem>
         </note>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
-      <note default-x="50.47" default-y="-30.00">
+      <note default-x="50.11" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -167,13 +161,7 @@ Garton</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="3" width="175.23">
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
+    <measure number="3" width="174.49">
       <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
@@ -185,7 +173,7 @@ Garton</credit-words>
         <dot/>
         <stem>up</stem>
         </note>
-      <note default-x="56.25" default-y="-30.00">
+      <note default-x="55.96" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -195,13 +183,7 @@ Garton</credit-words>
         <type>eighth</type>
         <stem>up</stem>
         </note>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
-      <note default-x="82.42" default-y="-30.00">
+      <note default-x="82.13" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -212,7 +194,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">begin</beam>
         </note>
-      <note default-x="105.10" default-y="-40.00">
+      <note default-x="104.67" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -223,7 +205,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">continue</beam>
         </note>
-      <note default-x="127.78" default-y="-45.00">
+      <note default-x="127.20" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -234,7 +216,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">continue</beam>
         </note>
-      <note default-x="150.47" default-y="-40.00">
+      <note default-x="149.73" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -246,13 +228,7 @@ Garton</credit-words>
         <beam number="1">end</beam>
         </note>
       </measure>
-    <measure number="4" width="175.23">
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
+    <measure number="4" width="174.49">
       <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
@@ -264,7 +240,7 @@ Garton</credit-words>
         <dot/>
         <stem>up</stem>
         </note>
-      <note default-x="56.25" default-y="-30.00">
+      <note default-x="55.96" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -274,13 +250,7 @@ Garton</credit-words>
         <type>eighth</type>
         <stem>up</stem>
         </note>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
-      <note default-x="82.42" default-y="-30.00">
+      <note default-x="82.13" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -291,7 +261,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">begin</beam>
         </note>
-      <note default-x="105.10" default-y="-40.00">
+      <note default-x="104.67" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -302,7 +272,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">continue</beam>
         </note>
-      <note default-x="127.78" default-y="-45.00">
+      <note default-x="127.20" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -313,7 +283,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">continue</beam>
         </note>
-      <note default-x="150.47" default-y="-40.00">
+      <note default-x="149.73" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -325,13 +295,7 @@ Garton</credit-words>
         <beam number="1">end</beam>
         </note>
       </measure>
-    <measure number="5" width="140.90">
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
+    <measure number="5" width="140.17">
       <note default-x="12.00" default-y="-50.00">
         <pitch>
           <step>C</step>
@@ -343,7 +307,7 @@ Garton</credit-words>
         <dot/>
         <stem>up</stem>
         </note>
-      <note default-x="50.30" default-y="-45.00">
+      <note default-x="50.03" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -359,7 +323,7 @@ Garton</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="76.48" default-y="-40.00">
+      <note default-x="76.20" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -369,7 +333,7 @@ Garton</credit-words>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="107.89" default-y="-25.00">
+      <note default-x="107.38" default-y="-25.00">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -380,13 +344,7 @@ Garton</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="6" width="90.55">
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
+    <measure number="6" width="89.81">
       <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
@@ -397,13 +355,7 @@ Garton</credit-words>
         <type>half</type>
         <stem>up</stem>
         </note>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
-      <note default-x="50.47" default-y="-30.00">
+      <note default-x="50.11" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -414,13 +366,7 @@ Garton</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="7" width="175.23">
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
+    <measure number="7" width="174.49">
       <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
@@ -432,7 +378,7 @@ Garton</credit-words>
         <dot/>
         <stem>up</stem>
         </note>
-      <note default-x="56.25" default-y="-30.00">
+      <note default-x="55.96" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -442,13 +388,7 @@ Garton</credit-words>
         <type>eighth</type>
         <stem>up</stem>
         </note>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
-      <note default-x="82.42" default-y="-30.00">
+      <note default-x="82.13" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -459,7 +399,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">begin</beam>
         </note>
-      <note default-x="105.10" default-y="-40.00">
+      <note default-x="104.67" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -470,7 +410,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">continue</beam>
         </note>
-      <note default-x="127.78" default-y="-45.00">
+      <note default-x="127.20" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -481,7 +421,7 @@ Garton</credit-words>
         <stem>up</stem>
         <beam number="1">continue</beam>
         </note>
-      <note default-x="150.47" default-y="-40.00">
+      <note default-x="149.73" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -503,12 +443,6 @@ Garton</credit-words>
           <system-distance>92.50</system-distance>
           </system-layout>
         </print>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
       <note default-x="53.15" default-y="-50.00">
         <pitch>
           <step>C</step>
@@ -529,12 +463,6 @@ Garton</credit-words>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <harmony print-frame="no">
-        <root>
-          <root-step>C</root-step>
-          </root>
-        <kind text="">major</kind>
-        </harmony>
       <note default-x="87.47" default-y="-50.00">
         <pitch>
           <step>C</step>

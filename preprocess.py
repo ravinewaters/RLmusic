@@ -2,6 +2,7 @@ __author__ = 'redhat'
 
 from music21 import converter, note, harmony, stream
 from common_methods import save_obj, compute_next_state
+from constants import PICKUP_ID
 import os
 
 
@@ -53,23 +54,26 @@ class BasePreprocessor():
                     pickup.append(elem.quarterLength)
                     pickup_duration += elem.quarterLength
 
-            states.append((elem.measureNumber, tuple(pickup), '0', pickup_beat,
-                           pickup_duration, pickup_fighead))
+            states.append((elem.measureNumber,
+                           tuple(pickup),
+                           'pickup',
+                           pickup_beat,
+                           pickup_duration,
+                           pickup_fighead))
 
         last_item = False
         for i in range(len(elements)):
-            prev_elem = elements[i-1]
             elem = elements[i]
+            if elem.measureNumber == 1 and anacrusis is True:
+                continue
+
+            prev_elem = elements[i-1]
             try:
                 next_elem = elements[i+1]
             except stream.StreamException:
                 # at the last iteration, look for next item in the original measure
                 next_elem = elem.next()
                 last_item = True
-
-            # Skip if anacrusis
-            if elem.measureNumber == 1 and anacrusis:
-                continue
 
             if elem.isChord:
                 # get chord's name
@@ -149,15 +153,16 @@ class BasePreprocessor():
                 if chord in chords_dict[0]:
                     chord_int = chords_dict[0][chord]
                 else:
-                    if chord != '0':
+                    if chord != 'pickup':
                         chords_dict[0][chord] = chords_counter
                         chords_dict[1][chords_counter] = chord
                         chord_int = chords_counter
                         chords_counter += 1
                     else:
                         # if pickup
-                        chords_dict[0][chord] = 0
-                        chords_dict[1][0] = chord
+                        chords_dict[0][chord] = PICKUP_ID
+                        chords_dict[1][PICKUP_ID] = chord
+                        chord_int = PICKUP_ID
 
                 new_state = (state[0],
                              fignotes_int,
@@ -216,8 +221,7 @@ class BasePreprocessor():
         all_actions = []
         for state in all_states:
             chord = state[2]
-            if chord == 0:
-                # '0': 0 < 'A': 1, pickup will be assigned to 0
+            if chord == PICKUP_ID:
                 continue
             else:
                 all_actions.append(state[1:3] + state[-2:])

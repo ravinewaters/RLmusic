@@ -6,6 +6,7 @@ from scipy import io
 from constants import CHORD_ROOT_TO_INT, DIR
 from numpy import uint8
 from common_methods import make_flat_list
+from constants import PICKUP_ID
 import argparse
 import shutil
 import os
@@ -30,7 +31,7 @@ class FeaturesPreprocessor(BasePreprocessor):
         if action[-1] == -1:
             # next fig is rest
             return 101
-        if state[2] == 1:
+        if state[2] == PICKUP_ID:
             # pickup, no chord
             return 102
         chord_root = self.chords_dict[1][state[2]]

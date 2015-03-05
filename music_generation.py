@@ -3,6 +3,7 @@ __author__ = 'redhat'
 from common_methods import compute_next_state, load_obj, weighted_choice_b, \
     make_dir_when_not_exist
 from random import choice
+from constants import PICKUP_ID
 import subprocess
 import music21
 import sys
@@ -36,14 +37,11 @@ class MusicGenerator():
         Generate trajectory using start_state as the start state and
         policy_matrix as the policy until landing on action == -1.
         """
+
         state = choice(list(self.start_states))
         original_trajectory = []
         counter = 0
         while counter <= 30:
-            action = choice(self.policy[state])
-            if action == -1:
-                break
-            state = compute_next_state(state, action)
             original_state = (state[0],
                               self.fignotes_dict[1][state[1]],
                               self.chords_dict[1][state[2]],
@@ -51,6 +49,10 @@ class MusicGenerator():
                               int(state[4] / 4.0),
                               state[5])
             original_trajectory.append(original_state)
+            action = choice(self.policy[state])
+            if action == -1:
+                break
+            state = compute_next_state(state, action)
             counter += 1
         return original_trajectory
 
@@ -69,27 +71,39 @@ class MusicGenerator():
         part.append(clef)
         part.append(key_signature)
         part.append(instrument)
-        stream.append(common_time)
 
         score.metadata.title = title
         score.metadata.composer = composer
 
+        first_figure = self.trajectory[0]
+        if first_figure[2] == 'pickup':
+            self.trajectory = self.trajectory[1:]
+            duration_str = str(int(first_figure[4]))
+            stream.append(music21.meter.TimeSignature(duration_str + '/4'))
+            self.translate_figure_to_music21(first_figure, stream)
+
+
+        stream.append(common_time)
         for state in self.trajectory:
             if state[-1] == -1:
-                duration = state[1][1]
-                r = music21.note.Rest(quarterLength=duration)
+                duration_str = state[1][1]
+                r = music21.note.Rest(quarterLength=duration_str)
                 stream.append(r)
             else:
-                pitches = state[1][::2]
-                durations = state[1][1::2]
-                for pitch, duration in zip(pitches, durations):
-                    n = music21.note.Note(pitch, quarterLength=duration)
-                    stream.append(n)
+                self.translate_figure_to_music21(state, stream)
         stream.makeMeasures(inPlace=True)
         part.append(stream)
+
         score.append(part)
         return score
 
+    @staticmethod
+    def translate_figure_to_music21(figure, stream):
+        pitches = figure[1][::2]
+        durations = figure[1][1::2]
+        for pitch, duration in zip(pitches, durations):
+            n = music21.note.Note(pitch, quarterLength=duration)
+            stream.append(n)
 
     def convert_midi_to_mp3_file(self, outpath, soundfont_path):
         # requires fluidsynth and lame
@@ -168,3 +182,4 @@ if __name__ == '__main__':
 
     mg = MusicGenerator()
     mg.run(args.filename, args.outdir, args.sfpath, args.format)
+    # mg.run('test', 'output/', 'TimGM6mb.sf2', 'musicxml')

@@ -27,3 +27,5 @@ CHORD_QUALITY = {'major': 0,
 # where to save temporary objects created during the process
 DIR = 'obj/'
 
+PICKUP_ID = -1
+
