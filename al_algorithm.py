@@ -79,13 +79,7 @@ class ALAlgorithm():
             print('{}, {}'.format(counter, t))
             reward_mtx = (feat_mtx * w.T)
 
-            # q-value iteration
             policy_matrix = value_iteration(reward_mtx, disc_rate, max_reward)
-
-            # q-learning
-            # policy_matrix = q_learning(reward_mtx,
-            #                            disc_rate,
-            #                            100)
             policies.append(policy_matrix)
             mu_value = compute_policy_features_expectation(policy_matrix,
                                                            disc_rate)
@@ -119,7 +113,8 @@ class ALAlgorithm():
     def value_iteration(self, reward_mtx, disc_rate, max_reward):
         # q-value iteration
         # max_values = {s : (q_value, [a1, a2, ..., an])}
-        # q_matrix = {(state, action): (row_index, next_state}
+        # q_states = {s : {a: (row_idx, s')}}
+        # q_matrix = {(state, action): q-value}
 
         eps = 0.001
         q_states = self.q_states
@@ -132,7 +127,6 @@ class ALAlgorithm():
             for state, actions in q_states.items():
                 for action in actions:
                     # reward for (s, -1) is reward_mtx[row_idx] + max_reward
-
                     row_idx = q_states[state][action][0]
                     reward = reward_mtx[row_idx]
                     if action != -1:
@@ -163,41 +157,6 @@ class ALAlgorithm():
                         delta = diff
         policy_matrix = {s: tuple(set(v[1])) for s, v in max_values.items()}
         return policy_matrix
-
-    def q_learning(self, reward_mtx, disc_rate, n_iter=50):
-        # q-learning
-        # use for loop over all actions. The size of states and actions is not
-        # too large
-
-        q_states = self.q_states
-
-        q_matrix = {(s, a): (0, 1) for s, acts in q_states.items() for a in acts}
-
-        # should init max_values with random actions
-        max_values = {s: (0, next(iter(a))) for s, a in q_states.items()}
-
-        for _ in itertools.repeat(None, 10):
-            for state, actions in q_states.items():
-                for action in actions:
-                    if action == -1:
-                        # if action 'exit'
-                        break
-                    row_idx = q_states[state][action][0]
-                    reward = reward_mtx[row_idx]
-                    state_prime = q_states[state][action][1]
-                    sample = reward + disc_rate * max_values[state_prime][0]
-                    n_visit = q_matrix[(state, action)][1]
-                    alpha = 1/n_visit
-                    new_q_value = alpha * sample + \
-                                  (1-alpha)*q_matrix[(state, action)][0]
-                    q_matrix[(state, action)] = (new_q_value, n_visit+1)
-
-                    # update max_values
-                    if max_values[state][0] < new_q_value:
-                        max_values[state] = (new_q_value, action)
-        policy_matrix = {s: choice(v[1]) for s, v in max_values.items()}
-        return policy_matrix
-
 
     def generate_random_policy_matrix(self):
         # generate matrix of 0-1 value with size:

@@ -332,3 +332,43 @@ def is_valid_action(state, action):
     elif fig_beat + fig_duration == 20:
         return True
     assert False, "Shouldn't get here"
+
+
+    def q_learning(self, reward_mtx, disc_rate, max_reward, n_iter=50):
+        # q-learning
+        # use for loop over all actions. The size of states and actions is not
+        # too large
+        # max_values = {s : (q_value, (a,)}
+        # q_states = {s : {a: (row_idx, s')}}
+        # q_matrix = {(state, action): [q-value, n_visit]}
+
+        q_states = self.q_states
+        q_matrix = {}
+        max_values = dict.fromkeys(list(q_states), (0, None))
+        for _ in itertools.repeat(None, n_iter):
+            for state, actions in q_states.items():
+                for action in actions:
+                    row_idx = q_states[state][action][0]
+                    reward = reward_mtx[row_idx]
+                    if action != -1:
+                        state_prime = q_states[state][action][1]
+                        sample = reward + disc_rate * max_values[state_prime][0]
+                    else:
+                        sample = reward + max_reward
+
+                    if (state, action) not in q_matrix:
+                        q_matrix[(state, action)] = [5, 1]
+                        alpha = 0
+                    else:
+                        alpha = 1/q_matrix[(state, action)][1]
+                    new_q_value = alpha * sample + \
+                                  (1-alpha) * q_matrix[(state, action)][0]
+
+                    q_matrix[(state, action)][0] = new_q_value
+                    q_matrix[(state, action)][1] += 1
+
+                    # update max_values
+                    if max_values[state][0] <= new_q_value:
+                        max_values[state] = (new_q_value, (action,))
+        policy_matrix = {s: v[1] for s, v in max_values.items()}
+        return policy_matrix
