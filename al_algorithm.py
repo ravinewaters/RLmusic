@@ -28,6 +28,7 @@ class ALAlgorithm():
                          al_error_tolerance=1,
                          max_reward=100):
         # bind to name for faster access
+        q_states = self.q_states
         feat_mtx = self.feat_mtx
         compute_policy_features_expectation = self.compute_policy_features_expectation
         compute_projection = self.compute_projection
@@ -49,9 +50,11 @@ class ALAlgorithm():
             mu_bar = temp['mu_bar'].ravel()
             counter = temp['counter'][0][0]
         except FileNotFoundError:
-            policy_matrix = self.generate_random_policy_matrix()
+            policy_matrix = self.generate_initial_policy_matrix(q_states)
             policies = [policy_matrix]
-            mu_expert = self.compute_expert_features_expectation(disc_rate)
+            mu_expert = self.compute_expert_features_expectation(disc_rate,
+                                                                 feat_mtx,
+                                                                 q_states)
             mu = []
             counter = 1
 
@@ -60,7 +63,9 @@ class ALAlgorithm():
         while counter <= 30:
             if counter == 1:
                 mu_value = compute_policy_features_expectation(policy_matrix,
-                                                               disc_rate)
+                                                               disc_rate,
+                                                               feat_mtx,
+                                                               q_states)
                 mu.append(mu_value)
                 mu_bar = mu[counter-1]  # mu_bar[0] = mu[0]
             else:  # counter >= 2
@@ -79,10 +84,13 @@ class ALAlgorithm():
             print('{}, {}'.format(counter, t))
             reward_mtx = (feat_mtx * w.T)
 
-            policy_matrix = value_iteration(reward_mtx, disc_rate, max_reward)
+            policy_matrix = value_iteration(reward_mtx, disc_rate, max_reward,
+                                            q_states)
             policies.append(policy_matrix)
             mu_value = compute_policy_features_expectation(policy_matrix,
-                                                           disc_rate)
+                                                           disc_rate,
+                                                           feat_mtx,
+                                                           q_states)
             mu.append(mu_value)
             counter += 1
 
@@ -104,20 +112,22 @@ class ALAlgorithm():
 
     @staticmethod
     def compute_projection(mu_bar, mu, mu_expert):
+        print('mu:', mu)
+        print('mu_bar:', mu_bar)
+        print('mu_expert:', mu_expert)
         mu_mu_bar_distance = mu - mu_bar
         mu_bar_mu_expert_distance = mu_expert - mu_bar
         numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)
         denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)
         return numerator/denominator * mu_mu_bar_distance
 
-    def value_iteration(self, reward_mtx, disc_rate, max_reward):
+    def value_iteration(self, reward_mtx, disc_rate, max_reward, q_states):
         # q-value iteration
         # max_values = {s : (q_value, [a1, a2, ..., an])}
         # q_states = {s : {a: (row_idx, s')}}
         # q_matrix = {(state, action): q-value}
 
         eps = 0.001
-        q_states = self.q_states
         q_matrix = {}
         max_values = dict.fromkeys(list(q_states), (0, None))
         threshold = eps*(1-disc_rate)/disc_rate
@@ -126,13 +136,14 @@ class ALAlgorithm():
             delta = -1
             for state, actions in q_states.items():
                 for action in actions:
-                    # reward for (s, -1) is reward_mtx[row_idx] + max_reward
+
                     row_idx = q_states[state][action][0]
                     reward = reward_mtx[row_idx]
                     if action != -1:
                         state_prime = q_states[state][action][1]
                         opt_future_val = max_values[state_prime][0]
                     else:
+                        # reward for (s, -1) is reward_mtx[row_idx] + max_reward
                         reward += max_reward
                         opt_future_val = 0
 
@@ -158,40 +169,32 @@ class ALAlgorithm():
         policy_matrix = {s: tuple(set(v[1])) for s, v in max_values.items()}
         return policy_matrix
 
-    def generate_random_policy_matrix(self):
-        # generate matrix of 0-1 value with size:
-        # rows = # states
-        # cols = # actions
-        # Use dictionary not matrix.
-        # not stochastic
-        # Should add stochastic policy to the matrix.
-
-        policy_matrix = {s: list(v) for s, v in self.q_states.items()}
+    def generate_initial_policy_matrix(self, q_states):
+        """
+        Generate a policy table = {s: [a_1, a_2, ..., a_k]}, where
+        a_1, a_2, ..., a_k are valid actions for state s.
+        """
+        policy_matrix = {s: list(v) for s, v in q_states.items()}
         return policy_matrix
 
-    def compute_policy_features_expectation(self, policy_matrix, disc_rate):
-        # Walk through the states and
-        # actions. The actions are gotten by choosing randomly according to the
-        # policy matrix. We start from a given start_state and stop when
-        # reaching a terminal state or the features expectation is very small
-        # because of the discount factor.
-        # We generate n_iter trajectories and find the average of the sum of
-        # discounted feature expectation. If we have a deterministic policy we
-        # can just set the n_iter to be 1.
+    def compute_policy_features_expectation(self, policy_matrix, disc_rate,
+                                            feat_mtx, q_states):
+        """
+        Generate a set of trajectories starting from state in start states
+        until picking 'exit' action.
+        The number of trajectories is 7 * number of state in start_states.
+        Then, we average the discounted features vector over all
+        trajectories in the set to get an estimate of features expectation
+        of the policy.
+        """
 
-        # policy_matrix:
-        # {state: ((a1, .05), (a2, .1), (a3, .85))}
-        # row_ind, col_ind, data to construct discount_mtx
-
-        feat_mtx = self.feat_mtx
-        q_states = self.q_states
         start_states = self.start_states
 
         row = 0
         row_ind = []
         col_ind = []
         data = []
-        for _ in itertools.repeat(None, 4):
+        for _ in itertools.repeat(None, 7):
             for state in start_states:
                 t = 0
                 while True:
@@ -200,10 +203,8 @@ class ALAlgorithm():
                     row_ind.append(row)
                     col_ind.append(row_idx)
                     data.append(disc_rate ** t)
-
                     if action == -1:
                         break
-
                     state = q_states[state][action][1]  # next state
                     t += 1
                 row += 1
@@ -214,9 +215,12 @@ class ALAlgorithm():
 
         return (discount_mtx * feat_mtx).mean(0).A1
 
-    def compute_expert_features_expectation(self, disc_rate):
-        feat_mtx = self.feat_mtx
-        q_states = self.q_states
+    def compute_expert_features_expectation(self, disc_rate, feat_mtx,
+                                            q_states):
+        """
+        Similar to compute_policy_features_expectation but we are given a
+        fixed number of trajectories which are expert's.
+        """
         trajectories = self.trajectories
 
         row = 0
@@ -225,7 +229,7 @@ class ALAlgorithm():
         data = []
         for trajectory in trajectories:
             t = 0
-            # from the first state to the penultimate state
+            # zip states and actions
             for state, action in zip(trajectory[::2], trajectory[1::2]):
                 row_idx = q_states[state][action][0]
                 row_ind.append(row)
