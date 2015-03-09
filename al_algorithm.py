@@ -76,8 +76,8 @@ class ALAlgorithm():
                 break
 
             print('{}, {}'.format(counter, t))
-            reward_mtx = (feat_mtx * w.T)
 
+            reward_mtx = feat_mtx * w.T
             policy_matrix = value_iteration(reward_mtx, disc_rate, max_reward)
             policies.append(policy_matrix)
             mu_value = compute_policy_features_expectation(policy_matrix,
@@ -85,7 +85,6 @@ class ALAlgorithm():
             mu.append(mu_value)
             counter += 1
 
-            # save for later computation
             io.savemat(DIR + 'TEMP', {'mu_expert': mu_expert, 'mu': mu,
                                       'mu_bar': mu_bar, 'counter': counter})
             save_obj(policies, 'TEMP_POLICIES')
@@ -107,10 +106,6 @@ class ALAlgorithm():
         mu_bar_mu_expert_distance = mu_expert - mu_bar
         numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)
         denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)
-        print('mu-mu_bar:', mu_mu_bar_distance)
-        print('mu_bar-mu_expert:', mu_bar_mu_expert_distance)
-        print('numerator:', numerator)
-        print('denominator:', denominator)
         return numerator/denominator * mu_mu_bar_distance
 
     def value_iteration(self, reward_mtx, disc_rate, max_reward):
@@ -119,26 +114,31 @@ class ALAlgorithm():
         # q_states = {s : {a: (row_idx, s')}}
         # q_matrix = {(state, action): q-value}
 
+        # use try-except when accessing max_values
+        # if doesn't exist return 0
+
         eps = 0.001
         q_states = self.q_states
         q_matrix = {}
-        max_values = dict.fromkeys(list(q_states), (0, None))
-        threshold = eps*(1-disc_rate)/disc_rate
+        max_values = {}
+        threshold = 2*eps*(1-disc_rate)/disc_rate
         delta = threshold
         while delta >= threshold:
             delta = -1
             for state, actions in q_states.items():
                 for action in actions:
-
                     row_idx = q_states[state][action][0]
                     reward = reward_mtx[row_idx]
+                    opt_future_val = 0
+
                     if action != -1:
                         state_prime = q_states[state][action][1]
-                        opt_future_val = max_values[state_prime][0]
+                        try:
+                            opt_future_val = max_values[state_prime][0]
+                        except KeyError:
+                            pass
                     else:
-                        # reward for (s, -1) is reward_mtx[row_idx] + max_reward
                         reward += max_reward
-                        opt_future_val = 0
 
                     new_q_value = reward + disc_rate * opt_future_val
 
@@ -146,16 +146,19 @@ class ALAlgorithm():
                         diff = new_q_value - q_matrix[(state, action)]
                     else:
                         diff = new_q_value
+                    q_matrix[(state, action)] = new_q_value
+
+                    try:
+                        # update max_values
+                        if max_values[state][0] < new_q_value:
+                            max_values[state] = (new_q_value, [action])
+                        elif max_values[state][0] == new_q_value:
+                            max_values[state][1].append(action)
+                    except KeyError:
+                        max_values[state] = (new_q_value, [action])
 
                     if diff < 0:
                         diff = -diff
-                    q_matrix[(state, action)] = new_q_value
-
-                    # update max_values
-                    if max_values[state][0] < new_q_value:
-                        max_values[state] = (new_q_value, [action])
-                    elif max_values[state][0] == new_q_value:
-                        max_values[state][1].append(action)
 
                     if diff > delta:
                         delta = diff
@@ -183,7 +186,6 @@ class ALAlgorithm():
         feat_mtx = self.feat_mtx
         q_states = self.q_states
         start_states = self.start_states
-
         row = 0
         row_ind = []
         col_ind = []
@@ -202,11 +204,9 @@ class ALAlgorithm():
                     state = q_states[state][action][1]  # next state
                     t += 1
                 row += 1
-
         discount_mtx = sparse.csr_matrix((data, (row_ind, col_ind)),
                                          shape=(row, feat_mtx.shape[0]),
                                          dtype=float64)
-
         return (discount_mtx * feat_mtx).mean(0).A1
 
     def compute_expert_features_expectation(self, disc_rate):
@@ -274,7 +274,7 @@ if __name__ == '__main__':
                                            "learning algorithm.")
     parser.add_argument('-dr', '--disc_rate', default=0.95, type=float)
     parser.add_argument('--eps', default=1, type=float)
-    parser.add_argument('-mr', '--max_reward', default=1000, type=float)
+    parser.add_argument('-mr', '--max_reward', default=100, type=float)
     args = parser.parse_args()
 
     alg = ALAlgorithm()

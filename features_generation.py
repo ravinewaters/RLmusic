@@ -122,13 +122,10 @@ class FeaturesPreprocessor(BasePreprocessor):
     @staticmethod
     def compute_binary_features_expectation(cols, rows, row_idx, feat,
                                             l_elem_idx_marker):
-        print('feat:', feat)
         for i in range(len(feat)):
             idx = l_elem_idx_marker[i] + feat[i]
-            print('index:', idx)
             cols.append(idx)
             rows.append(row_idx)
-        print('\n')
 
     def generate_features_expectation_mtx(self):
         q_states = self.q_states
