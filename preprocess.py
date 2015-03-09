@@ -11,13 +11,11 @@ class BasePreprocessor():
     def parse(filename):
         """
         Idea:
-        1. When it's a chord, the next note is a figurehead
-        2. Continue acquiring all notes that falls into the same figure, until
-        3. meeting the next chord, which implies new figure
-        4. Pickup bar and the last figure are handled separately
-
-        notes:
-        1. In 4/4 beat occurs every quarter.
+        1. If current object is a chord or current note has beat 1.0 or a rest,
+        2. save all notes that follows,
+        3. until meeting next chord or note that has beat 1.0.
+        4. Pickup bar is handled separately
+        5. A rest is considered a figure.
 
         state = (elem.measureNumber, tuple(fig_notes), fig_chord,
                  fig_start_at_beat, fig_duration, fighead)
@@ -71,13 +69,13 @@ class BasePreprocessor():
             try:
                 next_elem = elements[i+1]
             except stream.StreamException:
-                # at the last iteration, look for next item in the original measure
+                # at the last iteration, get the next item from the original
+                # Measure
                 next_elem = elem.next()
                 last_item = True
 
             if elem.isChord:
-                # get chord's name
-                fig_chord = elem.figure
+                fig_chord = elem.figure  # get chord's name
 
             elif elem.isNote:
                 if prev_elem.isChord or prev_elem.isRest or elem.beat == 1.0:
@@ -90,8 +88,9 @@ class BasePreprocessor():
                 fig_notes.append(elem.quarterLength)
                 fig_duration += elem.quarterLength
 
-                # Wrap up figure if we encounter Rest or Chord or new bar (beat ==
-                # 1.0) or Final Barline
+                # Wrap up figure if we encounter Rest or Chord or Final
+                # Barline (next_elem has not attribute 'pitch') or new bar
+                # (beat == 1.0)
                 if not hasattr(next_elem, 'pitch') or next_elem.beat == 1.0:
                     figure = (elem.measureNumber,  #  0
                               tuple(fig_notes),    #  1
@@ -101,8 +100,8 @@ class BasePreprocessor():
                               fighead)             #  5
                     states.append(figure)
 
+            # If rest is the last_item, ignore it.
             elif elem.isRest and not last_item:
-                # elem is a rest
                 states.append((elem.measureNumber,
                                ('rest', elem.quarterLength),
                                'rest',
@@ -122,8 +121,7 @@ class BasePreprocessor():
                 filenames.append(corpus_dir + f)
         return filenames
 
-    @staticmethod
-    def convert_each_elem_to_int(list_of_song_states):
+    def convert_each_elem_to_int(self, l_states):
         """
         returns states that are tuple of nonnegative integers, e.g.
         (1,1,1,1,2) instead of ((0, 1.0), 'C', 1.0, 1.0, 0)
@@ -136,7 +134,7 @@ class BasePreprocessor():
         chords_counter = 1
 
         new_all_states = []
-        for states in list_of_song_states:
+        for states in l_states:
             new_states = []
             for state in states:
                 fignotes = state[1]
@@ -175,7 +173,9 @@ class BasePreprocessor():
 
         save_obj(fignotes_dict, 'FIGNOTES_DICT')
         save_obj(chords_dict, 'CHORDS_DICT')
-        return new_all_states, fignotes_dict, chords_dict
+        self.fignotes_dict = fignotes_dict
+        self.chords_dict = chords_dict
+        return new_all_states
 
     @staticmethod
     def compute_action(s_prime):
@@ -197,27 +197,17 @@ class BasePreprocessor():
                 action = self.compute_action(state)
                 trajectory.append(action)
                 trajectory.append(state)
-            trajectory.append(-1)  # exit action for terminal state
+            trajectory.append(-1)  # append exit action to trajectory
             trajectories.append(trajectory)
+        self.trajectories = trajectories
         save_obj(trajectories, 'TRAJECTORIES')
-        return trajectories
-
-    def get_terminal_states(self):
-        terminal_states = []
-        for trajectory in self.trajectories:
-            terminal_states.append(trajectory[-2])
-        return set(terminal_states)
-
 
     def get_start_states(self):
-        start_states = []
-        for trajectory in self.trajectories:
-            start_states.append(trajectory[0])
-        save_obj(start_states, 'START_STATES')
-        return set(start_states)
-
+        self.start_states = {trajectory[0] for trajectory in self.trajectories}
+        save_obj(self.start_states, 'START_STATES')
 
     def get_all_actions(self, all_states):
+        # actions = (seq_of_notes, chord, duration, figurehead)
         all_actions = []
         for state in all_states:
             chord = state[2]
@@ -227,9 +217,7 @@ class BasePreprocessor():
                 all_actions.append(state[1:3] + state[-2:])
         return set(all_actions)
 
-
-    def generate_all_possible_q_states(self, all_states, all_actions,
-                                       term_states):
+    def generate_all_possible_q_states(self, all_states, all_actions):
         """
         Return q_states = {s : {a: (row_idx, s')}}
 
@@ -242,7 +230,7 @@ class BasePreprocessor():
 
         A terminal state s have action a = -1 and s' = - 1.
         """
-
+        term_states = {trajectory[-2] for trajectory in self.trajectories}
         row_idx = 0
         q_states = {}
         for state in all_states:
@@ -259,8 +247,8 @@ class BasePreprocessor():
                     except KeyError:
                         q_states[state] = {action: (row_idx, next_state)}
                     row_idx += 1
+        self.q_states = q_states
         save_obj(q_states, 'Q_STATES')
-        return q_states
 
 if __name__ == "__main__":
     print("This module can't be use directly")

@@ -3,10 +3,9 @@ __author__ = 'redhat'
 from preprocess import BasePreprocessor
 from scipy.sparse import csr_matrix
 from scipy import io
-from constants import CHORD_ROOT_TO_INT, DIR
+from constants import CHORD_ROOT_TO_INT, DIR, PICKUP_ID
 from numpy import uint8
-from common_methods import make_flat_list
-from constants import PICKUP_ID
+from itertools import accumulate
 import argparse
 import shutil
 import os
@@ -73,7 +72,8 @@ class FeaturesPreprocessor(BasePreprocessor):
     def get_next_beat(state):
         return state[4] + state[3]
 
-    def is_in_goal_state(self, state, action):
+    @staticmethod
+    def is_in_goal_state(state, action):
         if action == -1:
             return 1
         return 0
@@ -121,26 +121,34 @@ class FeaturesPreprocessor(BasePreprocessor):
 
     @staticmethod
     def compute_binary_features_expectation(cols, rows, row_idx, feat,
-                                            coord_size):
-        # modify cols and rows list
-        # called after we know the size of each coordinate
-
-        index = 0
+                                            l_elem_idx_marker):
+        print('feat:', feat)
         for i in range(len(feat)):
-            index = index + coord_size[i]
-            cols.append(index + feat[i])
+            idx = l_elem_idx_marker[i] + feat[i]
+            print('index:', idx)
+            cols.append(idx)
             rows.append(row_idx)
+        print('\n')
 
     def generate_features_expectation_mtx(self):
+        q_states = self.q_states
+
+
+        # map feature value to integer
+        # e.g. {1: 0, 4:1, 100:2}
+        # if this is not mapped, then the binary feature needs 100 coordinates,
+        # otherwise only 3 coordinates is required.
+        # the mapped feature is called proper feature
+        # this will then be mapped to binary feature.
+        #
+        # temp_dict = {row_idx: feat}
 
         num_of_features = 8
         dictionaries = [{} for _ in range(num_of_features)]
         counters = [0] * num_of_features
+        temp_dict = {}
 
-        temp_dict = {}  # store proper features temporarily {row_idx: feat}
-        q_states = self.q_states
-
-        # this loop is to get proper features and the size of each coordinate
+        # Get proper features and the size of each coordinate
         for state, actions in q_states.items():
             for action, value in actions.items():
                 row_idx = value[0]
@@ -151,14 +159,15 @@ class FeaturesPreprocessor(BasePreprocessor):
                                                     num_of_features)
                 temp_dict[row_idx] = feat
 
-        coord_size = [0] + [len(d) for d in dictionaries]
+        coord_size = [len(d) for d in dictionaries]
         print('Size of coordinate elements:', coord_size[1:])
+        l_elem_idx_marker = list(accumulate([0] + coord_size[:-1]))
 
         # use row_idx as the row number to store feat_exp into
         # use csr_matrix
-        cols = []  # this will be a list of column
+        cols = []  # this will be a list of column numbers
         rows = []
-        n_rows = -1
+        n_rows = -1  # get maximum row_idx value for csr_matrix construction
         for state, actions in q_states.items():
             for value in actions.values():
                 row_idx = value[0]
@@ -167,23 +176,21 @@ class FeaturesPreprocessor(BasePreprocessor):
                                                          rows,
                                                          row_idx,
                                                          feat,
-                                                         coord_size)
+                                                         l_elem_idx_marker)
                 if row_idx > n_rows:
                     n_rows = row_idx
 
         # create csr_matrix from data, rows and cols.
         data = [1] * len(cols)
         n_rows += 1  # include index 0
-        n_cols = sum(coord_size) + 1
+        n_cols = sum(coord_size)
         print('Number of state-action pairs:', n_rows)
         print('Binary features size:', n_cols)
-        mtx = csr_matrix((data, (rows, cols)),
-                         dtype=uint8,
-                         shape=(n_rows, n_cols))
+        self.feat_mtx = csr_matrix((data, (rows, cols)), dtype=uint8,
+                                   shape=(n_rows, n_cols))
 
         # save matrix to file
-        io.savemat(DIR + 'FEATURES_EXPECTATION_MATRIX', {'mtx': mtx})
-        return mtx
+        io.savemat(DIR + 'FEATURES_EXPECTATION_MATRIX', {'mtx': self.feat_mtx})
 
     def run(self, corpus_dir='corpus/'):
         if os.path.exists(DIR):
@@ -193,21 +200,17 @@ class FeaturesPreprocessor(BasePreprocessor):
             corpus_dir += '/'
 
         filenames = self.get_corpus(corpus_dir)
-        list_of_song_states = [self.parse(filename) for filename in filenames]
+        l_states = [self.parse(filename) for filename in filenames]
 
-        new_list_of_song_states, self.fignotes_dict, self.chords_dict \
-            = self.convert_each_elem_to_int(list_of_song_states)
+        l_int_states = self.convert_each_elem_to_int(l_states)
 
-        all_states = set(make_flat_list(new_list_of_song_states))
+        all_states = {state for states in l_int_states for state in states}
         all_actions = self.get_all_actions(all_states)
 
-        self.trajectories = self.get_trajectories(new_list_of_song_states)
-        self.start_states = self.get_start_states()
-        term_states = self.get_terminal_states()
-        self.q_states = self.generate_all_possible_q_states(all_states,
-                                                            all_actions,
-                                                            term_states)
-        self.feat_mtx = self.generate_features_expectation_mtx()
+        self.get_trajectories(l_int_states)
+        self.get_start_states()
+        self.generate_all_possible_q_states(all_states, all_actions)
+        self.generate_features_expectation_mtx()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Preprocessor module",
