@@ -8,7 +8,7 @@ Une Jeune Pucelle</movement-title>
     <creator type="composer">Trad.</creator>
     <encoding>
       <software>MuseScore 1.3</software>
-      <encoding-date>2015-01-26</encoding-date>
+      <encoding-date>2015-03-09</encoding-date>
       </encoding>
     </identification>
   <defaults>
@@ -79,10 +79,10 @@ Une Jeune Pucelle</credit-words>
           <beat-type>4</beat-type>
           </time>
         </attributes>
-      <note default-x="79.15" default-y="-75.00">
+      <note default-x="79.15" default-y="-40.00">
         <pitch>
           <step>E</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -97,40 +97,40 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="36.14" default-y="-55.00">
+      <note default-x="36.14" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="60.28" default-y="-50.00">
+      <note default-x="60.28" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="84.42" default-y="-45.00">
+      <note default-x="84.42" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -145,9 +145,19 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="36.14" default-y="-20.00">
+        <pitch>
+          <step>B</step>
           <octave>4</octave>
           </pitch>
         <duration>1</duration>
@@ -155,30 +165,20 @@ Une Jeune Pucelle</credit-words>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="36.14" default-y="-55.00">
-        <pitch>
-          <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="60.28" default-y="-60.00">
+      <note default-x="60.28" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="84.42" default-y="-65.00">
+      <note default-x="84.42" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -193,40 +193,40 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="36.14" default-y="-60.00">
+      <note default-x="36.14" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="60.28" default-y="-55.00">
+      <note default-x="60.28" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="84.42" default-y="-65.00">
+      <note default-x="84.42" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -241,183 +241,10 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>3</duration>
-        <voice>1</voice>
-        <type>half</type>
-        <dot/>
-        <stem>up</stem>
-        </note>
-      <note default-x="59.25" default-y="-75.00">
-        <pitch>
-          <step>E</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      </measure>
-    <measure number="6" width="110.15">
-      <harmony print-frame="no">
-        <root>
-          <root-step>A</root-step>
-          </root>
-        <kind text="m">minor</kind>
-        </harmony>
-      <note default-x="12.00" default-y="-60.00">
-        <pitch>
-          <step>A</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="36.14" default-y="-55.00">
-        <pitch>
-          <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="60.28" default-y="-50.00">
-        <pitch>
-          <step>C</step>
           <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="84.42" default-y="-45.00">
-        <pitch>
-          <step>D</step>
-          <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      </measure>
-    <measure number="7" width="110.15">
-      <harmony print-frame="no">
-        <root>
-          <root-step>A</root-step>
-          </root>
-        <kind text="m">minor</kind>
-        </harmony>
-      <note default-x="12.00" default-y="-50.00">
-        <pitch>
-          <step>C</step>
-          <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="36.14" default-y="-55.00">
-        <pitch>
-          <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="60.28" default-y="-60.00">
-        <pitch>
-          <step>A</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="84.42" default-y="-65.00">
-        <pitch>
-          <step>G</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      </measure>
-    <measure number="8" width="110.15">
-      <harmony print-frame="no">
-        <root>
-          <root-step>A</root-step>
-          </root>
-        <kind text="m">minor</kind>
-        </harmony>
-      <note default-x="12.00" default-y="-60.00">
-        <pitch>
-          <step>A</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="36.14" default-y="-60.00">
-        <pitch>
-          <step>A</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="60.28" default-y="-55.00">
-        <pitch>
-          <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="84.42" default-y="-65.00">
-        <pitch>
-          <step>G</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      </measure>
-    <measure number="9" width="85.07">
-      <harmony print-frame="no">
-        <root>
-          <root-step>A</root-step>
-          </root>
-        <kind text="m">minor</kind>
-        </harmony>
-      <note default-x="12.00" default-y="-60.00">
-        <pitch>
-          <step>A</step>
-          <octave>3</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -436,6 +263,179 @@ Une Jeune Pucelle</credit-words>
         <stem>up</stem>
         </note>
       </measure>
+    <measure number="6" width="110.15">
+      <harmony print-frame="no">
+        <root>
+          <root-step>A</root-step>
+          </root>
+        <kind text="m">minor</kind>
+        </harmony>
+      <note default-x="12.00" default-y="-25.00">
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="36.14" default-y="-20.00">
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="60.28" default-y="-15.00">
+        <pitch>
+          <step>C</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="84.42" default-y="-10.00">
+        <pitch>
+          <step>D</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      </measure>
+    <measure number="7" width="110.15">
+      <harmony print-frame="no">
+        <root>
+          <root-step>A</root-step>
+          </root>
+        <kind text="m">minor</kind>
+        </harmony>
+      <note default-x="12.00" default-y="-15.00">
+        <pitch>
+          <step>C</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="36.14" default-y="-20.00">
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="60.28" default-y="-25.00">
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="84.42" default-y="-30.00">
+        <pitch>
+          <step>G</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      </measure>
+    <measure number="8" width="110.15">
+      <harmony print-frame="no">
+        <root>
+          <root-step>A</root-step>
+          </root>
+        <kind text="m">minor</kind>
+        </harmony>
+      <note default-x="12.00" default-y="-25.00">
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="36.14" default-y="-25.00">
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="60.28" default-y="-20.00">
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="84.42" default-y="-30.00">
+        <pitch>
+          <step>G</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      </measure>
+    <measure number="9" width="85.07">
+      <harmony print-frame="no">
+        <root>
+          <root-step>A</root-step>
+          </root>
+        <kind text="m">minor</kind>
+        </harmony>
+      <note default-x="12.00" default-y="-25.00">
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+          </pitch>
+        <duration>3</duration>
+        <voice>1</voice>
+        <type>half</type>
+        <dot/>
+        <stem>up</stem>
+        </note>
+      <note default-x="59.25" default-y="-5.00">
+        <pitch>
+          <step>E</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      </measure>
     <measure number="10" width="110.15">
       <harmony print-frame="no">
         <root>
@@ -443,40 +443,40 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="36.14" default-y="-40.00">
+      <note default-x="36.14" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="60.28" default-y="-55.00">
+      <note default-x="60.28" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="84.42" default-y="-50.00">
+      <note default-x="84.42" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -500,19 +500,29 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="53.15" default-y="-45.00">
+      <note default-x="53.15" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="90.47" default-y="-50.00">
+      <note default-x="90.47" default-y="-15.00">
         <pitch>
           <step>C</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="127.79" default-y="-20.00">
+        <pitch>
+          <step>B</step>
           <octave>4</octave>
           </pitch>
         <duration>1</duration>
@@ -520,20 +530,10 @@ Une Jeune Pucelle</credit-words>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="127.79" default-y="-55.00">
+      <note default-x="165.11" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="165.11" default-y="-55.00">
-        <pitch>
-          <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -548,9 +548,19 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
+          <octave>5</octave>
+          </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <stem>up</stem>
+        </note>
+      <note default-x="49.32" default-y="-20.00">
+        <pitch>
+          <step>B</step>
           <octave>4</octave>
           </pitch>
         <duration>1</duration>
@@ -558,30 +568,20 @@ Une Jeune Pucelle</credit-words>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="49.32" default-y="-55.00">
+      <note default-x="86.64" default-y="-25.00">
         <pitch>
-          <step>B</step>
-          <octave>3</octave>
+          <step>A</step>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="86.64" default-y="-60.00">
+      <note default-x="123.96" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      <note default-x="123.96" default-y="-60.00">
-        <pitch>
-          <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -596,40 +596,40 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-55.00">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="49.32" default-y="-60.00">
+      <note default-x="49.32" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="86.64" default-y="-60.00">
+      <note default-x="86.64" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="123.96" default-y="-65.00">
+      <note default-x="123.96" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -644,30 +644,30 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-75.00">
+      <note default-x="12.00" default-y="-40.00">
         <pitch>
           <step>E</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
         </note>
-      <note default-x="71.04" default-y="-60.00">
+      <note default-x="71.04" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="107.95" default-y="-60.00">
+      <note default-x="107.95" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -682,30 +682,30 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-65.00">
+      <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="48.90" default-y="-70.00">
+      <note default-x="48.90" default-y="-35.00">
         <pitch>
           <step>F</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="85.81" default-y="-75.00">
+      <note default-x="85.81" default-y="-40.00">
         <pitch>
           <step>E</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -720,30 +720,30 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
         </note>
-      <note default-x="71.04" default-y="-65.00">
+      <note default-x="71.04" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="107.95" default-y="-75.00">
+      <note default-x="107.95" default-y="-40.00">
         <pitch>
           <step>E</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -758,10 +758,10 @@ Une Jeune Pucelle</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-60.00">
+      <note default-x="12.00" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>

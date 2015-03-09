@@ -230,6 +230,7 @@ class BasePreprocessor():
 
         A terminal state s have action a = -1 and s' = - 1.
         """
+
         term_states = {trajectory[-2] for trajectory in self.trajectories}
         row_idx = 0
         q_states = {}

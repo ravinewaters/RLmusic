@@ -92,15 +92,14 @@ class MusicGenerator():
 
         stream.append(common_time)
         for state in self.trajectory:
-            if state[-1] == -1:
+            if state[-1] == -1:  # rest
                 duration_str = state[1][1]
                 r = music21.note.Rest(quarterLength=duration_str)
                 stream.append(r)
-            else:
+            else:  # note
                 self.translate_figure_to_music21(state, stream)
         stream.makeMeasures(inPlace=True)
         part.append(stream)
-
         score.append(part)
         return score
 

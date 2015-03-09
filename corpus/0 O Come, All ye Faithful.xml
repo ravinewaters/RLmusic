@@ -8,7 +8,7 @@ Adeste Fideles</movement-title>
     <creator type="composer">John Wade, 1743.</creator>
     <encoding>
       <software>MuseScore 1.3</software>
-      <encoding-date>2015-01-23</encoding-date>
+      <encoding-date>2015-03-09</encoding-date>
       </encoding>
     </identification>
   <defaults>
@@ -38,10 +38,10 @@ Adeste Fideles</movement-title>
 Adeste Fideles</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="1133.79" default-y="1559.98" font-size="12" justify="right" valign="top">John Wade, 1743.</credit-words>
+    <credit-words default-x="1133.79" default-y="1558.48" font-size="12" justify="right" valign="top">John Wade, 1743.</credit-words>
     </credit>
   <credit page="1">
-    <credit-words default-x="56.6893" default-y="1559.98" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
+    <credit-words default-x="56.6893" default-y="1558.48" font-size="12" justify="left" valign="top">Paul Hardy&apos;s Xmas Tunebook 2012 (see www.paulhardy.net). Creative Commons cc by-nc-sa licenced.</credit-words>
     </credit>
   <part-list>
     <score-part id="P1">
@@ -58,11 +58,11 @@ Adeste Fideles</credit-words>
       </score-part>
     </part-list>
   <part id="P1">
-    <measure number="1" width="104.98">
+    <measure number="1" width="109.36">
       <print>
         <system-layout>
           <system-margins>
-            <left-margin>25.87</left-margin>
+            <left-margin>26.50</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
           <top-system-distance>180.00</top-system-distance>
@@ -79,10 +79,10 @@ Adeste Fideles</credit-words>
           <beat-type>4</beat-type>
           </time>
         </attributes>
-      <note default-x="74.65" default-y="-50.00">
+      <note default-x="79.15" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -90,37 +90,37 @@ Adeste Fideles</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="2" width="94.11">
+    <measure number="2" width="93.61">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>down</stem>
         </note>
-      <note default-x="47.29" default-y="-65.00">
+      <note default-x="46.98" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="69.34" default-y="-50.00">
+      <note default-x="68.84" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -128,27 +128,27 @@ Adeste Fideles</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="3" width="77.68">
+    <measure number="3" width="77.18">
       <harmony print-frame="no">
         <root>
           <root-step>G</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-45.00">
+      <note default-x="12.00" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>down</stem>
         </note>
-      <note default-x="44.04" default-y="-65.00">
+      <note default-x="43.79" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -156,37 +156,37 @@ Adeste Fideles</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="4" width="110.53">
+    <measure number="4" width="110.03">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="36.23" default-y="-45.00">
+      <note default-x="36.11" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="60.47" default-y="-40.00">
+      <note default-x="60.21" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -199,10 +199,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="84.70" default-y="-35.00">
+      <note default-x="84.32" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -210,17 +210,17 @@ Adeste Fideles</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="5" width="94.11">
+    <measure number="5" width="93.61">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -233,20 +233,20 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="47.29" default-y="-45.00">
+      <note default-x="46.98" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="69.34" default-y="-50.00">
+      <note default-x="68.84" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -254,27 +254,27 @@ Adeste Fideles</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="6" width="94.11">
+    <measure number="6" width="93.61">
       <harmony print-frame="no">
         <root>
           <root-step>A</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>down</stem>
         </note>
-      <note default-x="47.29" default-y="-55.00">
+      <note default-x="46.98" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -287,10 +287,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="69.34" default-y="-60.00">
+      <note default-x="68.84" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -298,37 +298,37 @@ Adeste Fideles</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="7" width="110.53">
+    <measure number="7" width="110.03">
       <harmony print-frame="no">
         <root>
           <root-step>G</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-55.00">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="36.23" default-y="-50.00">
+      <note default-x="36.11" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="60.47" default-y="-45.00">
+      <note default-x="60.21" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -341,10 +341,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="84.70" default-y="-40.00">
+      <note default-x="84.32" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -352,17 +352,17 @@ Adeste Fideles</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="8" width="111.62">
+    <measure number="8" width="111.12">
       <harmony print-frame="no">
         <root>
           <root-step>G</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-55.00">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -375,10 +375,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="7">dominant</kind>
         </harmony>
-      <note default-x="46.90" default-y="-60.00">
+      <note default-x="46.63" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -386,10 +386,10 @@ Adeste Fideles</credit-words>
         <dot/>
         <stem>up</stem>
         </note>
-      <note default-x="77.84" default-y="-65.00">
+      <note default-x="77.34" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -397,17 +397,17 @@ Adeste Fideles</credit-words>
         <stem>up</stem>
         </note>
       </measure>
-    <measure number="9" width="81.78">
+    <measure number="9" width="81.28">
       <harmony print-frame="no">
         <root>
           <root-step>G</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-65.00">
+      <note default-x="12.00" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>6</duration>
         <voice>1</voice>
@@ -422,37 +422,37 @@ Adeste Fideles</credit-words>
         <type>quarter</type>
         </note>
       </measure>
-    <measure number="10" width="94.11">
+    <measure number="10" width="93.61">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-30.00">
+      <note default-x="12.00" default-y="5.00">
         <pitch>
           <step>G</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>down</stem>
         </note>
-      <note default-x="47.29" default-y="-35.00">
+      <note default-x="46.98" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="69.34" default-y="-40.00">
+      <note default-x="68.84" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -460,17 +460,17 @@ Adeste Fideles</credit-words>
         <stem>down</stem>
         </note>
       </measure>
-    <measure number="11" width="77.68">
+    <measure number="11" width="77.18">
       <harmony print-frame="no">
         <root>
           <root-step>D</root-step>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="12.00" default-y="-35.00">
+      <note default-x="12.00" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -483,10 +483,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="44.04" default-y="-40.00">
+      <note default-x="43.79" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -510,20 +510,20 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="53.15" default-y="-45.00">
+      <note default-x="53.15" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="77.69" default-y="-40.00">
+      <note default-x="77.69" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -536,20 +536,20 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="m">minor</kind>
         </harmony>
-      <note default-x="102.24" default-y="-50.00">
+      <note default-x="102.24" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
         </note>
-      <note default-x="126.78" default-y="-45.00">
+      <note default-x="126.78" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -564,10 +564,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-55.00">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -575,30 +575,30 @@ Adeste Fideles</credit-words>
         <dot/>
         <stem>down</stem>
         </note>
-      <note default-x="45.90" default-y="-60.00">
+      <note default-x="45.90" default-y="-25.00">
         <pitch>
           <step>A</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
         </note>
-      <note default-x="72.08" default-y="-65.00">
+      <note default-x="72.08" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="99.88" default-y="-50.00">
+      <note default-x="99.88" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -613,10 +613,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -629,10 +629,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="36.54" default-y="-55.00">
+      <note default-x="36.54" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -645,10 +645,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="61.09" default-y="-50.00">
+      <note default-x="61.09" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -661,10 +661,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="85.63" default-y="-45.00">
+      <note default-x="85.63" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -679,30 +679,30 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
         <type>half</type>
         <stem>down</stem>
         </note>
-      <note default-x="48.06" default-y="-65.00">
+      <note default-x="48.06" default-y="-30.00">
         <pitch>
           <step>G</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
         </note>
-      <note default-x="70.59" default-y="-40.00">
+      <note default-x="70.59" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -711,10 +711,10 @@ Adeste Fideles</credit-words>
         </note>
       </measure>
     <measure number="16" width="111.78">
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -727,10 +727,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="36.54" default-y="-45.00">
+      <note default-x="36.54" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -743,10 +743,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="61.09" default-y="-40.00">
+      <note default-x="61.09" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -759,10 +759,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="7">dominant</kind>
         </harmony>
-      <note default-x="85.63" default-y="-35.00">
+      <note default-x="85.63" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -777,10 +777,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -793,10 +793,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="48.06" default-y="-45.00">
+      <note default-x="48.06" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -809,10 +809,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="70.59" default-y="-40.00">
+      <note default-x="70.59" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -827,10 +827,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="7">dominant</kind>
         </harmony>
-      <note default-x="12.00" default-y="-35.00">
+      <note default-x="12.00" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -843,10 +843,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="36.54" default-y="-40.00">
+      <note default-x="36.54" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -859,10 +859,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="61.09" default-y="-45.00">
+      <note default-x="61.09" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -881,10 +881,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="85.63" default-y="-50.00">
+      <note default-x="85.63" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -899,10 +899,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-55.00">
+      <note default-x="12.00" default-y="-20.00">
         <pitch>
           <step>B</step>
-          <octave>3</octave>
+          <octave>4</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -915,10 +915,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="48.06" default-y="-50.00">
+      <note default-x="48.06" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -931,10 +931,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="70.59" default-y="-35.00">
+      <note default-x="70.59" default-y="0.00">
         <pitch>
           <step>F</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -949,10 +949,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-40.00">
+      <note default-x="12.00" default-y="-5.00">
         <pitch>
           <step>E</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>4</duration>
         <voice>1</voice>
@@ -965,10 +965,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="47.56" default-y="-45.00">
+      <note default-x="47.56" default-y="-10.00">
         <pitch>
           <step>D</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>3</duration>
         <voice>1</voice>
@@ -976,10 +976,10 @@ Adeste Fideles</credit-words>
         <dot/>
         <stem>down</stem>
         </note>
-      <note default-x="79.09" default-y="-50.00">
+      <note default-x="79.09" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>1</duration>
         <voice>1</voice>
@@ -994,10 +994,10 @@ Adeste Fideles</credit-words>
           </root>
         <kind text="">major</kind>
         </harmony>
-      <note default-x="12.00" default-y="-50.00">
+      <note default-x="12.00" default-y="-15.00">
         <pitch>
           <step>C</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>6</duration>
         <voice>1</voice>
