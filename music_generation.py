@@ -1,9 +1,9 @@
 __author__ = 'redhat'
 
-from common_methods import compute_next_state, load_obj, weighted_choice_b, \
+from common_methods import compute_next_state, load_obj, \
     make_dir_when_not_exist
-from random import choice
-from constants import PICKUP_ID
+from random import choice, random
+import bisect
 import subprocess
 import music21
 import sys
@@ -11,10 +11,7 @@ import argparse
 
 
 class MusicGenerator():
-    def __init__(self,
-                 preprocessor=None,
-                 al_algorithm=None):
-
+    def __init__(self, preprocessor=None, al_algorithm=None):
         if preprocessor is None or al_algorithm is None:
             self.policies = load_obj('POLICIES')
             self.lambdas = load_obj('LAMBDAS')
@@ -29,8 +26,20 @@ class MusicGenerator():
             self.chords_dict = preprocessor.chords_dict
 
     def mix_policies(self):
-        idx = weighted_choice_b(self.lambdas)
+        idx = self.weighted_choice_b(self.lambdas)
         return self.policies[idx]
+
+    @staticmethod
+    def weighted_choice_b(weights):
+        totals = []
+        running_total = 0
+
+        for w in weights:
+            running_total += w
+            totals.append(running_total)
+
+        rnd = random() * running_total
+        return bisect.bisect_right(totals, rnd)
 
     def generate_trajectory(self):
         """
@@ -57,7 +66,6 @@ class MusicGenerator():
         return original_trajectory
 
     def translate_trajectory_to_music21(self, title='', composer=''):
-
         score = music21.stream.Score()
         part = music21.stream.Part()
         stream = music21.stream.Stream()
@@ -104,7 +112,8 @@ class MusicGenerator():
             n = music21.note.Note(pitch, quarterLength=duration)
             stream.append(n)
 
-    def convert_midi_to_mp3_file(self, outpath, soundfont_path):
+    @staticmethod
+    def convert_midi_to_mp3_file(outpath, soundfont_path):
         # requires fluidsynth and lame
 
         wavfile = outpath + '.wav'
@@ -155,7 +164,6 @@ class MusicGenerator():
                   "}.".format(format, avail_format))
 
     def run(self, outfile, outdir, soundfont_path=None, format='midi'):
-        # randomly chosen policy
         self.policy = self.mix_policies()
         self.trajectory = self.generate_trajectory()
         self.score = self.translate_trajectory_to_music21()
@@ -181,4 +189,3 @@ if __name__ == '__main__':
 
     mg = MusicGenerator()
     mg.run(args.filename, args.outdir, args.sfpath, args.format)
-    # mg.run('test', 'output/', 'TimGM6mb.sf2', 'musicxml')

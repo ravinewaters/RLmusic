@@ -1,8 +1,6 @@
 __author__ = 'redhat'
 
 import pickle
-from random import random
-import bisect
 import os
 from constants import DIR
 
@@ -36,18 +34,6 @@ def compute_next_state(state, action):
                action[2],
                action[3])
     return s_prime
-
-
-def weighted_choice_b(weights):
-    totals = []
-    running_total = 0
-
-    for w in weights:
-        running_total += w
-        totals.append(running_total)
-
-    rnd = random() * running_total
-    return bisect.bisect_right(totals, rnd)
 
 if __name__ == '__main__':
     pass

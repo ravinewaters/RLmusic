@@ -57,7 +57,7 @@ class ALAlgorithm():
 
         print('\n', 'counter, t')
         t = 0
-        while counter <= 30:
+        while counter <= 50:
             if counter == 1:
                 mu_value = compute_policy_features_expectation(policy_matrix,
                                                                disc_rate)
