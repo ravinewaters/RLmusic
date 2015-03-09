@@ -75,7 +75,6 @@ class ALAlgorithm():
                 print('t:', t)
                 break
 
-            w /= t
             print('{}, {}'.format(counter, t))
             reward_mtx = (feat_mtx * w.T)
 
@@ -108,6 +107,10 @@ class ALAlgorithm():
         mu_bar_mu_expert_distance = mu_expert - mu_bar
         numerator = mu_mu_bar_distance.dot(mu_bar_mu_expert_distance.T)
         denominator = mu_mu_bar_distance.dot(mu_mu_bar_distance.T)
+        print('mu-mu_bar:', mu_mu_bar_distance)
+        print('mu_bar-mu_expert:', mu_bar_mu_expert_distance)
+        print('numerator:', numerator)
+        print('denominator:', denominator)
         return numerator/denominator * mu_mu_bar_distance
 
     def value_iteration(self, reward_mtx, disc_rate, max_reward):
@@ -164,7 +167,7 @@ class ALAlgorithm():
         Generate a policy table = {s: [a_1, a_2, ..., a_k]}, where
         a_1, a_2, ..., a_k are valid actions for state s.
         """
-        policy_matrix = {s: list(v) for s, v in self.q_states.items()}
+        policy_matrix = {s: tuple(v) for s, v in self.q_states.items()}
         return policy_matrix
 
     def compute_policy_features_expectation(self, policy_matrix, disc_rate):
