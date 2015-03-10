@@ -2,7 +2,7 @@ __author__ = 'redhat'
 
 from random import choice
 from scipy import sparse, io
-from numpy import float64, sqrt, vstack
+from numpy import float64, sqrt, array
 from cvxopt import matrix, spmatrix, solvers
 from common_methods import load_obj, DIR, save_obj
 import os
@@ -89,7 +89,7 @@ class ALAlgorithm():
                                       'mu_bar': mu_bar, 'counter': counter})
             save_obj(policies, 'TEMP_POLICIES')
 
-        mu = [mu_expert] + mu
+        mu = [mu_expert] + mu  # stack at the beginning.
         save_obj(policies, 'POLICIES')
         save_obj(mu, 'MU')
 
@@ -244,8 +244,13 @@ class ALAlgorithm():
         the closest point to mu_expert.
         """
 
-        # check once again whether the matrix P, q, G, h, A, b is already
-        # correct
+        # B = (n+1) x 1 array of arrays
+        # P = (n+1) x (n+1) matrix
+        # q = (n+1) x 1 zero-matrix
+        # G = n x (n+1) matrix
+        # h = 2 x 1 matrix
+        # A = 2 x (n+1) matrix
+        # b = 2 x 1 matrix
 
         solvers.options['show_progress'] = False
         n = len(self.mu) - 1
@@ -254,12 +259,16 @@ class ALAlgorithm():
         A_cols = range(n+1)
         A = spmatrix(A_data, A_rows, A_cols)
         b = matrix([1.0, 1.0])
-        G = spmatrix([-1]*n, range(0, n), range(1, n+1), (n, n+1))
+        G_data = [-1]*n
+        G_rows = range(0, n)
+        G_cols = range(1, n+1)
+        G_size = (n, n+1)
+        G = spmatrix(G_data, G_rows, G_cols, G_size)
         h = matrix([0.0]*n)
         q = matrix([0.0]*(n+1))
-        B = vstack(self.mu)
+        B = array(self.mu)
         P = matrix(B.dot(B.T))
-        self.lambdas = list(solvers.qp(2*P, q, G, h, A, b)['x'])[1:]
+        self.lambdas = list(solvers.qp(P, q, G, h, A, b)['x'])[1:]
         save_obj(self.lambdas, 'LAMBDAS')
 
     def run(self, disc_rate, eps, max_reward):
