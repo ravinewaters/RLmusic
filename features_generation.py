@@ -128,8 +128,9 @@ class FeaturesPreprocessor(BasePreprocessor):
             rows.append(row_idx)
 
     def generate_features_expectation_mtx(self):
-        q_states = self.q_states
-
+        """
+        :return a sparse matrix called feat_mtx.
+        """
 
         # map feature value to integer
         # e.g. {1: 0, 4:1, 100:2}
@@ -139,7 +140,7 @@ class FeaturesPreprocessor(BasePreprocessor):
         # this will then be mapped to binary feature.
         #
         # temp_dict = {row_idx: feat}
-
+        q_states = self.q_states
         num_of_features = 8
         dictionaries = [{} for _ in range(num_of_features)]
         counters = [0] * num_of_features

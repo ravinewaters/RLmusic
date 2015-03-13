@@ -26,11 +26,14 @@ class MusicGenerator():
             self.chords_dict = preprocessor.chords_dict
 
     def mix_policies(self):
-        idx = self.weighted_choice_b(self.lambdas)
+        """
+        Choose a policy based on weight lambdas
+        """
+        idx = self.weighted_choice(self.lambdas)
         return self.policies[idx]
 
     @staticmethod
-    def weighted_choice_b(weights):
+    def weighted_choice(weights):
         totals = []
         running_total = 0
 
@@ -162,7 +165,10 @@ class MusicGenerator():
             print("Wrong format chosen. You chose: {}. Available formats: {"
                   "}.".format(format, avail_format))
 
-    def run(self, outfile, outdir, soundfont_path=None, format='midi'):
+    def run(self, outfile="out",
+            outdir="output/",
+            soundfont_path=None,
+            format='midi'):
         self.policy = self.mix_policies()
         self.trajectory = self.generate_trajectory()
         self.score = self.translate_trajectory_to_music21()

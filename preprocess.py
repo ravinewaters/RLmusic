@@ -12,7 +12,7 @@ class BasePreprocessor():
         """
         Idea:
         1. If current object is a chord or current note has beat 1.0 or a rest,
-        2. save all notes that follows,
+        2. save all the following notes,
         3. until meeting next chord or note that has beat 1.0.
         4. Pickup bar is handled separately
         5. A rest is considered a figure.
@@ -171,16 +171,18 @@ class BasePreprocessor():
                 new_states.append(new_state)
             new_all_states.append(new_states)
 
-        save_obj(fignotes_dict, 'FIGNOTES_DICT')
-        save_obj(chords_dict, 'CHORDS_DICT')
         self.fignotes_dict = fignotes_dict
         self.chords_dict = chords_dict
+
+        save_obj(fignotes_dict, 'FIGNOTES_DICT')
+        save_obj(chords_dict, 'CHORDS_DICT')
+
         return new_all_states
 
     @staticmethod
     def compute_action(s_prime):
-        # find a that makes fs transition to s_prime
-        # no bar in action
+        """find a that makes s transition to s_prime"""
+
         action = s_prime[1:3] + s_prime[-2:]
         return action
 

@@ -24,9 +24,13 @@ class ALAlgorithm():
                 'mtx']
             self.trajectories = load_obj('TRAJECTORIES')
 
-    def compute_policies(self, disc_rate=0.95,
-                         al_error_tolerance=1,
-                         max_reward=100):
+    def apprenticeship_learning_algorithm(self, disc_rate,
+                                          al_error_tolerance,
+                                          max_reward):
+        """
+        Implementation of Apprenticeship Learning Algorithm.
+        """
+
         # bind to name for faster access
         feat_mtx = self.feat_mtx
         compute_policy_features_expectation = self.compute_policy_features_expectation
@@ -109,13 +113,14 @@ class ALAlgorithm():
         return numerator/denominator * mu_mu_bar_distance
 
     def value_iteration(self, reward_mtx, disc_rate, max_reward):
+        """
+        value iteration algorithm implementation
+        :return policy_matrix
+        """
         # q-value iteration
         # max_values = {s : (q_value, [a1, a2, ..., an])}
         # q_states = {s : {a: (row_idx, s')}}
         # q_matrix = {(state, action): q-value}
-
-        # use try-except when accessing max_values
-        # if doesn't exist return 0
 
         eps = 0.001
         q_states = self.q_states
@@ -169,6 +174,7 @@ class ALAlgorithm():
         """
         Generate a policy table = {s: [a_1, a_2, ..., a_k]}, where
         a_1, a_2, ..., a_k are valid actions for state s.
+        :return policy_matrix
         """
         policy_matrix = {s: tuple(v) for s, v in self.q_states.items()}
         return policy_matrix
@@ -181,6 +187,7 @@ class ALAlgorithm():
         Then, we average the discounted features vector over all
         trajectories in the set to get an estimate of features expectation
         of the policy.
+        :return a 1-d numpy array
         """
 
         feat_mtx = self.feat_mtx
@@ -213,6 +220,7 @@ class ALAlgorithm():
         """
         Similar to compute_policy_features_expectation but we are given a
         fixed number of trajectories which are expert's.
+        :return 1-d numpy array
         """
         feat_mtx = self.feat_mtx
         q_states = self.q_states
@@ -271,8 +279,8 @@ class ALAlgorithm():
         self.lambdas = list(solvers.qp(P, q, G, h, A, b)['x'])[1:]
         save_obj(self.lambdas, 'LAMBDAS')
 
-    def run(self, disc_rate, eps, max_reward):
-        self.compute_policies(disc_rate, eps, max_reward)
+    def run(self, disc_rate=0.95, eps=0.1, max_reward=100):
+        self.apprenticeship_learning_algorithm(disc_rate, eps, max_reward)
         self.solve_lambdas()
 
 if __name__ == '__main__':
